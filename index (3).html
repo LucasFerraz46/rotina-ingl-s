@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rotina — Inglês todo dia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F7ECE7;
+    --paper: #FFF9F6;
+    --ink: #331F1A;
+    --ink-soft: #8A6A61;
+    --line: #EAD3CA;
+    --blue: #B23A2E;
+    --amber: #C98F3F;
+    --coral: #7A2620;
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    margin:0;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:.02em; }
+
+  .app{
+    display:grid;
+    grid-template-columns: 280px 1fr;
+    min-height:100vh;
+  }
+  @media (max-width: 860px){
+    .app{ grid-template-columns: 1fr; }
+    .sidebar{ position:static; border-right:none; border-bottom:1px solid var(--line); }
+  }
+
+  /* Sidebar */
+  .sidebar{
+    background:var(--paper);
+    border-right:1px solid var(--line);
+    padding:28px 22px;
+    position:sticky; top:0; height:100vh; overflow-y:auto;
+  }
+  .brand{ display:flex; align-items:baseline; gap:8px; margin-bottom:6px; }
+  .brand h1{ font-size:1.4rem; }
+  .brand span{ color:var(--coral); font-family:'Fraunces', serif; font-style:italic; font-size:1.4rem; }
+  .tagline{ color:var(--ink-soft); font-size:.85rem; margin-bottom:28px; }
+
+  .streak{
+    display:flex; align-items:center; gap:10px;
+    background:#F5DED4; border:1px solid var(--line); border-radius:var(--radius);
+    padding:12px 14px; margin-bottom:26px;
+  }
+  .streak .num{ font-family:'Fraunces', serif; font-size:1.6rem; color:var(--amber); line-height:1;}
+  .streak .label{ font-size:.72rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em;}
+
+  .nav-label{ font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); margin: 18px 0 10px; }
+  .day-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
+  .day-item{
+    display:flex; align-items:center; gap:10px;
+    padding:9px 10px; border-radius:10px; cursor:pointer;
+    font-size:.92rem; color:var(--ink-soft);
+  }
+  .day-item .dot{ width:8px; height:8px; border-radius:50%; background:var(--line); flex-shrink:0; }
+  .day-item.active{ background:#F6E1D9; color:var(--ink); font-weight:500; }
+  .day-item.active .dot{ background:var(--blue); }
+  .day-item.done .dot{ background:#A6763B; }
+  .day-item .n{ font-family:'IBM Plex Mono', monospace; font-size:.78rem; color:var(--ink-soft); min-width:22px; }
+
+  /* Main */
+  main{ padding:44px 48px 80px; max-width:920px; }
+  @media (max-width: 640px){ main{ padding:28px 20px 60px; } }
+
+  .lesson-header{ margin-bottom:34px; }
+  .eyebrow{ color:var(--ink-soft); font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+  .lesson-header h2{ font-size:2.1rem; }
+  .lesson-sub{ color:var(--ink-soft); margin-top:8px; font-size:1rem; }
+
+  /* Signature: 50-minute dial */
+  .dial-row{
+    display:flex; align-items:center; gap:28px;
+    background:var(--paper); border:1px solid var(--line); border-radius:20px;
+    padding:24px 28px; margin-bottom:40px;
+  }
+  @media (max-width:640px){ .dial-row{ flex-direction:column; align-items:flex-start; } }
+  .dial-wrap{ flex-shrink:0; }
+  .dial-legend{ display:flex; flex-direction:column; gap:10px; }
+  .legend-item{ display:flex; align-items:center; gap:9px; font-size:.9rem; }
+  .swatch{ width:11px; height:11px; border-radius:3px; flex-shrink:0; }
+  .legend-time{ color:var(--ink-soft); margin-left:auto; font-family:'IBM Plex Mono', monospace; font-size:.8rem; }
+  @media (max-width:640px){ .legend-time{ margin-left:0; } }
+
+  /* Blocks */
+  .blocks{ display:flex; flex-direction:column; gap:16px; }
+  .block{
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 24px; display:flex; gap:18px; align-items:flex-start;
+    transition:border-color .15s ease;
+  }
+  .block:hover{ border-color:#B9C2AE; }
+  .block-icon{
+    width:40px; height:40px; border-radius:10px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-size:1.1rem; color:#fff;
+  }
+  .block-body{ flex:1; }
+  .block-top{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
+  .block-top h3{ font-size:1.05rem; }
+  .block-time{ font-family:'IBM Plex Mono', monospace; font-size:.78rem; color:var(--ink-soft); white-space:nowrap; }
+  .block-desc{ color:var(--ink-soft); font-size:.92rem; margin-top:5px; line-height:1.5; }
+  .block-status{
+    margin-top:12px; font-size:.78rem; font-weight:500; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--blue);
+  }
+
+  .start-btn{
+    margin-top:34px;
+    background:var(--ink); color:var(--paper); border:none;
+    padding:14px 26px; border-radius:10px; font-size:.95rem; font-weight:500;
+    cursor:pointer; font-family:'Work Sans', sans-serif;
+  }
+  .start-btn:hover{ background:#4A2A22; }
+  .start-btn:focus-visible, .day-item:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+
+  /* Lesson content */
+  .lesson-block{
+    background:var(--paper); border:1px solid var(--line); border-radius:18px;
+    padding:28px 30px; margin-bottom:24px;
+  }
+  .block-tag{
+    display:inline-block; color:#fff; font-size:.72rem; font-weight:600;
+    text-transform:uppercase; letter-spacing:.05em; padding:5px 12px; border-radius:20px; margin-bottom:14px;
+  }
+  .block-title{ font-size:1.5rem; margin-bottom:14px; }
+  .explain{ color:var(--ink-soft); line-height:1.65; font-size:.95rem; margin:0 0 16px; }
+  .mini-h{ font-family:'Fraunces', serif; font-size:1.05rem; margin:22px 0 12px; }
+
+  .be-table{ width:100%; border-collapse:collapse; margin-bottom:16px; font-size:.92rem; }
+  .be-table th{ text-align:left; color:var(--ink-soft); font-weight:500; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; padding:8px 10px; border-bottom:1px solid var(--line); }
+  .be-table td{ padding:9px 10px; border-bottom:1px solid var(--line); }
+
+  .chip{
+    display:inline-block; background:#F3E4DC; color:var(--coral);
+    padding:3px 9px; border-radius:6px; font-size:.82rem; margin:2px 3px 2px 0;
+  }
+
+  .quiz .q{ margin-bottom:12px; font-size:.98rem; }
+  .blank{
+    width:64px; text-align:center; font-family:'IBM Plex Mono', monospace;
+    border:1px solid var(--line); border-radius:6px; padding:5px 6px; font-size:.9rem;
+    background:#fff;
+  }
+  .blank.correct{ border-color:#5F8A5A; background:#EAF3E8; }
+  .blank.wrong{ border-color:var(--coral); background:#FBE9E5; }
+
+  .q-choice{ margin-bottom:14px; font-size:.95rem; }
+  .q-choice label{ display:inline-flex; align-items:center; gap:6px; margin-right:18px; color:var(--ink-soft); }
+
+  .check-btn{
+    background:var(--blue); color:#fff; border:none; padding:9px 18px;
+    border-radius:8px; font-size:.85rem; cursor:pointer; font-family:'Work Sans', sans-serif; margin-top:6px;
+  }
+  .quiz-feedback{ margin-top:10px; font-size:.9rem; font-weight:500; min-height:1.2em; }
+
+  .dialogue{ display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+  .line{ display:flex; align-items:center; gap:12px; font-size:.94rem; }
+  .play-btn{
+    width:32px; height:32px; border-radius:50%; border:1px solid var(--line);
+    background:#fff; cursor:pointer; flex-shrink:0; color:var(--blue); font-size:.8rem;
+  }
+  .play-btn-wide{
+    background:var(--paper); border:1px solid var(--blue); color:var(--blue);
+    padding:9px 16px; border-radius:8px; cursor:pointer; font-size:.85rem; font-family:'Work Sans', sans-serif;
+  }
+
+  .reading-text{ font-size:1.05rem; line-height:1.9; margin-bottom:14px; }
+  .reading-text mark{ background:#F5DDA0; padding:1px 3px; border-radius:3px; }
+
+  .speak-card{ background:#FBF3EF; border:1px solid var(--line); border-radius:14px; padding:20px 22px; }
+  .target-phrase{ font-family:'Fraunces', serif; font-size:1.2rem; margin-bottom:16px; }
+  .speak-controls{ display:flex; gap:12px; flex-wrap:wrap; }
+  .record-btn{
+    background:var(--coral); color:#fff; border:none; padding:9px 18px;
+    border-radius:8px; cursor:pointer; font-size:.85rem; font-family:'Work Sans', sans-serif;
+  }
+  .record-btn.recording{ background:#8C231C; }
+  .speak-result{ margin-top:14px; font-size:.92rem; color:var(--ink-soft); }
+
+  /* Example list */
+  .example-list{ list-style:none; margin:0 0 18px; padding:0; display:flex; flex-direction:column; gap:8px; }
+  .example-list li{ display:flex; justify-content:space-between; gap:16px; font-size:.94rem; padding:8px 12px; background:#FBF3EF; border-radius:8px; flex-wrap:wrap; }
+  .example-list .en{ color:var(--ink); }
+  .example-list .pt{ color:var(--ink-soft); font-style:italic; }
+
+  /* Instant dictionary */
+  .dict-box{
+    display:flex; gap:16px; align-items:flex-start;
+    background:var(--paper); border:1.5px solid var(--blue); border-radius:16px;
+    padding:18px 22px; margin-bottom:24px;
+  }
+  .dict-icon{ font-size:1.3rem; margin-top:6px; }
+  .dict-body{ flex:1; }
+  .dict-input{
+    width:100%; border:none; border-bottom:2px solid var(--line);
+    font-family:'Fraunces', serif; font-size:1.3rem; padding:6px 2px;
+    background:transparent; color:var(--ink);
+  }
+  .dict-input:focus{ outline:none; border-bottom-color:var(--blue); }
+  .dict-result{ margin-top:10px; font-size:.92rem; color:var(--ink-soft); min-height:1.3em; }
+  .dict-result .found{ color:var(--ink); }
+  .dict-result .found strong{ color:var(--blue); font-family:'Fraunces', serif; font-size:1.05rem; }
+  .dict-result .not-found{ color:var(--coral); }
+  .dict-result .loading{ color:var(--amber); }
+  .dict-result .src{ color:var(--ink-soft); font-size:.78rem; font-style:italic; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand"><h1>Rotina</h1><span>en</span></div>
+    <p class="tagline">50 minutos por dia. Nível A1.</p>
+
+    <div class="streak">
+      <div class="num mono">0</div>
+      <div class="label">dias seguidos</div>
+    </div>
+
+    <div class="nav-label">Sua trilha</div>
+    <ul class="day-list" id="dayList">
+      <!-- gerado por JS -->
+    </ul>
+  </aside>
+
+  <main>
+    <div class="lesson-header">
+      <div class="eyebrow">Dia 1 · Nível A1</div>
+      <h2>Greetings &amp; Introductions</h2>
+      <p class="lesson-sub">Hoje você aprende a se apresentar, cumprimentar e fazer perguntas simples em inglês.</p>
+    </div>
+
+    <div class="dict-box">
+      <div class="dict-icon">🔎</div>
+      <div class="dict-body">
+        <input type="text" id="dictInput" class="dict-input" placeholder="Digite uma palavra em inglês..." autocomplete="off">
+        <div class="dict-result" id="dictResult">Traduzo qualquer palavra da aula — e várias outras — na hora.</div>
+      </div>
+    </div>
+
+    <div class="dial-row">
+      <div class="dial-wrap">
+        <svg id="dial" width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#E4E7DC" stroke-width="12"/>
+          <!-- arcos preenchidos via JS conforme progresso -->
+          <g id="dialArcs"></g>
+          <text x="60" y="56" text-anchor="middle" font-family="Fraunces, serif" font-size="22" fill="#21332C">50</text>
+          <text x="60" y="74" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="10" fill="#5B6B62">minutos</text>
+        </svg>
+      </div>
+      <div class="dial-legend">
+        <div class="legend-item"><span class="swatch" style="background:#B23A2E"></span>Gramática &amp; aquecimento<span class="legend-time">20 min</span></div>
+        <div class="legend-item"><span class="swatch" style="background:#C98F3F"></span>Escuta &amp; leitura<span class="legend-time">20 min</span></div>
+        <div class="legend-item"><span class="swatch" style="background:#7A2620"></span>Expressão oral<span class="legend-time">10 min</span></div>
+      </div>
+    </div>
+
+    <div class="blocks">
+      <div class="block">
+        <div class="block-icon" style="background:var(--blue)">1</div>
+        <div class="block-body">
+          <div class="block-top"><h3>Aquecimento + Gramática</h3><span class="block-time">15 min</span></div>
+          <p class="block-desc">Revisão do dia anterior e o verbo <em>to be</em>: I am, you are, he/she is.</p>
+          <div class="block-status">Pendente</div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-icon" style="background:var(--amber)">2</div>
+        <div class="block-body">
+          <div class="block-top"><h3>Compreensão auditiva</h3><span class="block-time">10 min</span></div>
+          <p class="block-desc">Ouça um diálogo curto de apresentação e responda perguntas simples.</p>
+          <div class="block-status">Pendente</div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-icon" style="background:#A6763B">3</div>
+        <div class="block-body">
+          <div class="block-top"><h3>Leitura</h3><span class="block-time">10 min</span></div>
+          <p class="block-desc">Texto curto com vocabulário novo destacado.</p>
+          <div class="block-status">Pendente</div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-icon" style="background:var(--coral)">4</div>
+        <div class="block-body">
+          <div class="block-top"><h3>Expressão oral</h3><span class="block-time">10 min</span></div>
+          <p class="block-desc">Grave sua voz repetindo as frases da aula e compare com a pronúncia alvo.</p>
+          <div class="block-status">Pendente</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="start-btn" id="startBtn">Começar aula do Dia 1</button>
+
+    <section id="lessonContent" style="display:none; margin-top:40px;">
+
+      <!-- BLOCO 1: GRAMÁTICA -->
+      <div class="lesson-block" id="block-grammar">
+        <div class="block-tag" style="background:var(--blue)">Bloco 1 · Gramática</div>
+        <h2 class="block-title">O verbo <em>to be</em></h2>
+        <p class="explain">
+          Em português, usamos <strong>"ser"</strong> ou <strong>"estar"</strong> dependendo do contexto.
+          Em inglês, um único verbo faz os dois papéis: <strong>to be</strong>. Ele muda de forma
+          conforme quem está falando.
+        </p>
+
+        <table class="be-table">
+          <tr><th>Pessoa</th><th>Forma</th><th>Exemplo</th></tr>
+          <tr><td>I</td><td class="mono">am</td><td>I <strong>am</strong> Marcos.</td></tr>
+          <tr><td>You</td><td class="mono">are</td><td>You <strong>are</strong> a student.</td></tr>
+          <tr><td>He / She / It</td><td class="mono">is</td><td>She <strong>is</strong> happy.</td></tr>
+          <tr><td>We / You / They</td><td class="mono">are</td><td>We <strong>are</strong> friends.</td></tr>
+        </table>
+
+        <h3 class="mini-h">Mais exemplos</h3>
+        <ul class="example-list">
+          <li><span class="en">I <strong>am</strong> from Brazil.</span><span class="pt">Eu sou do Brasil.</span></li>
+          <li><span class="en">He <strong>is</strong> my brother.</span><span class="pt">Ele é meu irmão.</span></li>
+          <li><span class="en">This coffee <strong>is</strong> hot.</span><span class="pt">Este café está quente.</span></li>
+          <li><span class="en">We <strong>are</strong> at school.</span><span class="pt">Nós estamos na escola.</span></li>
+          <li><span class="en">They <strong>are</strong> tired.</span><span class="pt">Eles estão cansados.</span></li>
+          <li><span class="en">It <strong>is</strong> Monday today.</span><span class="pt">Hoje é segunda-feira.</span></li>
+        </ul>
+
+        <h3 class="mini-h">Forma negativa</h3>
+        <p class="explain">Para negar, é só colocar <strong>not</strong> depois do verbo:
+          <span class="mono chip">I'm not</span> <span class="mono chip">you aren't</span>
+          <span class="mono chip">he isn't</span> <span class="mono chip">they aren't</span>
+        </p>
+        <ul class="example-list">
+          <li><span class="en">I <strong>am not</strong> tired.</span><span class="pt">Eu não estou cansado.</span></li>
+          <li><span class="en">She <strong>isn't</strong> a doctor.</span><span class="pt">Ela não é médica.</span></li>
+        </ul>
+
+        <p class="explain">Contraído (do jeito que as pessoas falam de verdade):
+          <span class="mono chip">I'm</span> <span class="mono chip">you're</span>
+          <span class="mono chip">he's</span> <span class="mono chip">she's</span>
+          <span class="mono chip">we're</span> <span class="mono chip">they're</span>
+        </p>
+
+        <h3 class="mini-h">Exercício 1 — Complete com am / is / are</h3>
+        <div class="quiz" id="quizBe">
+          <div class="q" data-answer="am">
+            <p>1. I <input type="text" class="blank" maxlength="4" placeholder="___"> Brazilian.</p>
+          </div>
+          <div class="q" data-answer="is">
+            <p>2. My sister <input type="text" class="blank" maxlength="4" placeholder="___"> a doctor.</p>
+          </div>
+          <div class="q" data-answer="are">
+            <p>3. You and I <input type="text" class="blank" maxlength="4" placeholder="___"> classmates.</p>
+          </div>
+          <div class="q" data-answer="is">
+            <p>4. This book <input type="text" class="blank" maxlength="4" placeholder="___"> interesting.</p>
+          </div>
+          <div class="q" data-answer="are">
+            <p>5. They <input type="text" class="blank" maxlength="4" placeholder="___"> from Canada.</p>
+          </div>
+          <div class="q" data-answer="is">
+            <p>6. It <input type="text" class="blank" maxlength="4" placeholder="___"> Monday today.</p>
+          </div>
+          <div class="q" data-answer="am">
+            <p>7. I <input type="text" class="blank" maxlength="4" placeholder="___"> a student too.</p>
+          </div>
+          <button class="check-btn" onclick="checkQuiz('quizBe')">Corrigir</button>
+          <p class="quiz-feedback" id="feedback-quizBe"></p>
+        </div>
+
+        <h3 class="mini-h">Exercício 2 — Escolha a forma correta</h3>
+        <div class="quiz" id="quizBeChoice">
+          <div class="q-choice">
+            <p>1. She ___ my friend.</p>
+            <label><input type="radio" name="c1" value="correct"> is</label>
+            <label><input type="radio" name="c1" value="wrong"> are</label>
+            <label><input type="radio" name="c1" value="wrong"> am</label>
+          </div>
+          <div class="q-choice">
+            <p>2. We ___ happy today.</p>
+            <label><input type="radio" name="c2" value="wrong"> is</label>
+            <label><input type="radio" name="c2" value="correct"> are</label>
+            <label><input type="radio" name="c2" value="wrong"> am</label>
+          </div>
+          <div class="q-choice">
+            <p>3. I ___ not tired.</p>
+            <label><input type="radio" name="c3" value="correct"> am</label>
+            <label><input type="radio" name="c3" value="wrong"> is</label>
+            <label><input type="radio" name="c3" value="wrong"> are</label>
+          </div>
+          <div class="q-choice">
+            <p>4. My parents ___ at home.</p>
+            <label><input type="radio" name="c4" value="wrong"> is</label>
+            <label><input type="radio" name="c4" value="correct"> are</label>
+            <label><input type="radio" name="c4" value="wrong"> am</label>
+          </div>
+          <button class="check-btn" onclick="checkChoice(['c1','c2','c3','c4'], 'feedback-quizBeChoice')">Corrigir</button>
+          <p class="quiz-feedback" id="feedback-quizBeChoice"></p>
+        </div>
+      </div>
+
+      <!-- BLOCO 2: LISTENING -->
+      <div class="lesson-block" id="block-listening">
+        <div class="block-tag" style="background:var(--amber)">Bloco 2 · Compreensão auditiva</div>
+        <h2 class="block-title">Ouça o diálogo</h2>
+        <p class="explain">Clique para ouvir cada fala (voz sintetizada em inglês). Depois responda às perguntas.</p>
+
+        <div class="dialogue">
+          <div class="line"><button class="play-btn" onclick="speak('Hi! My name is Anna. What is your name?')">▶</button><span><strong>Anna:</strong> Hi! My name is Anna. What is your name?</span></div>
+          <div class="line"><button class="play-btn" onclick="speak('Hello Anna, I am Marcos. Nice to meet you.')">▶</button><span><strong>Marcos:</strong> Hello Anna, I am Marcos. Nice to meet you.</span></div>
+          <div class="line"><button class="play-btn" onclick="speak('Nice to meet you too. Are you a student?')">▶</button><span><strong>Anna:</strong> Nice to meet you too. Are you a student?</span></div>
+          <div class="line"><button class="play-btn" onclick="speak('Yes, I am. I am from Brazil.')">▶</button><span><strong>Marcos:</strong> Yes, I am. I am from Brazil.</span></div>
+        </div>
+        <button class="play-btn-wide" onclick="speakAll()">▶ Ouvir diálogo completo</button>
+
+        <h3 class="mini-h">Perguntas</h3>
+        <div class="quiz" id="quizListen">
+          <div class="q-choice">
+            <p>1. What is the woman's name?</p>
+            <label><input type="radio" name="l1" value="wrong"> Marcos</label>
+            <label><input type="radio" name="l1" value="correct"> Anna</label>
+          </div>
+          <div class="q-choice">
+            <p>2. Where is Marcos from?</p>
+            <label><input type="radio" name="l2" value="correct"> Brazil</label>
+            <label><input type="radio" name="l2" value="wrong"> Portugal</label>
+          </div>
+          <div class="q-choice">
+            <p>3. Is Marcos a student?</p>
+            <label><input type="radio" name="l3" value="correct"> Yes, he is</label>
+            <label><input type="radio" name="l3" value="wrong"> No, he isn't</label>
+          </div>
+          <div class="q-choice">
+            <p>4. Who asks "What is your name?"</p>
+            <label><input type="radio" name="l4" value="correct"> Anna</label>
+            <label><input type="radio" name="l4" value="wrong"> Marcos</label>
+          </div>
+          <button class="check-btn" onclick="checkChoice(['l1','l2','l3','l4'], 'feedback-quizListen')">Corrigir</button>
+          <p class="quiz-feedback" id="feedback-quizListen"></p>
+        </div>
+      </div>
+
+      <!-- BLOCO 3: LEITURA -->
+      <div class="lesson-block" id="block-reading">
+        <div class="block-tag" style="background:#A6763B">Bloco 3 · Leitura</div>
+        <h2 class="block-title">Texto: A New Friend</h2>
+        <p class="reading-text">
+          My name is <strong>Marcos</strong>. I <mark>am</mark> from Brazil. I <mark>am</mark> a student.
+          My friend <mark>is</mark> Anna. She <mark>is</mark> from Canada. We <mark>are</mark> classmates
+          and we <mark>are</mark> good friends. Anna <mark>is</mark> friendly and funny.
+        </p>
+        <p class="explain">Palavras novas: <span class="mono chip">friend</span> <span class="mono chip">classmate</span> <span class="mono chip">friendly</span> <span class="mono chip">funny</span></p>
+      </div>
+
+      <!-- BLOCO 4: SPEAKING -->
+      <div class="lesson-block" id="block-speaking">
+        <div class="block-tag" style="background:var(--coral)">Bloco 4 · Expressão oral</div>
+        <h2 class="block-title">Repita e grave sua voz</h2>
+        <p class="explain">Clique em "Ouvir" para escutar a frase, depois em "Gravar" e repita em voz alta.</p>
+
+        <div class="speak-card">
+          <p class="target-phrase">"Hi! My name is <em>[seu nome]</em>. I am from Brazil."</p>
+          <div class="speak-controls">
+            <button class="play-btn-wide" onclick="speak('Hi! My name is Marcos. I am from Brazil.')">▶ Ouvir</button>
+            <button class="record-btn" id="recordBtn" onclick="toggleRecord()">🎤 Gravar</button>
+          </div>
+          <p class="speak-result" id="speakResult"></p>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<script>
+  // Estrutura de dias — por enquanto só o Dia 1 tem conteúdo real
+  const totalDays = 14;
+  const currentDay = 1;
+  const completedDays = []; // ex: [1,2,3]
+
+  const dayList = document.getElementById('dayList');
+  for(let i=1; i<=totalDays; i++){
+    const li = document.createElement('li');
+    li.className = 'day-item' + (i===currentDay ? ' active' : '') + (completedDays.includes(i) ? ' done' : '');
+    li.tabIndex = 0;
+    li.innerHTML = `<span class="dot"></span><span class="n">${String(i).padStart(2,'0')}</span><span>Dia ${i}</span>`;
+    dayList.appendChild(li);
+  }
+
+  // Signature: dial de progresso (arcos coloridos proporcionais aos 3 blocos de 50min)
+  const svgNS = "http://www.w3.org/2000/svg";
+  const arcsGroup = document.getElementById('dialArcs');
+  const segments = [
+    { color: '#B23A2E', minutes: 20 },
+    { color: '#C98F3F', minutes: 20 },
+    { color: '#7A2620', minutes: 10 }
+  ];
+  const r = 50, cx = 60, cy = 60, circumference = 2 * Math.PI * r;
+  let offset = 0;
+  segments.forEach(seg => {
+    const len = (seg.minutes/50) * circumference;
+    const circle = document.createElementNS(svgNS, 'circle');
+    circle.setAttribute('cx', cx);
+    circle.setAttribute('cy', cy);
+    circle.setAttribute('r', r);
+    circle.setAttribute('fill', 'none');
+    circle.setAttribute('stroke', seg.color);
+    circle.setAttribute('stroke-width', 12);
+    circle.setAttribute('stroke-dasharray', `${len} ${circumference-len}`);
+    circle.setAttribute('stroke-dashoffset', -offset);
+    circle.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
+    circle.setAttribute('stroke-linecap', 'butt');
+    arcsGroup.appendChild(circle);
+    offset += len;
+  });
+
+  document.getElementById('startBtn').addEventListener('click', () => {
+    const content = document.getElementById('lessonContent');
+    const isHidden = content.style.display === 'none';
+    content.style.display = isHidden ? 'block' : 'none';
+    document.getElementById('startBtn').textContent = isHidden ? 'Ocultar aula' : 'Começar aula do Dia 1';
+    if(isHidden){ content.scrollIntoView({behavior:'smooth', block:'start'}); }
+  });
+
+  // --- Text-to-Speech ---
+  function speak(text){
+    if(!('speechSynthesis' in window)){ alert('Seu navegador não suporta síntese de voz.'); return; }
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'en-US';
+    utter.rate = 0.92;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter);
+  }
+  const dialogueLines = [
+    'Hi! My name is Anna. What is your name?',
+    'Hello Anna, I am Marcos. Nice to meet you.',
+    'Nice to meet you too. Are you a student?',
+    'Yes, I am. I am from Brazil.'
+  ];
+  function speakAll(i=0){
+    if(i >= dialogueLines.length) return;
+    if(!('speechSynthesis' in window)) return;
+    const utter = new SpeechSynthesisUtterance(dialogueLines[i]);
+    utter.lang = 'en-US';
+    utter.rate = 0.92;
+    utter.onend = () => speakAll(i+1);
+    speechSynthesis.speak(utter);
+  }
+
+  // --- Quiz de preencher lacunas (Bloco 1) ---
+  function checkQuiz(quizId){
+    const quiz = document.getElementById(quizId);
+    const questions = quiz.querySelectorAll('.q');
+    let correct = 0;
+    questions.forEach(q => {
+      const answer = q.dataset.answer.trim().toLowerCase();
+      const input = q.querySelector('.blank');
+      const value = input.value.trim().toLowerCase();
+      input.classList.remove('correct','wrong');
+      if(value === answer){ input.classList.add('correct'); correct++; }
+      else{ input.classList.add('wrong'); }
+    });
+    const fb = document.getElementById('feedback-' + quizId);
+    fb.textContent = `Você acertou ${correct} de ${questions.length}.`;
+    fb.style.color = correct === questions.length ? '#4A7A45' : '#B23A2E';
+  }
+
+  // --- Quiz de múltipla escolha (Bloco 2) ---
+  function checkChoice(names, feedbackId){
+    let correct = 0;
+    names.forEach(name => {
+      const checked = document.querySelector(`input[name="${name}"]:checked`);
+      if(checked && checked.value === 'correct') correct++;
+    });
+    const fb = document.getElementById(feedbackId);
+    fb.textContent = `Você acertou ${correct} de ${names.length}.`;
+    fb.style.color = correct === names.length ? '#4A7A45' : '#B23A2E';
+  }
+
+  // --- Gravação de voz + comparação (Bloco 4) ---
+  let recognizing = false;
+  let recognition;
+  const targetPhrase = 'hi my name is marcos i am from brazil';
+
+  function toggleRecord(){
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const btn = document.getElementById('recordBtn');
+    const result = document.getElementById('speakResult');
+
+    if(!SpeechRecognition){
+      result.textContent = 'Seu navegador não suporta reconhecimento de voz (funciona melhor no Chrome).';
+      return;
+    }
+    if(recognizing){
+      recognition.stop();
+      return;
+    }
+    recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      recognizing = true;
+      btn.classList.add('recording');
+      btn.textContent = '⏺ Gravando...';
+      result.textContent = 'Fale agora...';
+    };
+    recognition.onend = () => {
+      recognizing = false;
+      btn.classList.remove('recording');
+      btn.textContent = '🎤 Gravar';
+    };
+    recognition.onerror = (e) => {
+      result.textContent = 'Não foi possível captar o áudio. Tente novamente.';
+    };
+    recognition.onresult = (e) => {
+      const said = e.results[0][0].transcript.toLowerCase().trim();
+      const saidClean = said.replace(/[.,!?]/g,'');
+      const similarity = wordOverlap(saidClean, targetPhrase);
+      result.innerHTML = `Você disse: <strong>"${said}"</strong><br>Aproximação com a frase alvo: <strong>${similarity}%</strong>`;
+    };
+    recognition.start();
+  }
+
+  function wordOverlap(a, b){
+    const wordsA = a.split(/\s+/);
+    const wordsB = b.split(/\s+/);
+    let matches = 0;
+    wordsB.forEach(w => { if(wordsA.includes(w)) matches++; });
+    return Math.round((matches / wordsB.length) * 100);
+  }
+
+  // --- Dicionário instantâneo (inglês -> português) ---
+  const dictionary = {
+    "hi":"oi", "hello":"olá", "bye":"tchau", "goodbye":"adeus",
+    "name":"nome", "friend":"amigo(a)", "friendly":"amigável, simpático",
+    "classmate":"colega de classe", "funny":"engraçado(a)",
+    "student":"estudante", "teacher":"professor(a)", "doctor":"médico(a)",
+    "brother":"irmão", "sister":"irmã", "mother":"mãe", "father":"pai",
+    "family":"família", "book":"livro", "coffee":"café", "school":"escola",
+    "home":"casa, lar", "today":"hoje", "tired":"cansado(a)", "happy":"feliz",
+    "sad":"triste", "hot":"quente", "cold":"frio", "interesting":"interessante",
+    "monday":"segunda-feira", "brazil":"brasil", "brazilian":"brasileiro(a)",
+    "canada":"canadá", "from":"de (origem)", "meet":"conhecer, encontrar",
+    "nice":"legal, agradável", "yes":"sim", "no":"não",
+    "am":"(verbo to be - 1ª pessoa) sou/estou", "is":"(verbo to be - 3ª pessoa) é/está",
+    "are":"(verbo to be - você/nós/eles) é/são/está/estão",
+    "not":"não (negação)", "and":"e", "too":"também",
+    "i":"eu", "you":"você", "he":"ele", "she":"ela", "it":"isso/ele/ela (objeto/animal)",
+    "we":"nós", "they":"eles/elas", "my":"meu/minha", "your":"seu/sua",
+    "his":"dele", "her":"dela", "our":"nosso(a)", "their":"deles/delas",
+    "student's":"do(a) estudante", "what":"o que/qual", "where":"onde", "who":"quem",
+    "parents":"pais (mãe e pai)", "good":"bom/boa"
+  };
+
+  const dictInput = document.getElementById('dictInput');
+  const dictResult = document.getElementById('dictResult');
+  let dictTimeout;
+
+  dictInput.addEventListener('input', () => {
+    const word = dictInput.value.trim().toLowerCase().replace(/[.,!?']/g,'');
+    clearTimeout(dictTimeout);
+
+    if(!word){
+      dictResult.innerHTML = 'Traduzo qualquer palavra em inglês — na hora.';
+      return;
+    }
+
+    // 1. Tenta primeiro o dicionário local (instantâneo, sem internet)
+    if(dictionary[word]){
+      dictResult.innerHTML = `<span class="found"><strong>${word}</strong> → ${dictionary[word]} <span class="src">(aula)</span></span>`;
+      return;
+    }
+
+    // 2. Se não achar, espera o usuário parar de digitar e busca na API (evita chamadas excessivas)
+    dictResult.innerHTML = `<span class="loading">Traduzindo "${word}"...</span>`;
+    dictTimeout = setTimeout(() => translateOnline(word), 450);
+  });
+
+  async function translateOnline(word){
+    try{
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|pt-BR`;
+      const res = await fetch(url);
+      if(!res.ok) throw new Error('network');
+      const data = await res.json();
+      const translated = data?.responseData?.translatedText;
+
+      // ignora se a palavra atual do input mudou enquanto esperava a resposta
+      if(dictInput.value.trim().toLowerCase().replace(/[.,!?']/g,'') !== word) return;
+
+      if(translated){
+        dictResult.innerHTML = `<span class="found"><strong>${word}</strong> → ${translated.toLowerCase()} <span class="src">(web)</span></span>`;
+      } else {
+        dictResult.innerHTML = `<span class="not-found">Não encontrei tradução para "${word}".</span>`;
+      }
+    } catch(err){
+      dictResult.innerHTML = `<span class="not-found">Sem conexão com o tradutor agora. Tente novamente em instantes.</span>`;
+    }
+  }
+
+
+
+</script>
+</body>
+</html>
