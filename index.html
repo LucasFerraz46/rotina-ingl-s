@@ -16,67 +16,37 @@
     --blue: #B23A2E;
     --amber: #C98F3F;
     --coral: #7A2620;
+    --green: #4A7A45;
     --radius: 14px;
   }
   *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-    font-family:'Work Sans', sans-serif;
-    -webkit-font-smoothing:antialiased;
-  }
-  h1,h2,h3{
-    font-family:'Fraunces', serif;
-    font-weight:600;
-    margin:0;
-  }
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Work Sans', sans-serif; -webkit-font-smoothing:antialiased; }
+  h1,h2,h3{ font-family:'Fraunces', serif; font-weight:600; margin:0; }
   .mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:.02em; }
 
-  .app{
-    display:grid;
-    grid-template-columns: 280px 1fr;
-    min-height:100vh;
-  }
-  @media (max-width: 860px){
-    .app{ grid-template-columns: 1fr; }
-    .sidebar{ position:static; border-right:none; border-bottom:1px solid var(--line); }
-  }
+  .app{ display:grid; grid-template-columns: 280px 1fr; min-height:100vh; }
+  @media (max-width: 860px){ .app{ grid-template-columns: 1fr; } .sidebar{ position:static; border-right:none; border-bottom:1px solid var(--line); height:auto; } }
 
-  /* Sidebar */
-  .sidebar{
-    background:var(--paper);
-    border-right:1px solid var(--line);
-    padding:28px 22px;
-    position:sticky; top:0; height:100vh; overflow-y:auto;
-  }
+  .sidebar{ background:var(--paper); border-right:1px solid var(--line); padding:28px 22px; position:sticky; top:0; height:100vh; overflow-y:auto; }
   .brand{ display:flex; align-items:baseline; gap:8px; margin-bottom:6px; }
   .brand h1{ font-size:1.4rem; }
   .brand span{ color:var(--coral); font-family:'Fraunces', serif; font-style:italic; font-size:1.4rem; }
   .tagline{ color:var(--ink-soft); font-size:.85rem; margin-bottom:28px; }
 
-  .streak{
-    display:flex; align-items:center; gap:10px;
-    background:#F5DED4; border:1px solid var(--line); border-radius:var(--radius);
-    padding:12px 14px; margin-bottom:26px;
-  }
+  .streak{ display:flex; align-items:center; gap:10px; background:#F5DED4; border:1px solid var(--line); border-radius:var(--radius); padding:12px 14px; margin-bottom:26px; }
   .streak .num{ font-family:'Fraunces', serif; font-size:1.6rem; color:var(--amber); line-height:1;}
   .streak .label{ font-size:.72rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em;}
 
-  .nav-label{ font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); margin: 18px 0 10px; }
-  .day-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
-  .day-item{
-    display:flex; align-items:center; gap:10px;
-    padding:9px 10px; border-radius:10px; cursor:pointer;
-    font-size:.92rem; color:var(--ink-soft);
-  }
+  .nav-label{ font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); margin: 18px 0 10px; display:flex; justify-content:space-between; }
+  .day-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; max-height:480px; overflow-y:auto; }
+  .day-item{ display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:10px; cursor:pointer; font-size:.92rem; color:var(--ink-soft); border:none; background:none; width:100%; text-align:left; font-family:'Work Sans', sans-serif; }
   .day-item .dot{ width:8px; height:8px; border-radius:50%; background:var(--line); flex-shrink:0; }
   .day-item.active{ background:#F6E1D9; color:var(--ink); font-weight:500; }
   .day-item.active .dot{ background:var(--blue); }
   .day-item.done .dot{ background:#A6763B; }
   .day-item .n{ font-family:'IBM Plex Mono', monospace; font-size:.78rem; color:var(--ink-soft); min-width:22px; }
+  .day-item .topic{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
-  /* Main */
   main{ padding:44px 48px 80px; max-width:920px; }
   @media (max-width: 640px){ main{ padding:28px 20px 60px; } }
 
@@ -85,12 +55,19 @@
   .lesson-header h2{ font-size:2.1rem; }
   .lesson-sub{ color:var(--ink-soft); margin-top:8px; font-size:1rem; }
 
-  /* Signature: 50-minute dial */
-  .dial-row{
-    display:flex; align-items:center; gap:28px;
-    background:var(--paper); border:1px solid var(--line); border-radius:20px;
-    padding:24px 28px; margin-bottom:40px;
-  }
+  .dict-box{ display:flex; gap:16px; align-items:flex-start; background:var(--paper); border:1.5px solid var(--blue); border-radius:16px; padding:18px 22px; margin-bottom:24px; }
+  .dict-icon{ font-size:1.3rem; margin-top:6px; }
+  .dict-body{ flex:1; }
+  .dict-input{ width:100%; border:none; border-bottom:2px solid var(--line); font-family:'Fraunces', serif; font-size:1.3rem; padding:6px 2px; background:transparent; color:var(--ink); }
+  .dict-input:focus{ outline:none; border-bottom-color:var(--blue); }
+  .dict-result{ margin-top:10px; font-size:.92rem; color:var(--ink-soft); min-height:1.3em; }
+  .dict-result .found{ color:var(--ink); }
+  .dict-result .found strong{ color:var(--blue); font-family:'Fraunces', serif; font-size:1.05rem; }
+  .dict-result .not-found{ color:var(--coral); }
+  .dict-result .loading{ color:var(--amber); }
+  .dict-result .src{ color:var(--ink-soft); font-size:.78rem; font-style:italic; }
+
+  .dial-row{ display:flex; align-items:center; gap:28px; background:var(--paper); border:1px solid var(--line); border-radius:20px; padding:24px 28px; margin-bottom:40px; }
   @media (max-width:640px){ .dial-row{ flex-direction:column; align-items:flex-start; } }
   .dial-wrap{ flex-shrink:0; }
   .dial-legend{ display:flex; flex-direction:column; gap:10px; }
@@ -99,88 +76,38 @@
   .legend-time{ color:var(--ink-soft); margin-left:auto; font-family:'IBM Plex Mono', monospace; font-size:.8rem; }
   @media (max-width:640px){ .legend-time{ margin-left:0; } }
 
-  /* Blocks */
-  .blocks{ display:flex; flex-direction:column; gap:16px; }
-  .block{
-    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
-    padding:22px 24px; display:flex; gap:18px; align-items:flex-start;
-    transition:border-color .15s ease;
-  }
-  .block:hover{ border-color:#B9C2AE; }
-  .block-icon{
-    width:40px; height:40px; border-radius:10px; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Fraunces', serif; font-size:1.1rem; color:#fff;
-  }
-  .block-body{ flex:1; }
-  .block-top{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
-  .block-top h3{ font-size:1.05rem; }
-  .block-time{ font-family:'IBM Plex Mono', monospace; font-size:.78rem; color:var(--ink-soft); white-space:nowrap; }
-  .block-desc{ color:var(--ink-soft); font-size:.92rem; margin-top:5px; line-height:1.5; }
-  .block-status{
-    margin-top:12px; font-size:.78rem; font-weight:500; text-transform:uppercase; letter-spacing:.05em;
-    color:var(--blue);
-  }
-
-  .start-btn{
-    margin-top:34px;
-    background:var(--ink); color:var(--paper); border:none;
-    padding:14px 26px; border-radius:10px; font-size:.95rem; font-weight:500;
-    cursor:pointer; font-family:'Work Sans', sans-serif;
-  }
+  .start-btn{ margin-bottom:24px; background:var(--ink); color:var(--paper); border:none; padding:14px 26px; border-radius:10px; font-size:.95rem; font-weight:500; cursor:pointer; font-family:'Work Sans', sans-serif; }
   .start-btn:hover{ background:#4A2A22; }
   .start-btn:focus-visible, .day-item:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
 
-  /* Lesson content */
-  .lesson-block{
-    background:var(--paper); border:1px solid var(--line); border-radius:18px;
-    padding:28px 30px; margin-bottom:24px;
-  }
-  .block-tag{
-    display:inline-block; color:#fff; font-size:.72rem; font-weight:600;
-    text-transform:uppercase; letter-spacing:.05em; padding:5px 12px; border-radius:20px; margin-bottom:14px;
-  }
+  .lesson-block{ background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:28px 30px; margin-bottom:24px; }
+  .block-tag{ display:inline-block; color:#fff; font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; padding:5px 12px; border-radius:20px; margin-bottom:14px; }
   .block-title{ font-size:1.5rem; margin-bottom:14px; }
   .explain{ color:var(--ink-soft); line-height:1.65; font-size:.95rem; margin:0 0 16px; }
   .mini-h{ font-family:'Fraunces', serif; font-size:1.05rem; margin:22px 0 12px; }
 
-  .be-table{ width:100%; border-collapse:collapse; margin-bottom:16px; font-size:.92rem; }
-  .be-table th{ text-align:left; color:var(--ink-soft); font-weight:500; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; padding:8px 10px; border-bottom:1px solid var(--line); }
-  .be-table td{ padding:9px 10px; border-bottom:1px solid var(--line); }
+  .chip{ display:inline-block; background:#F3E4DC; color:var(--coral); padding:3px 9px; border-radius:6px; font-size:.82rem; margin:2px 3px 2px 0; }
 
-  .chip{
-    display:inline-block; background:#F3E4DC; color:var(--coral);
-    padding:3px 9px; border-radius:6px; font-size:.82rem; margin:2px 3px 2px 0;
-  }
+  .example-list{ list-style:none; margin:0 0 18px; padding:0; display:flex; flex-direction:column; gap:8px; }
+  .example-list li{ display:flex; justify-content:space-between; gap:16px; font-size:.94rem; padding:8px 12px; background:#FBF3EF; border-radius:8px; flex-wrap:wrap; }
+  .example-list .en{ color:var(--ink); }
+  .example-list .pt{ color:var(--ink-soft); font-style:italic; }
 
   .quiz .q{ margin-bottom:12px; font-size:.98rem; }
-  .blank{
-    width:64px; text-align:center; font-family:'IBM Plex Mono', monospace;
-    border:1px solid var(--line); border-radius:6px; padding:5px 6px; font-size:.9rem;
-    background:#fff;
-  }
-  .blank.correct{ border-color:#5F8A5A; background:#EAF3E8; }
+  .blank{ width:70px; text-align:center; font-family:'IBM Plex Mono', monospace; border:1px solid var(--line); border-radius:6px; padding:5px 6px; font-size:.9rem; background:#fff; }
+  .blank.correct{ border-color:var(--green); background:#EAF3E8; }
   .blank.wrong{ border-color:var(--coral); background:#FBE9E5; }
 
   .q-choice{ margin-bottom:14px; font-size:.95rem; }
   .q-choice label{ display:inline-flex; align-items:center; gap:6px; margin-right:18px; color:var(--ink-soft); }
 
-  .check-btn{
-    background:var(--blue); color:#fff; border:none; padding:9px 18px;
-    border-radius:8px; font-size:.85rem; cursor:pointer; font-family:'Work Sans', sans-serif; margin-top:6px;
-  }
+  .check-btn{ background:var(--blue); color:#fff; border:none; padding:9px 18px; border-radius:8px; font-size:.85rem; cursor:pointer; font-family:'Work Sans', sans-serif; margin-top:6px; }
   .quiz-feedback{ margin-top:10px; font-size:.9rem; font-weight:500; min-height:1.2em; }
 
   .dialogue{ display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
   .line{ display:flex; align-items:center; gap:12px; font-size:.94rem; }
-  .play-btn{
-    width:32px; height:32px; border-radius:50%; border:1px solid var(--line);
-    background:#fff; cursor:pointer; flex-shrink:0; color:var(--blue); font-size:.8rem;
-  }
-  .play-btn-wide{
-    background:var(--paper); border:1px solid var(--blue); color:var(--blue);
-    padding:9px 16px; border-radius:8px; cursor:pointer; font-size:.85rem; font-family:'Work Sans', sans-serif;
-  }
+  .play-btn{ width:32px; height:32px; border-radius:50%; border:1px solid var(--line); background:#fff; cursor:pointer; flex-shrink:0; color:var(--blue); font-size:.8rem; }
+  .play-btn-wide{ background:var(--paper); border:1px solid var(--blue); color:var(--blue); padding:9px 16px; border-radius:8px; cursor:pointer; font-size:.85rem; font-family:'Work Sans', sans-serif; }
 
   .reading-text{ font-size:1.05rem; line-height:1.9; margin-bottom:14px; }
   .reading-text mark{ background:#F5DDA0; padding:1px 3px; border-radius:3px; }
@@ -188,39 +115,17 @@
   .speak-card{ background:#FBF3EF; border:1px solid var(--line); border-radius:14px; padding:20px 22px; }
   .target-phrase{ font-family:'Fraunces', serif; font-size:1.2rem; margin-bottom:16px; }
   .speak-controls{ display:flex; gap:12px; flex-wrap:wrap; }
-  .record-btn{
-    background:var(--coral); color:#fff; border:none; padding:9px 18px;
-    border-radius:8px; cursor:pointer; font-size:.85rem; font-family:'Work Sans', sans-serif;
-  }
+  .record-btn{ background:var(--coral); color:#fff; border:none; padding:9px 18px; border-radius:8px; cursor:pointer; font-size:.85rem; font-family:'Work Sans', sans-serif; }
   .record-btn.recording{ background:#8C231C; }
   .speak-result{ margin-top:14px; font-size:.92rem; color:var(--ink-soft); }
 
-  /* Example list */
-  .example-list{ list-style:none; margin:0 0 18px; padding:0; display:flex; flex-direction:column; gap:8px; }
-  .example-list li{ display:flex; justify-content:space-between; gap:16px; font-size:.94rem; padding:8px 12px; background:#FBF3EF; border-radius:8px; flex-wrap:wrap; }
-  .example-list .en{ color:var(--ink); }
-  .example-list .pt{ color:var(--ink-soft); font-style:italic; }
-
-  /* Instant dictionary */
-  .dict-box{
-    display:flex; gap:16px; align-items:flex-start;
-    background:var(--paper); border:1.5px solid var(--blue); border-radius:16px;
-    padding:18px 22px; margin-bottom:24px;
-  }
-  .dict-icon{ font-size:1.3rem; margin-top:6px; }
-  .dict-body{ flex:1; }
-  .dict-input{
-    width:100%; border:none; border-bottom:2px solid var(--line);
-    font-family:'Fraunces', serif; font-size:1.3rem; padding:6px 2px;
-    background:transparent; color:var(--ink);
-  }
-  .dict-input:focus{ outline:none; border-bottom-color:var(--blue); }
-  .dict-result{ margin-top:10px; font-size:.92rem; color:var(--ink-soft); min-height:1.3em; }
-  .dict-result .found{ color:var(--ink); }
-  .dict-result .found strong{ color:var(--blue); font-family:'Fraunces', serif; font-size:1.05rem; }
-  .dict-result .not-found{ color:var(--coral); }
-  .dict-result .loading{ color:var(--amber); }
-  .dict-result .src{ color:var(--ink-soft); font-size:.78rem; font-style:italic; }
+  .complete-row{ display:flex; align-items:center; gap:16px; margin-top:8px; flex-wrap:wrap; }
+  .complete-btn{ background:var(--green); color:#fff; border:none; padding:13px 24px; border-radius:10px; font-size:.92rem; font-weight:500; cursor:pointer; font-family:'Work Sans', sans-serif; }
+  .complete-btn:disabled{ background:#B9C2AE; cursor:default; }
+  .complete-msg{ font-size:.88rem; color:var(--ink-soft); }
+  .nav-buttons{ display:flex; gap:10px; margin-top:22px; }
+  .nav-buttons button{ background:var(--paper); border:1px solid var(--line); padding:10px 18px; border-radius:8px; cursor:pointer; font-size:.85rem; color:var(--ink); font-family:'Work Sans', sans-serif; }
+  .nav-buttons button:hover{ border-color:var(--blue); }
 </style>
 </head>
 <body>
@@ -228,495 +133,743 @@
 
   <aside class="sidebar">
     <div class="brand"><h1>Rotina</h1><span>en</span></div>
-    <p class="tagline">50 minutos por dia. Nível A1.</p>
+    <p class="tagline">50 minutos por dia. Nível A1 → A2.</p>
 
     <div class="streak">
-      <div class="num mono">0</div>
+      <div class="num mono" id="streakNum">0</div>
       <div class="label">dias seguidos</div>
     </div>
 
-    <div class="nav-label">Sua trilha</div>
-    <ul class="day-list" id="dayList">
-      <!-- gerado por JS -->
-    </ul>
+    <div class="nav-label"><span>Sua trilha</span><span id="progressLabel" class="mono">0/30</span></div>
+    <ul class="day-list" id="dayList"></ul>
   </aside>
 
   <main>
-    <div class="lesson-header">
-      <div class="eyebrow">Dia 1 · Nível A1</div>
-      <h2>Greetings &amp; Introductions</h2>
-      <p class="lesson-sub">Hoje você aprende a se apresentar, cumprimentar e fazer perguntas simples em inglês.</p>
-    </div>
-
     <div class="dict-box">
       <div class="dict-icon">🔎</div>
       <div class="dict-body">
         <input type="text" id="dictInput" class="dict-input" placeholder="Digite uma palavra em inglês..." autocomplete="off">
-        <div class="dict-result" id="dictResult">Traduzo qualquer palavra da aula — e várias outras — na hora.</div>
+        <div class="dict-result" id="dictResult">Traduzo qualquer palavra em inglês — na hora.</div>
       </div>
+    </div>
+
+    <div class="lesson-header">
+      <div class="eyebrow" id="dayEyebrow">Dia 1 · Nível A1</div>
+      <h2 id="lessonTitle">Greetings &amp; Introductions</h2>
+      <p class="lesson-sub" id="lessonSub"></p>
     </div>
 
     <div class="dial-row">
       <div class="dial-wrap">
         <svg id="dial" width="120" height="120" viewBox="0 0 120 120">
           <circle cx="60" cy="60" r="50" fill="none" stroke="#E4E7DC" stroke-width="12"/>
-          <!-- arcos preenchidos via JS conforme progresso -->
           <g id="dialArcs"></g>
-          <text x="60" y="56" text-anchor="middle" font-family="Fraunces, serif" font-size="22" fill="#21332C">50</text>
-          <text x="60" y="74" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="10" fill="#5B6B62">minutos</text>
+          <text x="60" y="56" text-anchor="middle" font-family="Fraunces, serif" font-size="22" fill="#331F1A">50</text>
+          <text x="60" y="74" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="10" fill="#8A6A61">minutos</text>
         </svg>
       </div>
       <div class="dial-legend">
-        <div class="legend-item"><span class="swatch" style="background:#B23A2E"></span>Gramática &amp; aquecimento<span class="legend-time">20 min</span></div>
+        <div class="legend-item"><span class="swatch" style="background:#B23A2E"></span>Gramática<span class="legend-time">20 min</span></div>
         <div class="legend-item"><span class="swatch" style="background:#C98F3F"></span>Escuta &amp; leitura<span class="legend-time">20 min</span></div>
         <div class="legend-item"><span class="swatch" style="background:#7A2620"></span>Expressão oral<span class="legend-time">10 min</span></div>
       </div>
     </div>
 
-    <div class="blocks">
-      <div class="block">
-        <div class="block-icon" style="background:var(--blue)">1</div>
-        <div class="block-body">
-          <div class="block-top"><h3>Aquecimento + Gramática</h3><span class="block-time">15 min</span></div>
-          <p class="block-desc">Revisão do dia anterior e o verbo <em>to be</em>: I am, you are, he/she is.</p>
-          <div class="block-status">Pendente</div>
-        </div>
-      </div>
-      <div class="block">
-        <div class="block-icon" style="background:var(--amber)">2</div>
-        <div class="block-body">
-          <div class="block-top"><h3>Compreensão auditiva</h3><span class="block-time">10 min</span></div>
-          <p class="block-desc">Ouça um diálogo curto de apresentação e responda perguntas simples.</p>
-          <div class="block-status">Pendente</div>
-        </div>
-      </div>
-      <div class="block">
-        <div class="block-icon" style="background:#A6763B">3</div>
-        <div class="block-body">
-          <div class="block-top"><h3>Leitura</h3><span class="block-time">10 min</span></div>
-          <p class="block-desc">Texto curto com vocabulário novo destacado.</p>
-          <div class="block-status">Pendente</div>
-        </div>
-      </div>
-      <div class="block">
-        <div class="block-icon" style="background:var(--coral)">4</div>
-        <div class="block-body">
-          <div class="block-top"><h3>Expressão oral</h3><span class="block-time">10 min</span></div>
-          <p class="block-desc">Grave sua voz repetindo as frases da aula e compare com a pronúncia alvo.</p>
-          <div class="block-status">Pendente</div>
-        </div>
-      </div>
-    </div>
+    <button class="start-btn" id="startBtn">Começar aula</button>
 
-    <button class="start-btn" id="startBtn">Começar aula do Dia 1</button>
-
-    <section id="lessonContent" style="display:none; margin-top:40px;">
-
-      <!-- BLOCO 1: GRAMÁTICA -->
-      <div class="lesson-block" id="block-grammar">
-        <div class="block-tag" style="background:var(--blue)">Bloco 1 · Gramática</div>
-        <h2 class="block-title">O verbo <em>to be</em></h2>
-        <p class="explain">
-          Em português, usamos <strong>"ser"</strong> ou <strong>"estar"</strong> dependendo do contexto.
-          Em inglês, um único verbo faz os dois papéis: <strong>to be</strong>. Ele muda de forma
-          conforme quem está falando.
-        </p>
-
-        <table class="be-table">
-          <tr><th>Pessoa</th><th>Forma</th><th>Exemplo</th></tr>
-          <tr><td>I</td><td class="mono">am</td><td>I <strong>am</strong> Marcos.</td></tr>
-          <tr><td>You</td><td class="mono">are</td><td>You <strong>are</strong> a student.</td></tr>
-          <tr><td>He / She / It</td><td class="mono">is</td><td>She <strong>is</strong> happy.</td></tr>
-          <tr><td>We / You / They</td><td class="mono">are</td><td>We <strong>are</strong> friends.</td></tr>
-        </table>
-
-        <h3 class="mini-h">Mais exemplos</h3>
-        <ul class="example-list">
-          <li><span class="en">I <strong>am</strong> from Brazil.</span><span class="pt">Eu sou do Brasil.</span></li>
-          <li><span class="en">He <strong>is</strong> my brother.</span><span class="pt">Ele é meu irmão.</span></li>
-          <li><span class="en">This coffee <strong>is</strong> hot.</span><span class="pt">Este café está quente.</span></li>
-          <li><span class="en">We <strong>are</strong> at school.</span><span class="pt">Nós estamos na escola.</span></li>
-          <li><span class="en">They <strong>are</strong> tired.</span><span class="pt">Eles estão cansados.</span></li>
-          <li><span class="en">It <strong>is</strong> Monday today.</span><span class="pt">Hoje é segunda-feira.</span></li>
-        </ul>
-
-        <h3 class="mini-h">Forma negativa</h3>
-        <p class="explain">Para negar, é só colocar <strong>not</strong> depois do verbo:
-          <span class="mono chip">I'm not</span> <span class="mono chip">you aren't</span>
-          <span class="mono chip">he isn't</span> <span class="mono chip">they aren't</span>
-        </p>
-        <ul class="example-list">
-          <li><span class="en">I <strong>am not</strong> tired.</span><span class="pt">Eu não estou cansado.</span></li>
-          <li><span class="en">She <strong>isn't</strong> a doctor.</span><span class="pt">Ela não é médica.</span></li>
-        </ul>
-
-        <p class="explain">Contraído (do jeito que as pessoas falam de verdade):
-          <span class="mono chip">I'm</span> <span class="mono chip">you're</span>
-          <span class="mono chip">he's</span> <span class="mono chip">she's</span>
-          <span class="mono chip">we're</span> <span class="mono chip">they're</span>
-        </p>
-
-        <h3 class="mini-h">Exercício 1 — Complete com am / is / are</h3>
-        <div class="quiz" id="quizBe">
-          <div class="q" data-answer="am">
-            <p>1. I <input type="text" class="blank" maxlength="4" placeholder="___"> Brazilian.</p>
-          </div>
-          <div class="q" data-answer="is">
-            <p>2. My sister <input type="text" class="blank" maxlength="4" placeholder="___"> a doctor.</p>
-          </div>
-          <div class="q" data-answer="are">
-            <p>3. You and I <input type="text" class="blank" maxlength="4" placeholder="___"> classmates.</p>
-          </div>
-          <div class="q" data-answer="is">
-            <p>4. This book <input type="text" class="blank" maxlength="4" placeholder="___"> interesting.</p>
-          </div>
-          <div class="q" data-answer="are">
-            <p>5. They <input type="text" class="blank" maxlength="4" placeholder="___"> from Canada.</p>
-          </div>
-          <div class="q" data-answer="is">
-            <p>6. It <input type="text" class="blank" maxlength="4" placeholder="___"> Monday today.</p>
-          </div>
-          <div class="q" data-answer="am">
-            <p>7. I <input type="text" class="blank" maxlength="4" placeholder="___"> a student too.</p>
-          </div>
-          <button class="check-btn" onclick="checkQuiz('quizBe')">Corrigir</button>
-          <p class="quiz-feedback" id="feedback-quizBe"></p>
-        </div>
-
-        <h3 class="mini-h">Exercício 2 — Escolha a forma correta</h3>
-        <div class="quiz" id="quizBeChoice">
-          <div class="q-choice">
-            <p>1. She ___ my friend.</p>
-            <label><input type="radio" name="c1" value="correct"> is</label>
-            <label><input type="radio" name="c1" value="wrong"> are</label>
-            <label><input type="radio" name="c1" value="wrong"> am</label>
-          </div>
-          <div class="q-choice">
-            <p>2. We ___ happy today.</p>
-            <label><input type="radio" name="c2" value="wrong"> is</label>
-            <label><input type="radio" name="c2" value="correct"> are</label>
-            <label><input type="radio" name="c2" value="wrong"> am</label>
-          </div>
-          <div class="q-choice">
-            <p>3. I ___ not tired.</p>
-            <label><input type="radio" name="c3" value="correct"> am</label>
-            <label><input type="radio" name="c3" value="wrong"> is</label>
-            <label><input type="radio" name="c3" value="wrong"> are</label>
-          </div>
-          <div class="q-choice">
-            <p>4. My parents ___ at home.</p>
-            <label><input type="radio" name="c4" value="wrong"> is</label>
-            <label><input type="radio" name="c4" value="correct"> are</label>
-            <label><input type="radio" name="c4" value="wrong"> am</label>
-          </div>
-          <button class="check-btn" onclick="checkChoice(['c1','c2','c3','c4'], 'feedback-quizBeChoice')">Corrigir</button>
-          <p class="quiz-feedback" id="feedback-quizBeChoice"></p>
-        </div>
-      </div>
-
-      <!-- BLOCO 2: LISTENING -->
-      <div class="lesson-block" id="block-listening">
-        <div class="block-tag" style="background:var(--amber)">Bloco 2 · Compreensão auditiva</div>
-        <h2 class="block-title">Ouça o diálogo</h2>
-        <p class="explain">Clique para ouvir cada fala (voz sintetizada em inglês). Depois responda às perguntas.</p>
-
-        <div class="dialogue">
-          <div class="line"><button class="play-btn" onclick="speak('Hi! My name is Anna. What is your name?')">▶</button><span><strong>Anna:</strong> Hi! My name is Anna. What is your name?</span></div>
-          <div class="line"><button class="play-btn" onclick="speak('Hello Anna, I am Marcos. Nice to meet you.')">▶</button><span><strong>Marcos:</strong> Hello Anna, I am Marcos. Nice to meet you.</span></div>
-          <div class="line"><button class="play-btn" onclick="speak('Nice to meet you too. Are you a student?')">▶</button><span><strong>Anna:</strong> Nice to meet you too. Are you a student?</span></div>
-          <div class="line"><button class="play-btn" onclick="speak('Yes, I am. I am from Brazil.')">▶</button><span><strong>Marcos:</strong> Yes, I am. I am from Brazil.</span></div>
-        </div>
-        <button class="play-btn-wide" onclick="speakAll()">▶ Ouvir diálogo completo</button>
-
-        <h3 class="mini-h">Perguntas</h3>
-        <div class="quiz" id="quizListen">
-          <div class="q-choice">
-            <p>1. What is the woman's name?</p>
-            <label><input type="radio" name="l1" value="wrong"> Marcos</label>
-            <label><input type="radio" name="l1" value="correct"> Anna</label>
-          </div>
-          <div class="q-choice">
-            <p>2. Where is Marcos from?</p>
-            <label><input type="radio" name="l2" value="correct"> Brazil</label>
-            <label><input type="radio" name="l2" value="wrong"> Portugal</label>
-          </div>
-          <div class="q-choice">
-            <p>3. Is Marcos a student?</p>
-            <label><input type="radio" name="l3" value="correct"> Yes, he is</label>
-            <label><input type="radio" name="l3" value="wrong"> No, he isn't</label>
-          </div>
-          <div class="q-choice">
-            <p>4. Who asks "What is your name?"</p>
-            <label><input type="radio" name="l4" value="correct"> Anna</label>
-            <label><input type="radio" name="l4" value="wrong"> Marcos</label>
-          </div>
-          <button class="check-btn" onclick="checkChoice(['l1','l2','l3','l4'], 'feedback-quizListen')">Corrigir</button>
-          <p class="quiz-feedback" id="feedback-quizListen"></p>
-        </div>
-      </div>
-
-      <!-- BLOCO 3: LEITURA -->
-      <div class="lesson-block" id="block-reading">
-        <div class="block-tag" style="background:#A6763B">Bloco 3 · Leitura</div>
-        <h2 class="block-title">Texto: A New Friend</h2>
-        <p class="reading-text">
-          My name is <strong>Marcos</strong>. I <mark>am</mark> from Brazil. I <mark>am</mark> a student.
-          My friend <mark>is</mark> Anna. She <mark>is</mark> from Canada. We <mark>are</mark> classmates
-          and we <mark>are</mark> good friends. Anna <mark>is</mark> friendly and funny.
-        </p>
-        <p class="explain">Palavras novas: <span class="mono chip">friend</span> <span class="mono chip">classmate</span> <span class="mono chip">friendly</span> <span class="mono chip">funny</span></p>
-      </div>
-
-      <!-- BLOCO 4: SPEAKING -->
-      <div class="lesson-block" id="block-speaking">
-        <div class="block-tag" style="background:var(--coral)">Bloco 4 · Expressão oral</div>
-        <h2 class="block-title">Repita e grave sua voz</h2>
-        <p class="explain">Clique em "Ouvir" para escutar a frase, depois em "Gravar" e repita em voz alta.</p>
-
-        <div class="speak-card">
-          <p class="target-phrase">"Hi! My name is <em>[seu nome]</em>. I am from Brazil."</p>
-          <div class="speak-controls">
-            <button class="play-btn-wide" onclick="speak('Hi! My name is Marcos. I am from Brazil.')">▶ Ouvir</button>
-            <button class="record-btn" id="recordBtn" onclick="toggleRecord()">🎤 Gravar</button>
-          </div>
-          <p class="speak-result" id="speakResult"></p>
-        </div>
-      </div>
-
-    </section>
-
+    <section id="lessonContent" style="display:none;"></section>
   </main>
-
 </div>
 
 <script>
-  // Estrutura de dias — por enquanto só o Dia 1 tem conteúdo real
-  const totalDays = 14;
-  const currentDay = 1;
-  const completedDays = []; // ex: [1,2,3]
+/* =========================================================
+   CONTEÚDO DAS 30 AULAS
+   Estrutura: cada dia tem gramática, escuta, leitura e fala.
+   História contínua: Marcos (brasileiro, A1) e Anna (canadense)
+   ========================================================= */
+const lessons = {
+1:{ topic:"To be & saudações", title:"Greetings & Introductions", sub:"O verbo to be e como se apresentar.",
+  grammarTitle:"O verbo to be",
+  grammarHtml:"Em português usamos <strong>ser</strong> ou <strong>estar</strong>. Em inglês, um único verbo faz os dois papéis: <strong>to be</strong> (am/is/are).",
+  examples:[["I am Marcos.","Eu sou o Marcos."],["She is happy.","Ela está feliz."],["We are friends.","Nós somos amigos."],["It is Monday today.","Hoje é segunda-feira."]],
+  fill:[["I ","am"," Brazilian."],["My sister ","is"," a doctor."],["You and I ","are"," classmates."]],
+  choice:[{q:"She ___ my friend.",opts:[["is",1],["are",0],["am",0]]},{q:"We ___ happy today.",opts:[["is",0],["are",1],["am",0]]}],
+  dialogue:[["Anna","Hi! My name is Anna. What is your name?"],["Marcos","Hello Anna, I am Marcos. Nice to meet you."],["Anna","Nice to meet you too. Are you a student?"],["Marcos","Yes, I am. I am from Brazil."]],
+  listenQ:[{q:"What is the woman's name?",opts:[["Marcos",0],["Anna",1]]},{q:"Where is Marcos from?",opts:[["Brazil",1],["Portugal",0]]},{q:"Is Marcos a student?",opts:[["Yes, he is",1],["No, he isn't",0]]}],
+  readingHtml:"My name is <strong>Marcos</strong>. I <mark>am</mark> from Brazil. I <mark>am</mark> a student. My friend <mark>is</mark> Anna. She <mark>is</mark> from Canada. We <mark>are</mark> classmates.",
+  vocab:["friend","classmate","student","from"],
+  speak:"Hi! My name is Marcos. I am from Brazil." },
 
+2:{ topic:"Preposições de lugar", title:"In, On, At", sub:"Como descrever onde as coisas estão.",
+  grammarTitle:"Preposições in / on / at",
+  grammarHtml:"Usamos <strong>in</strong> para espaços fechados (cidades, salas), <strong>on</strong> para superfícies, e <strong>at</strong> para pontos específicos.",
+  examples:[["The book is on the table.","O livro está na mesa."],["Anna is in the kitchen.","Anna está na cozinha."],["Marcos is at school.","Marcos está na escola."],["The keys are in my bag.","As chaves estão na minha bolsa."]],
+  fill:[["The cat is "," on"," the sofa."],["We are "," in"," Brazil."],["She is "," at"," the door."]],
+  choice:[{q:"My phone is ___ the table.",opts:[["on",1],["in",0]]},{q:"They are ___ the classroom.",opts:[["at",0],["in",1]]}],
+  dialogue:[["Anna","Where is the coffee shop?"],["Marcos","It's on Main Street, near the park."],["Anna","Is it in the city center?"],["Marcos","Yes, it's at the corner of Main and 2nd."]],
+  listenQ:[{q:"Where is the coffee shop?",opts:[["On Main Street",1],["On Park Street",0]]},{q:"Is it in the city center?",opts:[["Yes",1],["No",0]]}],
+  readingHtml:"Marcos's house is <mark>in</mark> São Paulo. His room is <mark>on</mark> the second floor. His books are <mark>on</mark> the shelf, and his backpack is <mark>at</mark> the door, ready for school.",
+  vocab:["shelf","backpack","corner","floor"],
+  speak:"The coffee shop is on Main Street, at the corner." },
+
+3:{ topic:"Artigos a/an/the", title:"A, An, The", sub:"Quando usar cada artigo em inglês.",
+  grammarTitle:"Artigos definidos e indefinidos",
+  grammarHtml:"Use <strong>a</strong> antes de consoante, <strong>an</strong> antes de vogal, e <strong>the</strong> quando já sabemos exatamente do que se fala.",
+  examples:[["I have a dog.","Eu tenho um cachorro."],["She is an engineer.","Ela é engenheira."],["The dog is friendly.","O cachorro é simpático."],["He eats an apple every day.","Ele come uma maçã todo dia."]],
+  fill:[[""," a"," book on the table."],["She is "," an"," artist."],["Close "," the"," door, please."]],
+  choice:[{q:"I need ___ umbrella.",opts:[["a",0],["an",1]]},{q:"___ sun is very hot today.",opts:[["A",0],["The",1]]}],
+  dialogue:[["Marcos","Do you have a pet?"],["Anna","Yes, I have a cat and an old dog."],["Marcos","What's the cat's name?"],["Anna","The cat's name is Luna."]],
+  listenQ:[{q:"What pets does Anna have?",opts:[["A cat and a dog",1],["Only a cat",0]]},{q:"What is the cat's name?",opts:[["Luna",1],["Anna",0]]}],
+  readingHtml:"Anna has <mark>a</mark> cat and <mark>an</mark> old dog. <mark>The</mark> cat, Luna, sleeps all day. <mark>The</mark> dog is very active and loves <mark>a</mark> long walk every morning.",
+  vocab:["pet","cat","active","walk"],
+  speak:"I have a cat and an old dog." },
+
+4:{ topic:"Plural dos substantivos", title:"Plural Nouns", sub:"Como formar o plural em inglês.",
+  grammarTitle:"Plural: -s, -es e irregulares",
+  grammarHtml:"A maioria dos substantivos ganha <strong>-s</strong> no plural. Palavras terminadas em -s/-sh/-ch/-x ganham <strong>-es</strong>. Alguns são irregulares: child → children, man → men.",
+  examples:[["one book, two books","um livro, dois livros"],["one box, two boxes","uma caixa, duas caixas"],["one child, two children","uma criança, duas crianças"],["one woman, two women","uma mulher, duas mulheres"]],
+  fill:[["I have three "," books","."],["There are two "," boxes"," here."],["She has two "," children","."]],
+  choice:[{q:"Plural of 'man':",opts:[["mans",0],["men",1]]},{q:"Plural of 'city':",opts:[["citys",0],["cities",1]]}],
+  dialogue:[["Anna","How many brothers do you have?"],["Marcos","I have two brothers and one sister."],["Anna","Wow, three siblings!"],["Marcos","Yes, and five cousins too."]],
+  listenQ:[{q:"How many brothers does Marcos have?",opts:[["Two",1],["Three",0]]},{q:"How many cousins?",opts:[["Five",1],["Two",0]]}],
+  readingHtml:"Marcos has two <mark>brothers</mark> and one <mark>sister</mark>. He also has five <mark>cousins</mark> and four <mark>friends</mark> from school who visit every weekend.",
+  vocab:["siblings","cousins","brothers","weekend"],
+  speak:"I have two brothers, one sister, and five cousins." },
+
+5:{ topic:"Pronomes possessivos", title:"Possessives", sub:"my, your, his, her, our, their.",
+  grammarTitle:"Pronomes possessivos",
+  grammarHtml:"Usamos possessivos antes de um substantivo para mostrar posse: <strong>my</strong> (meu), <strong>your</strong> (seu), <strong>his/her</strong> (dele/dela), <strong>our</strong> (nosso), <strong>their</strong> (deles).",
+  examples:[["This is my book.","Este é meu livro."],["Is that your car?","Aquele é seu carro?"],["Her name is Anna.","O nome dela é Anna."],["Their house is big.","A casa deles é grande."]],
+  fill:[["This is "," my"," phone."],["Is that "," your"," bag?"],["That is "," her"," jacket."]],
+  choice:[{q:"That is ___ dog (belongs to him).",opts:[["his",1],["her",0]]},{q:"This is ___ classroom (belongs to us).",opts:[["their",0],["our",1]]}],
+  dialogue:[["Marcos","Is this your notebook?"],["Anna","No, it's not my notebook. It's his."],["Marcos","Whose bag is this, then?"],["Anna","That's our teacher's bag."]],
+  listenQ:[{q:"Whose notebook is it?",opts:[["His",1],["Anna's",0]]},{q:"Whose bag is it?",opts:[["The teacher's",1],["Marcos's",0]]}],
+  readingHtml:"Every student has <mark>their</mark> own notebook. Marcos keeps <mark>his</mark> notebook in <mark>his</mark> backpack. Anna keeps <mark>her</mark> notebook on <mark>her</mark> desk at home.",
+  vocab:["notebook","desk","whose","teacher"],
+  speak:"This is my notebook, and that is her bag." },
+
+6:{ topic:"There is / there are", title:"There is / There are", sub:"Como dizer que algo existe ou está em algum lugar.",
+  grammarTitle:"There is / there are",
+  grammarHtml:"<strong>There is</strong> para singular, <strong>there are</strong> para plural. Usamos para dizer que algo existe em um lugar.",
+  examples:[["There is a park near my house.","Há um parque perto da minha casa."],["There are three chairs in the room.","Há três cadeiras na sala."],["There isn't any milk.","Não há leite nenhum."],["Are there any questions?","Há alguma pergunta?"]],
+  fill:[[""," There is"," a cat in the garden."],[""," There are"," five books here."],["","Is there"," a bank near here?"]],
+  choice:[{q:"___ a good restaurant on this street.",opts:[["There is",1],["There are",0]]},{q:"___ many students in the class.",opts:[["There is",0],["There are",1]]}],
+  dialogue:[["Anna","Is there a supermarket near here?"],["Marcos","Yes, there is one on Elm Street."],["Anna","Are there any pharmacies too?"],["Marcos","Yes, there are two, very close."]],
+  listenQ:[{q:"Is there a supermarket nearby?",opts:[["Yes",1],["No",0]]},{q:"How many pharmacies are there?",opts:[["Two",1],["One",0]]}],
+  readingHtml:"<mark>There is</mark> a small park near Marcos's house. <mark>There are</mark> many trees and <mark>there is</mark> a nice bench where he reads books in the afternoon.",
+  vocab:["nearby","pharmacy","bench","garden"],
+  speak:"There is a park near my house, and there are many trees." },
+
+7:{ topic:"Demonstrativos", title:"This, That, These, Those", sub:"Apontando para coisas perto e longe.",
+  grammarTitle:"This / that / these / those",
+  grammarHtml:"<strong>This/these</strong> = perto (singular/plural). <strong>That/those</strong> = longe (singular/plural).",
+  examples:[["This is my pen.","Esta é minha caneta."],["That is your house.","Aquela é sua casa."],["These are my keys.","Estas são minhas chaves."],["Those are nice shoes.","Aqueles são sapatos bonitos."]],
+  fill:[[""," This"," is my desk (near me)."],[""," That"," is your car (far away)."],[""," These"," are my books (near, plural)."]],
+  choice:[{q:"___ shoes over there are expensive.",opts:[["These",0],["Those",1]]},{q:"___ apple in my hand is sweet.",opts:[["This",1],["That",0]]}],
+  dialogue:[["Marcos","What is this?"],["Anna","This is a Canadian coin."],["Marcos","And what are those, over there?"],["Anna","Those are old photos from my trip."]],
+  listenQ:[{q:"What is 'this'?",opts:[["A Canadian coin",1],["A photo",0]]},{q:"What are 'those'?",opts:[["Old photos",1],["Coins",0]]}],
+  readingHtml:"<mark>This</mark> is Anna's favorite coin from Canada. <mark>Those</mark> photos on the wall are from her last trip. <mark>These</mark> souvenirs mean a lot to her.",
+  vocab:["coin","photo","trip","souvenir"],
+  speak:"This is my pen, and those are my books over there." },
+
+8:{ topic:"Present Simple (afirmativo)", title:"Present Simple — Affirmative", sub:"Falando sobre rotinas e hábitos.",
+  grammarTitle:"Present Simple",
+  grammarHtml:"Usamos o Present Simple para rotinas e fatos. Com he/she/it, o verbo ganha <strong>-s</strong>: I work → he work<strong>s</strong>.",
+  examples:[["I work every day.","Eu trabalho todos os dias."],["She studies English.","Ela estuda inglês."],["We live in São Paulo.","Nós moramos em São Paulo."],["He plays soccer on Sundays.","Ele joga futebol aos domingos."]],
+  fill:[["She "," studies"," English every day."],["He "," plays"," soccer on weekends."],["I "," work"," in an office."]],
+  choice:[{q:"Anna ___ coffee every morning.",opts:[["drink",0],["drinks",1]]},{q:"They ___ in Toronto.",opts:[["live",1],["lives",0]]}],
+  dialogue:[["Anna","What do you do, Marcos?"],["Marcos","I work in a bank. I start at 9am."],["Anna","And what does your sister do?"],["Marcos","She teaches at a school."]],
+  listenQ:[{q:"Where does Marcos work?",opts:[["A bank",1],["A school",0]]},{q:"What does his sister do?",opts:[["She teaches",1],["She studies",0]]}],
+  readingHtml:"Marcos <mark>works</mark> at a bank. He <mark>starts</mark> at nine and <mark>finishes</mark> at five. His sister <mark>teaches</mark> English at a local school every morning.",
+  vocab:["starts","finishes","teaches","bank"],
+  speak:"I work in a bank, and I start at nine every day." },
+
+9:{ topic:"Present Simple (negativo/perguntas)", title:"Present Simple — Negative & Questions", sub:"don't, doesn't e perguntas com do/does.",
+  grammarTitle:"Negativa e perguntas",
+  grammarHtml:"Negativa: <strong>don't/doesn't</strong> + verbo base. Perguntas: <strong>Do/Does</strong> + sujeito + verbo base?",
+  examples:[["I don't like coffee.","Eu não gosto de café."],["She doesn't work on Sundays.","Ela não trabalha aos domingos."],["Do you speak English?","Você fala inglês?"],["Does he live here?","Ele mora aqui?"]],
+  fill:[["I "," don't"," like tea."],["She "," doesn't"," eat meat."],[""," Do"," you like music?"]],
+  choice:[{q:"He ___ speak French.",opts:[["don't",0],["doesn't",1]]},{q:"___ they live in Canada?",opts:[["Do",1],["Does",0]]}],
+  dialogue:[["Marcos","Do you like Brazilian food?"],["Anna","Yes, I do! But I don't like very spicy food."],["Marcos","Does Canada have good coffee?"],["Anna","Yes, it does, especially in Toronto."]],
+  listenQ:[{q:"Does Anna like Brazilian food?",opts:[["Yes",1],["No",0]]},{q:"Does she like spicy food?",opts:[["No",1],["Yes",0]]}],
+  readingHtml:"Anna <mark>doesn't</mark> like very spicy food, but she <mark>likes</mark> Brazilian food a lot. Marcos <mark>doesn't</mark> drink coffee at night because he <mark>doesn't</mark> sleep well after.",
+  vocab:["spicy","especially","sleep","enjoy"],
+  speak:"I don't like spicy food, but I like coffee." },
+
+10:{ topic:"Números e horários", title:"Numbers & Time", sub:"Contando e dizendo as horas.",
+  grammarTitle:"Números e como dizer as horas",
+  grammarHtml:"Para horas: <strong>It's 3 o'clock</strong>, <strong>It's half past three</strong> (3:30), <strong>It's a quarter to four</strong> (3:45).",
+  examples:[["It's three o'clock.","São três horas."],["It's half past seven.","São sete e meia."],["It's a quarter to nine.","São quinze para as nove."],["The class starts at 10am.","A aula começa às 10h."]],
+  fill:[["It's "," half"," past six."],["The train leaves at "," seven"," o'clock."],["It's a "," quarter"," to five."]],
+  choice:[{q:"3:30 in English:",opts:[["Half past three",1],["Quarter past three",0]]},{q:"8:45 in English:",opts:[["Quarter to nine",1],["Half past eight",0]]}],
+  dialogue:[["Marcos","What time is it?"],["Anna","It's a quarter past eight."],["Marcos","What time does the movie start?"],["Anna","At half past nine."]],
+  listenQ:[{q:"What time is it now?",opts:[["8:15",1],["8:45",0]]},{q:"What time does the movie start?",opts:[["9:30",1],["9:15",0]]}],
+  readingHtml:"Marcos wakes up at <mark>seven o'clock</mark>. He has breakfast at a <mark>quarter past seven</mark> and leaves home at <mark>half past seven</mark> to arrive at work by nine.",
+  vocab:["wakes up","breakfast","leaves","arrive"],
+  speak:"It's a quarter past eight. The movie starts at half past nine." },
+
+11:{ topic:"Advérbios de frequência", title:"Adverbs of Frequency", sub:"always, usually, sometimes, never.",
+  grammarTitle:"Advérbios de frequência",
+  grammarHtml:"Ficam antes do verbo principal (mas depois de 'to be'): always (sempre), usually (geralmente), sometimes (às vezes), never (nunca).",
+  examples:[["I always drink coffee.","Eu sempre tomo café."],["She is usually late.","Ela geralmente está atrasada."],["We sometimes go to the beach.","Nós às vezes vamos à praia."],["He never eats breakfast.","Ele nunca toma café da manhã."]],
+  fill:[["I "," always"," study at night."],["She is "," never"," late."],["We "," sometimes"," walk to school."]],
+  choice:[{q:"He ___ plays soccer on Fridays. (100% of the time)",opts:[["always",1],["never",0]]},{q:"I ___ drink tea. (0% of the time)",opts:[["usually",0],["never",1]]}],
+  dialogue:[["Anna","Do you usually cook dinner?"],["Marcos","Yes, I always cook on weekdays."],["Anna","I sometimes cook, but I usually order food."],["Marcos","That's fun too!"]],
+  listenQ:[{q:"Does Marcos always cook?",opts:[["Yes, on weekdays",1],["No, never",0]]},{q:"What does Anna usually do?",opts:[["Order food",1],["Cook every day",0]]}],
+  readingHtml:"Marcos <mark>always</mark> cooks dinner on weekdays. Anna <mark>usually</mark> orders food, but she <mark>sometimes</mark> cooks on weekends. She <mark>never</mark> eats fast food.",
+  vocab:["order","weekdays","weekends","fast food"],
+  speak:"I always cook dinner, but I sometimes order food." },
+
+12:{ topic:"Can / can't", title:"Can & Can't", sub:"Habilidade e permissão.",
+  grammarTitle:"Can / can't",
+  grammarHtml:"<strong>Can</strong> expressa habilidade ou permissão: I can swim. <strong>Can't</strong> é a negativa: She can't drive.",
+  examples:[["I can speak Portuguese.","Eu consigo falar português."],["She can't drive yet.","Ela ainda não sabe dirigir."],["Can you help me?","Você pode me ajudar?"],["We can meet tomorrow.","Nós podemos nos encontrar amanhã."]],
+  fill:[["I "," can"," swim very well."],["He "," can't"," cook at all."],[""," Can"," you speak French?"]],
+  choice:[{q:"She ___ play the piano beautifully.",opts:[["can",1],["can't",0]]},{q:"___ you drive a car?",opts:[["Can",1],["Do",0]]}],
+  dialogue:[["Marcos","Can you play any instrument?"],["Anna","Yes, I can play the guitar. Can you?"],["Marcos","No, I can't, but I can sing!"],["Anna","That's great, let's play together."]],
+  listenQ:[{q:"Can Anna play the guitar?",opts:[["Yes",1],["No",0]]},{q:"Can Marcos play an instrument?",opts:[["No, but he can sing",1],["Yes, the guitar",0]]}],
+  readingHtml:"Anna <mark>can</mark> play the guitar very well. Marcos <mark>can't</mark> play any instrument, but he <mark>can</mark> sing. Together they <mark>can</mark> make good music.",
+  vocab:["instrument","guitar","sing","together"],
+  speak:"I can't play guitar, but I can sing." },
+
+13:{ topic:"Adjetivos descritivos", title:"Descriptive Adjectives", sub:"Descrevendo pessoas e coisas.",
+  grammarTitle:"Adjetivos em inglês",
+  grammarHtml:"Adjetivos ficam antes do substantivo e não mudam de forma (não têm plural/gênero): a tall man, tall women.",
+  examples:[["She is tall and friendly.","Ela é alta e simpática."],["It's a small, old house.","É uma casa pequena e antiga."],["He is very funny.","Ele é muito engraçado."],["This coffee is too hot.","Este café está quente demais."]],
+  fill:[["She has "," long"," hair."],["It's a "," big"," city."],["He is very "," kind","."]],
+  choice:[{q:"The opposite of 'big' is:",opts:[["small",1],["tall",0]]},{q:"The opposite of 'happy' is:",opts:[["sad",1],["funny",0]]}],
+  dialogue:[["Anna","What is Marcos like?"],["Friend","He's tall, friendly, and very funny."],["Anna","And is he a hard worker?"],["Friend","Yes, he's very organized too."]],
+  listenQ:[{q:"How is Marcos described?",opts:[["Tall, friendly, funny",1],["Short and quiet",0]]},{q:"Is he organized?",opts:[["Yes",1],["No",0]]}],
+  readingHtml:"Marcos is <mark>tall</mark>, <mark>friendly</mark>, and <mark>funny</mark>. He is also very <mark>organized</mark> at work. Anna is <mark>creative</mark> and always has <mark>interesting</mark> ideas.",
+  vocab:["organized","creative","hard worker","kind"],
+  speak:"She is tall, friendly, and very creative." },
+
+14:{ topic:"Família e relações", title:"Family & Relationships", sub:"Vocabulário de família e posse.",
+  grammarTitle:"Vocabulário de família",
+  grammarHtml:"Vocabulário essencial: parents (pais), mother/father, brother/sister, grandmother/grandfather, aunt/uncle, cousin.",
+  examples:[["My mother is a teacher.","Minha mãe é professora."],["His grandfather is 80 years old.","O avô dele tem 80 anos."],["Her aunt lives in Rio.","A tia dela mora no Rio."],["Our cousins visit every summer.","Nossos primos visitam todo verão."]],
+  fill:[["My "," mother"," is a doctor."],["His "," grandfather"," is very old."],["Her "," aunt"," lives in Rio."]],
+  choice:[{q:"Your mother's sister is your:",opts:[["aunt",1],["cousin",0]]},{q:"Your father's father is your:",opts:[["uncle",0],["grandfather",1]]}],
+  dialogue:[["Marcos","Do you have a big family?"],["Anna","Yes! I have two aunts, three uncles, and many cousins."],["Marcos","Do you see them often?"],["Anna","We meet every Christmas."]],
+  listenQ:[{q:"How many aunts does Anna have?",opts:[["Two",1],["Three",0]]},{q:"When does the family meet?",opts:[["Every Christmas",1],["Every summer",0]]}],
+  readingHtml:"Anna has a big family: two <mark>aunts</mark>, three <mark>uncles</mark>, and many <mark>cousins</mark>. Every Christmas, her whole <mark>family</mark> meets at her <mark>grandmother's</mark> house.",
+  vocab:["aunts","uncles","cousins","grandmother"],
+  speak:"My family meets every Christmas at my grandmother's house." },
+
+15:{ topic:"Quantificadores", title:"Some, Any, A lot of", sub:"Falando sobre quantidades.",
+  grammarTitle:"Some / any / a lot of / a little",
+  grammarHtml:"<strong>Some</strong> em frases afirmativas, <strong>any</strong> em negativas/perguntas. <strong>A lot of</strong> = muito(s). <strong>A little/a few</strong> = pouco(s).",
+  examples:[["I have some money.","Eu tenho um pouco de dinheiro."],["There isn't any milk.","Não há leite nenhum."],["She has a lot of friends.","Ela tem muitos amigos."],["We need a little sugar.","Precisamos de um pouco de açúcar."]],
+  fill:[["I have "," some"," questions."],["There isn't "," any"," bread."],["She has "," a lot"," of books."]],
+  choice:[{q:"Do you have ___ time today?",opts:[["some",0],["any",1]]},{q:"He has ___ money (not much).",opts:[["a little",1],["a lot of",0]]}],
+  dialogue:[["Marcos","Do we have any coffee left?"],["Anna","Yes, we have some, but not a lot."],["Marcos","Ok, I'll buy a little more."],["Anna","Good idea, thanks!"]],
+  listenQ:[{q:"Is there a lot of coffee?",opts:[["No, just some",1],["Yes, a lot",0]]},{q:"What will Marcos do?",opts:[["Buy more coffee",1],["Nothing",0]]}],
+  readingHtml:"They have <mark>some</mark> coffee, but not <mark>a lot</mark>. Marcos doesn't have <mark>any</mark> plans today, so he will buy <mark>a little</mark> more coffee at the market.",
+  vocab:["market","plans","left","buy"],
+  speak:"We have some coffee, but not a lot." },
+
+16:{ topic:"Pronomes objeto", title:"Object Pronouns", sub:"me, him, her, us, them.",
+  grammarTitle:"Pronomes objeto",
+  grammarHtml:"Usados depois do verbo: me, you, him, her, it, us, them. Ex: I see him. She calls me.",
+  examples:[["She calls me every day.","Ela me liga todos os dias."],["I see him at work.","Eu o vejo no trabalho."],["We invited them to dinner.","Nós os convidamos para jantar."],["Can you help us?","Você pode nos ajudar?"]],
+  fill:[["She calls "," me"," every day."],["I see "," him"," at school."],["Can you help "," us","?"]],
+  choice:[{q:"I know Anna. I see ___ often.",opts:[["her",1],["him",0]]},{q:"They are my friends. I trust ___.",opts:[["they",0],["them",1]]}],
+  dialogue:[["Anna","Can you call me tonight?"],["Marcos","Sure, I'll call you at eight."],["Anna","Great, and can you invite them too?"],["Marcos","Yes, I'll invite them right now."]],
+  listenQ:[{q:"What time will Marcos call?",opts:[["Eight",1],["Nine",0]]},{q:"Will he invite them?",opts:[["Yes",1],["No",0]]}],
+  readingHtml:"Anna asked Marcos to call <mark>her</mark> tonight. He will call <mark>her</mark> at eight and invite <mark>them</mark> — their friends — to the party too.",
+  vocab:["invite","tonight","party","call"],
+  speak:"I'll call you at eight and invite them too." },
+
+17:{ topic:"Present Continuous", title:"Present Continuous", sub:"O que está acontecendo agora.",
+  grammarTitle:"Present Continuous (be + -ing)",
+  grammarHtml:"Usamos para ações acontecendo agora: am/is/are + verbo-ing. Ex: I am studying now.",
+  examples:[["I am studying English now.","Estou estudando inglês agora."],["She is cooking dinner.","Ela está cozinhando o jantar."],["They are watching a movie.","Eles estão assistindo a um filme."],["We are waiting for the bus.","Estamos esperando o ônibus."]],
+  fill:[["I am "," studying"," right now."],["She is "," cooking"," dinner."],["They are "," watching"," TV."]],
+  choice:[{q:"Right now, he ___ (work).",opts:[["is working",1],["works",0]]},{q:"We ___ (wait) for you.",opts:[["are waiting",1],["wait",0]]}],
+  dialogue:[["Marcos","What are you doing right now?"],["Anna","I'm cooking dinner. What about you?"],["Marcos","I'm studying for my English class."],["Anna","Nice! Are you enjoying it?"]],
+  listenQ:[{q:"What is Anna doing?",opts:[["Cooking dinner",1],["Studying",0]]},{q:"What is Marcos doing?",opts:[["Studying English",1],["Watching TV",0]]}],
+  readingHtml:"Right now, Anna <mark>is cooking</mark> dinner while Marcos <mark>is studying</mark> English. Outside, it <mark>is raining</mark>, and their neighbors <mark>are walking</mark> their dog in the rain.",
+  vocab:["raining","neighbors","enjoying","outside"],
+  speak:"I'm studying English, and it's raining outside." },
+
+18:{ topic:"Comparativos", title:"Comparatives", sub:"Comparando duas coisas.",
+  grammarTitle:"Adjetivos comparativos",
+  grammarHtml:"Adjetivos curtos: +er (taller). Adjetivos longos: more + adjetivo (more interesting). Irregulares: good→better, bad→worse.",
+  examples:[["Marcos is taller than Anna.","Marcos é mais alto que Anna."],["This book is more interesting than that one.","Este livro é mais interessante que aquele."],["Today is worse than yesterday.","Hoje está pior que ontem."],["English is easier than Chinese for me.","Inglês é mais fácil que chinês para mim."]],
+  fill:[["He is "," taller"," than me."],["This is "," more"," interesting than that."],["Today is "," better"," than yesterday."]],
+  choice:[{q:"Comparative of 'big':",opts:[["bigger",1],["more big",0]]},{q:"Comparative of 'expensive':",opts:[["expensiver",0],["more expensive",1]]}],
+  dialogue:[["Anna","Is Portuguese harder than English?"],["Marcos","For me, English is harder than Portuguese."],["Anna","Really? I think Portuguese is more difficult!"],["Marcos","Maybe it's easier for native speakers."]],
+  listenQ:[{q:"What does Marcos think is harder?",opts:[["English",1],["Portuguese",0]]},{q:"What does Anna think?",opts:[["Portuguese is harder",1],["English is harder",0]]}],
+  readingHtml:"For Marcos, English is <mark>harder</mark> than Portuguese. For Anna, Portuguese is <mark>more difficult</mark> than English. Learning is always <mark>easier</mark> with practice and a <mark>better</mark> routine.",
+  vocab:["harder","native speaker","practice","routine"],
+  speak:"English is harder for me than Portuguese." },
+
+19:{ topic:"Superlativos", title:"Superlatives", sub:"O mais / a mais de um grupo.",
+  grammarTitle:"Adjetivos superlativos",
+  grammarHtml:"Curtos: the + adj + est (the tallest). Longos: the most + adj (the most interesting). Irregulares: the best, the worst.",
+  examples:[["Marcos is the tallest in his family.","Marcos é o mais alto da família."],["This is the most interesting book I've read.","Este é o livro mais interessante que já li."],["It was the best day ever.","Foi o melhor dia de todos."],["That was the worst movie.","Aquele foi o pior filme."]],
+  fill:[["He is the "," tallest"," in his class."],["This is the "," most"," beautiful city."],["It was the "," best"," trip ever."]],
+  choice:[{q:"Superlative of 'fast':",opts:[["fastest",1],["most fast",0]]},{q:"Superlative of 'good':",opts:[["goodest",0],["best",1]]}],
+  dialogue:[["Anna","What's the best city you've visited?"],["Marcos","Rio, definitely. It's the most beautiful."],["Anna","For me, it's Vancouver, the most peaceful."],["Marcos","I'd love to visit it one day."]],
+  listenQ:[{q:"Marcos's favorite city:",opts:[["Rio",1],["Vancouver",0]]},{q:"Anna's favorite city:",opts:[["Vancouver",1],["Rio",0]]}],
+  readingHtml:"For Marcos, Rio is <mark>the most beautiful</mark> city he knows. For Anna, Vancouver is <mark>the most peaceful</mark> place she has visited. They agree travel gives <mark>the best</mark> memories.",
+  vocab:["peaceful","memories","definitely","beautiful"],
+  speak:"Rio is the most beautiful city I've visited." },
+
+20:{ topic:"Imperativos e direções", title:"Directions", sub:"Dando instruções e pedindo direções.",
+  grammarTitle:"Imperativo e direções",
+  grammarHtml:"O imperativo usa o verbo base sem sujeito: Turn left. Go straight. Palavras úteis: turn left/right, go straight, next to, across from.",
+  examples:[["Turn left at the corner.","Vire à esquerda na esquina."],["Go straight for two blocks.","Siga reto por duas quadras."],["The bank is next to the pharmacy.","O banco fica ao lado da farmácia."],["It's across from the park.","Fica em frente ao parque."]],
+  fill:[[""," Turn"," left at the light."],[""," Go"," straight ahead."],["The shop is "," next"," to the bank."]],
+  choice:[{q:"'Vire à direita' in English:",opts:[["Turn right",1],["Turn left",0]]},{q:"'Em frente a' in English:",opts:[["Across from",1],["Next to",0]]}],
+  dialogue:[["Marcos","Excuse me, where is the post office?"],["Stranger","Go straight, then turn right at the bank."],["Marcos","Is it far from here?"],["Stranger","No, it's just two blocks away."]],
+  listenQ:[{q:"Where should he turn right?",opts:[["At the bank",1],["At the park",0]]},{q:"How far is it?",opts:[["Two blocks",1],["Five blocks",0]]}],
+  readingHtml:"To reach the post office, <mark>go straight</mark> for one block, then <mark>turn right</mark> at the bank. The post office is <mark>next to</mark> the pharmacy, <mark>across from</mark> the park.",
+  vocab:["post office","blocks","straight","stranger"],
+  speak:"Go straight, then turn right at the bank." },
+
+21:{ topic:"Comida e would like", title:"Food & Would Like", sub:"Pedindo comida educadamente.",
+  grammarTitle:"Would like (forma educada)",
+  grammarHtml:"<strong>Would like</strong> = 'gostaria', mais educado que 'want'. Ex: I would like a coffee, please. (I'd like...)",
+  examples:[["I'd like a coffee, please.","Eu gostaria de um café, por favor."],["Would you like some water?","Você gostaria de água?"],["She'd like the chicken salad.","Ela gostaria da salada de frango."],["We'd like to order now.","Nós gostaríamos de pedir agora."]],
+  fill:[["I'd "," like"," a coffee, please."],["Would you "," like"," some tea?"],["We'd like "," to"," order now."]],
+  choice:[{q:"Polite way to say 'I want a coffee':",opts:[["I'd like a coffee",1],["I want coffee now",0]]},{q:"'Would you like...' is used for:",opts:[["Offering something politely",1],["Giving an order",0]]}],
+  dialogue:[["Waiter","What would you like to order?"],["Anna","I'd like the chicken salad, please."],["Waiter","And for you, sir?"],["Marcos","I'd like a coffee and toast."]],
+  listenQ:[{q:"What does Anna order?",opts:[["Chicken salad",1],["Toast",0]]},{q:"What does Marcos order?",opts:[["Coffee and toast",1],["Salad",0]]}],
+  readingHtml:"At the café, Anna would like the <mark>chicken salad</mark>, and Marcos would like <mark>coffee</mark> and <mark>toast</mark>. The waiter writes down their <mark>order</mark> and smiles.",
+  vocab:["waiter","order","toast","salad"],
+  speak:"I'd like a coffee and toast, please." },
+
+22:{ topic:"Clima e estações", title:"Weather & Seasons", sub:"Falando sobre o tempo e as estações do ano.",
+  grammarTitle:"Vocabulário do clima",
+  grammarHtml:"Usamos 'it' para o clima: It's sunny/rainy/cold/hot. Estações: spring, summer, autumn/fall, winter.",
+  examples:[["It's sunny today.","Está ensolarado hoje."],["It's very cold in winter.","Faz muito frio no inverno."],["It rains a lot in autumn.","Chove muito no outono."],["Summer is my favorite season.","Verão é minha estação favorita."]],
+  fill:[["It's very "," cold"," today."],["It "," rains"," a lot here."],["My favorite season is "," summer","."]],
+  choice:[{q:"Cold season with snow:",opts:[["Winter",1],["Summer",0]]},{q:"'Ensolarado' in English:",opts:[["Sunny",1],["Rainy",0]]}],
+  dialogue:[["Anna","How's the weather in Brazil now?"],["Marcos","It's hot and sunny, it's summer here."],["Anna","Here it's cold, it's winter in Canada."],["Marcos","I'd love to see snow one day!"]],
+  listenQ:[{q:"What season is it in Brazil?",opts:[["Summer",1],["Winter",0]]},{q:"What season is it in Canada?",opts:[["Winter",1],["Summer",0]]}],
+  readingHtml:"In Brazil, it is <mark>summer</mark> and the weather is <mark>hot</mark> and <mark>sunny</mark>. In Canada, it is <mark>winter</mark>, and it is <mark>cold</mark> with a lot of snow.",
+  vocab:["sunny","snow","hot","season"],
+  speak:"It's hot and sunny in Brazil, but cold in Canada." },
+
+23:{ topic:"Dias, meses e datas", title:"Days, Months & Dates", sub:"Como dizer datas em inglês.",
+  grammarTitle:"Dizendo datas",
+  grammarHtml:"Datas: 'on' + dia (on Monday), 'in' + mês/ano (in July, in 2026). Ex: My birthday is on July 5th.",
+  examples:[["My birthday is in July.","Meu aniversário é em julho."],["The meeting is on Monday.","A reunião é na segunda."],["We're going on vacation in December.","Vamos viajar em dezembro."],["Today is the 15th of August.","Hoje é dia 15 de agosto."]],
+  fill:[["My birthday is "," in"," July."],["The class is "," on"," Monday."],["It's the 15th "," of"," August."]],
+  choice:[{q:"Use before a month:",opts:[["in",1],["on",0]]},{q:"Use before a day of the week:",opts:[["in",0],["on",1]]}],
+  dialogue:[["Marcos","When is your birthday?"],["Anna","It's in October, on the 3rd."],["Marcos","Mine is in July, on the 5th."],["Anna","Let's celebrate both this year!"]],
+  listenQ:[{q:"When is Anna's birthday?",opts:[["October 3rd",1],["July 5th",0]]},{q:"When is Marcos's birthday?",opts:[["July 5th",1],["October 3rd",0]]}],
+  readingHtml:"Anna's birthday is <mark>in</mark> October, <mark>on</mark> the third. Marcos's birthday is <mark>in</mark> July, <mark>on</mark> the fifth. They plan to celebrate both together this year.",
+  vocab:["birthday","celebrate","vacation","meeting"],
+  speak:"My birthday is in July, on the fifth." },
+
+24:{ topic:"Past Simple — to be", title:"Past Simple — Was / Were", sub:"Falando sobre o passado com to be.",
+  grammarTitle:"Was / were",
+  grammarHtml:"Passado de to be: I/he/she/it → <strong>was</strong>. You/we/they → <strong>were</strong>. Negativa: wasn't/weren't.",
+  examples:[["I was tired yesterday.","Eu estava cansado ontem."],["They were at the party.","Eles estavam na festa."],["She wasn't happy.","Ela não estava feliz."],["Were you at home?","Você estava em casa?"]],
+  fill:[["I "," was"," tired yesterday."],["They "," were"," at the party."],["She "," wasn't"," happy."]],
+  choice:[{q:"We ___ at school last week.",opts:[["was",0],["were",1]]},{q:"He ___ born in 1995.",opts:[["was",1],["were",0]]}],
+  dialogue:[["Anna","Where were you yesterday?"],["Marcos","I was at work until seven."],["Anna","Was the meeting long?"],["Marcos","Yes, it was very long and tiring."]],
+  listenQ:[{q:"Where was Marcos yesterday?",opts:[["At work",1],["At home",0]]},{q:"How was the meeting?",opts:[["Long and tiring",1],["Short",0]]}],
+  readingHtml:"Yesterday, Marcos <mark>was</mark> at work until seven. The meeting <mark>was</mark> very long. Anna <mark>was</mark> at home, and her evening <mark>was</mark> calm and relaxing.",
+  vocab:["tiring","relaxing","evening","calm"],
+  speak:"I was at work yesterday, and the meeting was long." },
+
+25:{ topic:"Past Simple — verbos regulares", title:"Past Simple — Regular Verbs", sub:"Verbos regulares no passado (-ed).",
+  grammarTitle:"Verbos regulares no passado",
+  grammarHtml:"Verbos regulares ganham <strong>-ed</strong> no passado: work → worked, study → studied, play → played.",
+  examples:[["I worked late yesterday.","Eu trabalhei até tarde ontem."],["She studied for two hours.","Ela estudou por duas horas."],["We walked to the park.","Nós caminhamos até o parque."],["They watched a movie last night.","Eles assistiram a um filme ontem à noite."]],
+  fill:[["I "," worked"," until 8pm."],["She "," studied"," all day."],["We "," walked"," to the park."]],
+  choice:[{q:"Past of 'play':",opts:[["played",1],["playd",0]]},{q:"Past of 'study':",opts:[["studyed",0],["studied",1]]}],
+  dialogue:[["Anna","What did you do yesterday?"],["Marcos","I worked, then I studied English at night."],["Anna","I walked in the park and watched a movie."],["Marcos","Sounds relaxing!"]],
+  listenQ:[{q:"What did Marcos do at night?",opts:[["Studied English",1],["Watched a movie",0]]},{q:"What did Anna do?",opts:[["Walked and watched a movie",1],["Worked all day",0]]}],
+  readingHtml:"Yesterday, Marcos <mark>worked</mark> all day and <mark>studied</mark> English at night. Anna <mark>walked</mark> in the park and <mark>watched</mark> a movie. Both had a good day.",
+  vocab:["walked","watched","worked","studied"],
+  speak:"I worked all day and studied English at night." },
+
+26:{ topic:"Past Simple — irregulares", title:"Past Simple — Irregular Verbs", sub:"Os verbos irregulares mais comuns.",
+  grammarTitle:"Verbos irregulares comuns",
+  grammarHtml:"Não seguem a regra do -ed: go→went, have→had, eat→ate, see→saw, go→went, buy→bought.",
+  examples:[["I went to the market.","Eu fui ao mercado."],["She had a great trip.","Ela teve uma ótima viagem."],["We ate at a new restaurant.","Nós comemos em um restaurante novo."],["They saw a great movie.","Eles viram um filme ótimo."]],
+  fill:[["I "," went"," to the market."],["She "," had"," a great trip."],["We "," ate"," at a new place."]],
+  choice:[{q:"Past of 'go':",opts:[["goed",0],["went",1]]},{q:"Past of 'see':",opts:[["saw",1],["seed",0]]}],
+  dialogue:[["Marcos","Did you go anywhere last weekend?"],["Anna","Yes! I went to Montreal and saw old friends."],["Marcos","Nice, did you eat well there?"],["Anna","We ate amazing French food."]],
+  listenQ:[{q:"Where did Anna go?",opts:[["Montreal",1],["Toronto",0]]},{q:"What did they eat?",opts:[["French food",1],["Italian food",0]]}],
+  readingHtml:"Last weekend, Anna <mark>went</mark> to Montreal. She <mark>saw</mark> old friends and <mark>ate</mark> amazing French food. She <mark>had</mark> a wonderful trip and <mark>bought</mark> souvenirs for Marcos.",
+  vocab:["wonderful","amazing","souvenirs","weekend"],
+  speak:"I went to Montreal, saw friends, and ate great food." },
+
+27:{ topic:"Going to (futuro)", title:"Going to — Future Plans", sub:"Falando sobre planos futuros.",
+  grammarTitle:"Be going to",
+  grammarHtml:"Usamos <strong>am/is/are going to</strong> + verbo base para planos e intenções: I am going to travel next month.",
+  examples:[["I'm going to travel next month.","Eu vou viajar mês que vem."],["She's going to study abroad.","Ela vai estudar no exterior."],["We're going to visit Anna.","Nós vamos visitar a Anna."],["Are you going to call him?","Você vai ligar para ele?"]],
+  fill:[["I'm "," going"," to travel soon."],["She's "," going"," to study abroad."],[""," Are"," you going to call him?"]],
+  choice:[{q:"Plan for the future:",opts:[["going to",1],["did",0]]},{q:"'Ele vai estudar' in English:",opts:[["He is going to study",1],["He studied",0]]}],
+  dialogue:[["Anna","What are you going to do this weekend?"],["Marcos","I'm going to visit my parents."],["Anna","Nice! I'm going to start a new English course."],["Marcos","That's great news!"]],
+  listenQ:[{q:"What is Marcos going to do?",opts:[["Visit his parents",1],["Study English",0]]},{q:"What is Anna going to do?",opts:[["Start an English course",1],["Travel"]]}],
+  readingHtml:"This weekend, Marcos <mark>is going to</mark> visit his parents. Anna <mark>is going to</mark> start a new English course. Next year, they <mark>are going to</mark> travel to Canada together.",
+  vocab:["parents","course","together","weekend"],
+  speak:"I'm going to visit my parents this weekend." },
+
+28:{ topic:"Preposições de tempo", title:"Prepositions of Time", sub:"in, on, at aplicados ao tempo.",
+  grammarTitle:"Preposições de tempo: in / on / at",
+  grammarHtml:"<strong>In</strong>: meses, anos, estações (in July, in 2026). <strong>On</strong>: dias e datas (on Monday). <strong>At</strong>: horas exatas e momentos (at 6pm, at night).",
+  examples:[["I wake up at 7am.","Eu acordo às 7h."],["The meeting is on Friday.","A reunião é na sexta."],["We were born in 1995.","Nós nascemos em 1995."],["She studies at night.","Ela estuda à noite."]],
+  fill:[["I wake up "," at"," seven."],["The party is "," on"," Saturday."],["He was born "," in"," 1998."]],
+  choice:[{q:"'At night' or 'in night'?",opts:[["At night",1],["In night",0]]},{q:"'On Monday' or 'at Monday'?",opts:[["On Monday",1],["At Monday",0]]}],
+  dialogue:[["Marcos","When do you usually study?"],["Anna","I study at night, after dinner."],["Marcos","And on weekends?"],["Anna","On Saturdays I rest, but on Sundays I study too."]],
+  listenQ:[{q:"When does Anna study?",opts:[["At night",1],["In the morning",0]]},{q:"When does she rest?",opts:[["On Saturdays",1],["On Sundays",0]]}],
+  readingHtml:"Anna studies <mark>at night</mark>, after dinner. <mark>On</mark> Saturdays she rests, but <mark>on</mark> Sundays she studies again. She started this routine <mark>in</mark> January.",
+  vocab:["routine","rest","dinner","January"],
+  speak:"I study at night, and I rest on Saturdays." },
+
+29:{ topic:"Verbos modais", title:"Must & Should", sub:"Obrigação e conselho.",
+  grammarTitle:"Must (obrigação) e should (conselho)",
+  grammarHtml:"<strong>Must</strong> expressa obrigação forte: You must study. <strong>Should</strong> expressa conselho: You should rest more.",
+  examples:[["You must wear a seatbelt.","Você deve usar cinto de segurança (obrigatório)."],["You should sleep more.","Você deveria dormir mais (conselho)."],["We must finish this today.","Nós temos que terminar isso hoje."],["She should call the doctor.","Ela deveria ligar para o médico."]],
+  fill:[["You "," must"," wear a seatbelt."],["You "," should"," rest more."],["We "," must"," finish today."]],
+  choice:[{q:"Strong obligation:",opts:[["must",1],["should",0]]},{q:"Friendly advice:",opts:[["must",0],["should",1]]}],
+  dialogue:[["Anna","You look tired. You should rest."],["Marcos","I know, but I must finish this report."],["Anna","You should take a break at least."],["Marcos","You're right, I should."]],
+  listenQ:[{q:"What should Marcos do?",opts:[["Rest / take a break",1],["Work more",0]]},{q:"What must he finish?",opts:[["A report",1],["A trip",0]]}],
+  readingHtml:"Marcos looks tired, so Anna says he <mark>should</mark> rest. But Marcos says he <mark>must</mark> finish his report first. Everyone <mark>should</mark> take breaks, but sometimes we <mark>must</mark> work.",
+  vocab:["report","break","obligation","advice"],
+  speak:"You should rest, but I must finish this first." },
+
+30:{ topic:"Revisão geral A1", title:"Review — You Made It!", sub:"Revisão de tudo o que você aprendeu no nível A1.",
+  grammarTitle:"Revisão geral",
+  grammarHtml:"Você completou 30 dias! Revise: to be, present simple, past simple, going to, comparativos, superlativos, modais (can/must/should) e muito vocabulário. Este exercício mistura um pouco de tudo.",
+  examples:[["I am a student and I study every day.","Eu sou estudante e estudo todos os dias."],["Yesterday I went to the market and bought fruit.","Ontem eu fui ao mercado e comprei fruta."],["Next month, I'm going to travel.","Mês que vem, eu vou viajar."],["You should practice English every day.","Você deveria praticar inglês todos os dias."]],
+  fill:[["I "," am"," a student."],["Yesterday I "," went"," to the market."],["Next year I'm "," going"," to travel."]],
+  choice:[{q:"Past of 'go':",opts:[["went",1],["goed",0]]},{q:"Advice, not obligation:",opts:[["should",1],["must",0]]}],
+  dialogue:[["Anna","You finished the whole A1 course! How do you feel?"],["Marcos","I feel great! I can speak much more now."],["Anna","You should be proud. What's next?"],["Marcos","I'm going to start level A2!"]],
+  listenQ:[{q:"How does Marcos feel?",opts:[["Great",1],["Tired",0]]},{q:"What's his next step?",opts:[["Start A2",1],["Stop studying",0]]}],
+  readingHtml:"Marcos <mark>finished</mark> the A1 course after 30 days of practice. He <mark>can</mark> introduce himself, talk about routines, the past, and future plans. Now he <mark>is going to</mark> start level A2 with Anna's support.",
+  vocab:["finished","proud","support","practice"],
+  speak:"I finished level A1, and I'm going to start A2!" }
+};
+const TOTAL_DAYS = 30;
+
+/* =========================================================
+   ESTADO / PROGRESSO (localStorage)
+   ========================================================= */
+function loadState(){
+  try{
+    const raw = localStorage.getItem('rotina-en-state');
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return { completed:[], streak:0, lastDate:null, currentDay:1 };
+}
+function saveState(){ localStorage.setItem('rotina-en-state', JSON.stringify(state)); }
+let state = loadState();
+let currentDay = state.currentDay || 1;
+
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function yesterdayStr(){ const d = new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); }
+
+function markDayComplete(day){
+  if(!state.completed.includes(day)) state.completed.push(day);
+  const today = todayStr();
+  if(state.lastDate !== today){
+    if(state.lastDate === yesterdayStr()){ state.streak += 1; }
+    else { state.streak = 1; }
+    state.lastDate = today;
+  }
+  saveState();
+  renderSidebar();
+  renderStreak();
+  renderLessonBody(); // atualiza botão "concluído"
+}
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+function renderSidebar(){
   const dayList = document.getElementById('dayList');
-  for(let i=1; i<=totalDays; i++){
+  dayList.innerHTML = '';
+  for(let i=1; i<=TOTAL_DAYS; i++){
     const li = document.createElement('li');
-    li.className = 'day-item' + (i===currentDay ? ' active' : '') + (completedDays.includes(i) ? ' done' : '');
-    li.tabIndex = 0;
-    li.innerHTML = `<span class="dot"></span><span class="n">${String(i).padStart(2,'0')}</span><span>Dia ${i}</span>`;
+    const btn = document.createElement('button');
+    btn.className = 'day-item' + (i===currentDay ? ' active' : '') + (state.completed.includes(i) ? ' done' : '');
+    btn.innerHTML = `<span class="dot"></span><span class="n">${String(i).padStart(2,'0')}</span><span class="topic">${lessons[i].topic}</span>`;
+    btn.addEventListener('click', () => selectDay(i));
+    li.appendChild(btn);
     dayList.appendChild(li);
   }
+  document.getElementById('progressLabel').textContent = `${state.completed.length}/${TOTAL_DAYS}`;
+}
+function renderStreak(){
+  document.getElementById('streakNum').textContent = state.streak;
+}
 
-  // Signature: dial de progresso (arcos coloridos proporcionais aos 3 blocos de 50min)
+function selectDay(day){
+  currentDay = day;
+  state.currentDay = day;
+  saveState();
+  const d = lessons[day];
+  document.getElementById('dayEyebrow').textContent = `Dia ${day} · ${day<=20?'Nível A1':'Nível A1/A2'}`;
+  document.getElementById('lessonTitle').textContent = d.title;
+  document.getElementById('lessonSub').textContent = d.sub;
+  document.getElementById('lessonContent').style.display = 'none';
+  document.getElementById('startBtn').textContent = 'Começar aula';
+  renderSidebar();
+  renderLessonBody();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* =========================================================
+   RENDERIZAÇÃO DO CONTEÚDO DA AULA
+   ========================================================= */
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderLessonBody(){
+  const d = lessons[currentDay];
+  const isDone = state.completed.includes(currentDay);
+
+  let examplesHtml = d.examples.map(([en,pt]) => `<li><span class="en">${en}</span><span class="pt">${pt}</span></li>`).join('');
+
+  let fillHtml = d.fill.map((f,idx) => `<div class="q" data-answer="${esc(f[1]).toLowerCase()}"><p>${idx+1}. ${f[0]}<input type="text" class="blank" maxlength="10" placeholder="___">${f[2]}</p></div>`).join('');
+
+  let choiceHtml = d.choice.map((c,idx) => {
+    const opts = c.opts.map(([t,ok],oi) => `<label><input type="radio" name="c-${currentDay}-${idx}" value="${ok?'correct':'wrong'}"> ${t}</label>`).join('');
+    return `<div class="q-choice"><p>${idx+1}. ${c.q}</p>${opts}</div>`;
+  }).join('');
+
+  let dialogueHtml = d.dialogue.map(([speaker,text]) => `<div class="line"><button class="play-btn" onclick="speak('${text.replace(/'/g,"\\'")}')">▶</button><span><strong>${speaker}:</strong> ${text}</span></div>`).join('');
+
+  let listenQHtml = d.listenQ.map((c,idx) => {
+    const opts = c.opts.map(([t,ok]) => `<label><input type="radio" name="l-${currentDay}-${idx}" value="${ok?'correct':'wrong'}"> ${t}</label>`).join('');
+    return `<div class="q-choice"><p>${idx+1}. ${c.q}</p>${opts}</div>`;
+  }).join('');
+
+  let vocabHtml = d.vocab.map(v => `<span class="mono chip">${v}</span>`).join(' ');
+
+  document.getElementById('lessonContent').innerHTML = `
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--blue)">Bloco 1 · Gramática</div>
+      <h2 class="block-title">${d.grammarTitle}</h2>
+      <p class="explain">${d.grammarHtml}</p>
+      <h3 class="mini-h">Exemplos</h3>
+      <ul class="example-list">${examplesHtml}</ul>
+      <h3 class="mini-h">Exercício 1 — Complete as frases</h3>
+      <div class="quiz" id="quizFill">
+        ${fillHtml}
+        <button class="check-btn" onclick="checkFill()">Corrigir</button>
+        <p class="quiz-feedback" id="feedback-quizFill"></p>
+      </div>
+      <h3 class="mini-h">Exercício 2 — Escolha a opção correta</h3>
+      <div class="quiz" id="quizChoice">
+        ${choiceHtml}
+        <button class="check-btn" onclick="checkChoiceGroup('quizChoice', ${d.choice.length}, 'c-${currentDay}')">Corrigir</button>
+        <p class="quiz-feedback" id="feedback-quizChoice"></p>
+      </div>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--amber)">Bloco 2 · Compreensão auditiva</div>
+      <h2 class="block-title">Ouça o diálogo</h2>
+      <p class="explain">Clique para ouvir cada fala. Depois responda às perguntas.</p>
+      <div class="dialogue">${dialogueHtml}</div>
+      <button class="play-btn-wide" onclick="speakAll(${currentDay})">▶ Ouvir diálogo completo</button>
+      <h3 class="mini-h">Perguntas</h3>
+      <div class="quiz" id="quizListen">
+        ${listenQHtml}
+        <button class="check-btn" onclick="checkChoiceGroup('quizListen', ${d.listenQ.length}, 'l-${currentDay}')">Corrigir</button>
+        <p class="quiz-feedback" id="feedback-quizListen"></p>
+      </div>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:#A6763B">Bloco 3 · Leitura</div>
+      <h2 class="block-title">Texto do dia</h2>
+      <p class="reading-text">${d.readingHtml}</p>
+      <p class="explain">Palavras novas: ${vocabHtml}</p>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--coral)">Bloco 4 · Expressão oral</div>
+      <h2 class="block-title">Repita e grave sua voz</h2>
+      <p class="explain">Ouça a frase, depois grave e compare sua pronúncia.</p>
+      <div class="speak-card">
+        <p class="target-phrase">"${d.speak}"</p>
+        <div class="speak-controls">
+          <button class="play-btn-wide" onclick="speak('${d.speak.replace(/'/g,"\\'")}')">▶ Ouvir</button>
+          <button class="record-btn" id="recordBtn" onclick="toggleRecord('${d.speak.toLowerCase().replace(/[.,!?']/g,'').replace(/'/g,"\\'")}')">🎤 Gravar</button>
+        </div>
+        <p class="speak-result" id="speakResult"></p>
+      </div>
+    </div>
+
+    <div class="lesson-block">
+      <div class="complete-row">
+        <button class="complete-btn" id="completeBtn" ${isDone?'disabled':''} onclick="markDayComplete(${currentDay})">${isDone ? '✓ Dia concluído' : 'Marcar dia como concluído'}</button>
+        <span class="complete-msg">${isDone ? 'Ótimo trabalho! Sua sequência foi contabilizada.' : 'Ao concluir, sua sequência (streak) é atualizada.'}</span>
+      </div>
+      <div class="nav-buttons">
+        <button onclick="selectDay(${Math.max(1,currentDay-1)})" ${currentDay===1?'disabled':''}>← Dia anterior</button>
+        <button onclick="selectDay(${Math.min(TOTAL_DAYS,currentDay+1)})" ${currentDay===TOTAL_DAYS?'disabled':''}>Próximo dia →</button>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================
+   DIAL DE PROGRESSO (visual, fixo)
+   ========================================================= */
+function renderDial(){
   const svgNS = "http://www.w3.org/2000/svg";
   const arcsGroup = document.getElementById('dialArcs');
-  const segments = [
-    { color: '#B23A2E', minutes: 20 },
-    { color: '#C98F3F', minutes: 20 },
-    { color: '#7A2620', minutes: 10 }
-  ];
-  const r = 50, cx = 60, cy = 60, circumference = 2 * Math.PI * r;
+  arcsGroup.innerHTML = '';
+  const segments = [{ color:'#B23A2E', minutes:20 },{ color:'#C98F3F', minutes:20 },{ color:'#7A2620', minutes:10 }];
+  const r=50, cx=60, cy=60, circumference = 2*Math.PI*r;
   let offset = 0;
   segments.forEach(seg => {
     const len = (seg.minutes/50) * circumference;
-    const circle = document.createElementNS(svgNS, 'circle');
-    circle.setAttribute('cx', cx);
-    circle.setAttribute('cy', cy);
-    circle.setAttribute('r', r);
-    circle.setAttribute('fill', 'none');
-    circle.setAttribute('stroke', seg.color);
-    circle.setAttribute('stroke-width', 12);
+    const circle = document.createElementNS(svgNS,'circle');
+    circle.setAttribute('cx',cx); circle.setAttribute('cy',cy); circle.setAttribute('r',r);
+    circle.setAttribute('fill','none'); circle.setAttribute('stroke',seg.color); circle.setAttribute('stroke-width',12);
     circle.setAttribute('stroke-dasharray', `${len} ${circumference-len}`);
     circle.setAttribute('stroke-dashoffset', -offset);
     circle.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
-    circle.setAttribute('stroke-linecap', 'butt');
     arcsGroup.appendChild(circle);
     offset += len;
   });
+}
 
-  document.getElementById('startBtn').addEventListener('click', () => {
-    const content = document.getElementById('lessonContent');
-    const isHidden = content.style.display === 'none';
-    content.style.display = isHidden ? 'block' : 'none';
-    document.getElementById('startBtn').textContent = isHidden ? 'Ocultar aula' : 'Começar aula do Dia 1';
-    if(isHidden){ content.scrollIntoView({behavior:'smooth', block:'start'}); }
+/* =========================================================
+   TEXT-TO-SPEECH
+   ========================================================= */
+function speak(text){
+  if(!('speechSynthesis' in window)){ alert('Seu navegador não suporta síntese de voz.'); return; }
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-US'; utter.rate = 0.92;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+}
+function speakAll(day, i=0){
+  const lines = lessons[day].dialogue;
+  if(i >= lines.length || !('speechSynthesis' in window)) return;
+  const utter = new SpeechSynthesisUtterance(lines[i][1]);
+  utter.lang = 'en-US'; utter.rate = 0.92;
+  utter.onend = () => speakAll(day, i+1);
+  speechSynthesis.speak(utter);
+}
+
+/* =========================================================
+   CORREÇÃO DE EXERCÍCIOS
+   ========================================================= */
+function checkFill(){
+  const questions = document.querySelectorAll('#quizFill .q');
+  let correct = 0;
+  questions.forEach(q => {
+    const answer = q.dataset.answer.trim().toLowerCase();
+    const input = q.querySelector('.blank');
+    const value = input.value.trim().toLowerCase();
+    input.classList.remove('correct','wrong');
+    if(value === answer){ input.classList.add('correct'); correct++; }
+    else{ input.classList.add('wrong'); }
   });
-
-  // --- Text-to-Speech ---
-  function speak(text){
-    if(!('speechSynthesis' in window)){ alert('Seu navegador não suporta síntese de voz.'); return; }
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'en-US';
-    utter.rate = 0.92;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(utter);
+  const fb = document.getElementById('feedback-quizFill');
+  fb.textContent = `Você acertou ${correct} de ${questions.length}.`;
+  fb.style.color = correct === questions.length ? '#4A7A45' : '#B23A2E';
+}
+function checkChoiceGroup(containerId, count, namePrefix){
+  let correct = 0;
+  for(let i=0;i<count;i++){
+    const checked = document.querySelector(`input[name="${namePrefix}-${i}"]:checked`);
+    if(checked && checked.value === 'correct') correct++;
   }
-  const dialogueLines = [
-    'Hi! My name is Anna. What is your name?',
-    'Hello Anna, I am Marcos. Nice to meet you.',
-    'Nice to meet you too. Are you a student?',
-    'Yes, I am. I am from Brazil.'
-  ];
-  function speakAll(i=0){
-    if(i >= dialogueLines.length) return;
-    if(!('speechSynthesis' in window)) return;
-    const utter = new SpeechSynthesisUtterance(dialogueLines[i]);
-    utter.lang = 'en-US';
-    utter.rate = 0.92;
-    utter.onend = () => speakAll(i+1);
-    speechSynthesis.speak(utter);
-  }
+  const fb = document.getElementById('feedback-' + containerId);
+  fb.textContent = `Você acertou ${correct} de ${count}.`;
+  fb.style.color = correct === count ? '#4A7A45' : '#B23A2E';
+}
 
-  // --- Quiz de preencher lacunas (Bloco 1) ---
-  function checkQuiz(quizId){
-    const quiz = document.getElementById(quizId);
-    const questions = quiz.querySelectorAll('.q');
-    let correct = 0;
-    questions.forEach(q => {
-      const answer = q.dataset.answer.trim().toLowerCase();
-      const input = q.querySelector('.blank');
-      const value = input.value.trim().toLowerCase();
-      input.classList.remove('correct','wrong');
-      if(value === answer){ input.classList.add('correct'); correct++; }
-      else{ input.classList.add('wrong'); }
-    });
-    const fb = document.getElementById('feedback-' + quizId);
-    fb.textContent = `Você acertou ${correct} de ${questions.length}.`;
-    fb.style.color = correct === questions.length ? '#4A7A45' : '#B23A2E';
-  }
-
-  // --- Quiz de múltipla escolha (Bloco 2) ---
-  function checkChoice(names, feedbackId){
-    let correct = 0;
-    names.forEach(name => {
-      const checked = document.querySelector(`input[name="${name}"]:checked`);
-      if(checked && checked.value === 'correct') correct++;
-    });
-    const fb = document.getElementById(feedbackId);
-    fb.textContent = `Você acertou ${correct} de ${names.length}.`;
-    fb.style.color = correct === names.length ? '#4A7A45' : '#B23A2E';
-  }
-
-  // --- Gravação de voz + comparação (Bloco 4) ---
-  let recognizing = false;
-  let recognition;
-  const targetPhrase = 'hi my name is marcos i am from brazil';
-
-  function toggleRecord(){
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const btn = document.getElementById('recordBtn');
-    const result = document.getElementById('speakResult');
-
-    if(!SpeechRecognition){
-      result.textContent = 'Seu navegador não suporta reconhecimento de voz (funciona melhor no Chrome).';
-      return;
-    }
-    if(recognizing){
-      recognition.stop();
-      return;
-    }
-    recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-
-    recognition.onstart = () => {
-      recognizing = true;
-      btn.classList.add('recording');
-      btn.textContent = '⏺ Gravando...';
-      result.textContent = 'Fale agora...';
-    };
-    recognition.onend = () => {
-      recognizing = false;
-      btn.classList.remove('recording');
-      btn.textContent = '🎤 Gravar';
-    };
-    recognition.onerror = (e) => {
-      result.textContent = 'Não foi possível captar o áudio. Tente novamente.';
-    };
-    recognition.onresult = (e) => {
-      const said = e.results[0][0].transcript.toLowerCase().trim();
-      const saidClean = said.replace(/[.,!?]/g,'');
-      const similarity = wordOverlap(saidClean, targetPhrase);
-      result.innerHTML = `Você disse: <strong>"${said}"</strong><br>Aproximação com a frase alvo: <strong>${similarity}%</strong>`;
-    };
-    recognition.start();
-  }
-
-  function wordOverlap(a, b){
-    const wordsA = a.split(/\s+/);
-    const wordsB = b.split(/\s+/);
-    let matches = 0;
-    wordsB.forEach(w => { if(wordsA.includes(w)) matches++; });
-    return Math.round((matches / wordsB.length) * 100);
-  }
-
-  // --- Dicionário instantâneo (inglês -> português) ---
-  const dictionary = {
-    "hi":"oi", "hello":"olá", "bye":"tchau", "goodbye":"adeus",
-    "name":"nome", "friend":"amigo(a)", "friendly":"amigável, simpático",
-    "classmate":"colega de classe", "funny":"engraçado(a)",
-    "student":"estudante", "teacher":"professor(a)", "doctor":"médico(a)",
-    "brother":"irmão", "sister":"irmã", "mother":"mãe", "father":"pai",
-    "family":"família", "book":"livro", "coffee":"café", "school":"escola",
-    "home":"casa, lar", "today":"hoje", "tired":"cansado(a)", "happy":"feliz",
-    "sad":"triste", "hot":"quente", "cold":"frio", "interesting":"interessante",
-    "monday":"segunda-feira", "brazil":"brasil", "brazilian":"brasileiro(a)",
-    "canada":"canadá", "from":"de (origem)", "meet":"conhecer, encontrar",
-    "nice":"legal, agradável", "yes":"sim", "no":"não",
-    "am":"(verbo to be - 1ª pessoa) sou/estou", "is":"(verbo to be - 3ª pessoa) é/está",
-    "are":"(verbo to be - você/nós/eles) é/são/está/estão",
-    "not":"não (negação)", "and":"e", "too":"também",
-    "i":"eu", "you":"você", "he":"ele", "she":"ela", "it":"isso/ele/ela (objeto/animal)",
-    "we":"nós", "they":"eles/elas", "my":"meu/minha", "your":"seu/sua",
-    "his":"dele", "her":"dela", "our":"nosso(a)", "their":"deles/delas",
-    "student's":"do(a) estudante", "what":"o que/qual", "where":"onde", "who":"quem",
-    "parents":"pais (mãe e pai)", "good":"bom/boa"
+/* =========================================================
+   GRAVAÇÃO DE VOZ
+   ========================================================= */
+let recognizing = false;
+let recognition;
+function toggleRecord(targetPhrase){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btn = document.getElementById('recordBtn');
+  const result = document.getElementById('speakResult');
+  if(!SpeechRecognition){ result.textContent = 'Seu navegador não suporta reconhecimento de voz (funciona melhor no Chrome).'; return; }
+  if(recognizing){ recognition.stop(); return; }
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US'; recognition.interimResults = false;
+  recognition.onstart = () => { recognizing = true; btn.classList.add('recording'); btn.textContent = '⏺ Gravando...'; result.textContent = 'Fale agora...'; };
+  recognition.onend = () => { recognizing = false; btn.classList.remove('recording'); btn.textContent = '🎤 Gravar'; };
+  recognition.onerror = () => { result.textContent = 'Não foi possível captar o áudio. Tente novamente.'; };
+  recognition.onresult = (e) => {
+    const said = e.results[0][0].transcript.toLowerCase().trim();
+    const saidClean = said.replace(/[.,!?]/g,'');
+    const similarity = wordOverlap(saidClean, targetPhrase);
+    result.innerHTML = `Você disse: <strong>"${said}"</strong><br>Aproximação com a frase alvo: <strong>${similarity}%</strong>`;
   };
+  recognition.start();
+}
+function wordOverlap(a,b){
+  const wordsA = a.split(/\s+/); const wordsB = b.split(/\s+/);
+  let matches = 0;
+  wordsB.forEach(w => { if(wordsA.includes(w)) matches++; });
+  return Math.round((matches/wordsB.length)*100);
+}
 
-  const dictInput = document.getElementById('dictInput');
-  const dictResult = document.getElementById('dictResult');
-  let dictTimeout;
+/* =========================================================
+   DICIONÁRIO INSTANTÂNEO
+   ========================================================= */
+const dictionary = {
+  "hi":"oi","hello":"olá","bye":"tchau","goodbye":"adeus","name":"nome","friend":"amigo(a)","friendly":"amigável, simpático",
+  "classmate":"colega de classe","funny":"engraçado(a)","student":"estudante","teacher":"professor(a)","doctor":"médico(a)",
+  "brother":"irmão","sister":"irmã","mother":"mãe","father":"pai","family":"família","book":"livro","coffee":"café","school":"escola",
+  "home":"casa, lar","today":"hoje","tired":"cansado(a)","happy":"feliz","sad":"triste","hot":"quente","cold":"frio",
+  "monday":"segunda-feira","brazil":"brasil","brazilian":"brasileiro(a)","canada":"canadá","from":"de (origem)","meet":"conhecer, encontrar",
+  "nice":"legal, agradável","yes":"sim","no":"não","am":"(to be) sou/estou","is":"(to be) é/está","are":"(to be) é/são/está/estão",
+  "not":"não (negação)","and":"e","too":"também","i":"eu","you":"você","he":"ele","she":"ela","it":"isso/ele/ela",
+  "we":"nós","they":"eles/elas","my":"meu/minha","your":"seu/sua","his":"dele","her":"dela","our":"nosso(a)","their":"deles/delas",
+  "what":"o que/qual","where":"onde","who":"quem","parents":"pais","good":"bom/boa","always":"sempre","never":"nunca",
+  "usually":"geralmente","sometimes":"às vezes","can":"poder, conseguir","must":"dever (obrigação)","should":"deveria (conselho)",
+  "went":"foi (passado de go)","was":"era/estava","were":"eram/estavam","going":"indo","weather":"clima","summer":"verão",
+  "winter":"inverno","birthday":"aniversário","market":"mercado","trip":"viagem","work":"trabalho","study":"estudar"
+};
+const dictInput = document.getElementById('dictInput');
+const dictResult = document.getElementById('dictResult');
+let dictTimeout;
+dictInput.addEventListener('input', () => {
+  const word = dictInput.value.trim().toLowerCase().replace(/[.,!?']/g,'');
+  clearTimeout(dictTimeout);
+  if(!word){ dictResult.innerHTML = 'Traduzo qualquer palavra em inglês — na hora.'; return; }
+  if(dictionary[word]){ dictResult.innerHTML = `<span class="found"><strong>${word}</strong> → ${dictionary[word]} <span class="src">(aula)</span></span>`; return; }
+  dictResult.innerHTML = `<span class="loading">Traduzindo "${word}"...</span>`;
+  dictTimeout = setTimeout(() => translateOnline(word), 450);
+});
+async function translateOnline(word){
+  try{
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|pt-BR`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('network');
+    const data = await res.json();
+    const translated = data?.responseData?.translatedText;
+    if(dictInput.value.trim().toLowerCase().replace(/[.,!?']/g,'') !== word) return;
+    if(translated){ dictResult.innerHTML = `<span class="found"><strong>${word}</strong> → ${translated.toLowerCase()} <span class="src">(web)</span></span>`; }
+    else{ dictResult.innerHTML = `<span class="not-found">Não encontrei tradução para "${word}".</span>`; }
+  }catch(err){ dictResult.innerHTML = `<span class="not-found">Sem conexão com o tradutor agora. Tente novamente em instantes.</span>`; }
+}
 
-  dictInput.addEventListener('input', () => {
-    const word = dictInput.value.trim().toLowerCase().replace(/[.,!?']/g,'');
-    clearTimeout(dictTimeout);
+/* =========================================================
+   INICIALIZAÇÃO
+   ========================================================= */
+document.getElementById('startBtn').addEventListener('click', () => {
+  const content = document.getElementById('lessonContent');
+  const isHidden = content.style.display === 'none';
+  content.style.display = isHidden ? 'block' : 'none';
+  document.getElementById('startBtn').textContent = isHidden ? 'Ocultar aula' : 'Começar aula';
+  if(isHidden){ content.scrollIntoView({behavior:'smooth', block:'start'}); }
+});
 
-    if(!word){
-      dictResult.innerHTML = 'Traduzo qualquer palavra em inglês — na hora.';
-      return;
-    }
-
-    // 1. Tenta primeiro o dicionário local (instantâneo, sem internet)
-    if(dictionary[word]){
-      dictResult.innerHTML = `<span class="found"><strong>${word}</strong> → ${dictionary[word]} <span class="src">(aula)</span></span>`;
-      return;
-    }
-
-    // 2. Se não achar, espera o usuário parar de digitar e busca na API (evita chamadas excessivas)
-    dictResult.innerHTML = `<span class="loading">Traduzindo "${word}"...</span>`;
-    dictTimeout = setTimeout(() => translateOnline(word), 450);
-  });
-
-  async function translateOnline(word){
-    try{
-      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|pt-BR`;
-      const res = await fetch(url);
-      if(!res.ok) throw new Error('network');
-      const data = await res.json();
-      const translated = data?.responseData?.translatedText;
-
-      // ignora se a palavra atual do input mudou enquanto esperava a resposta
-      if(dictInput.value.trim().toLowerCase().replace(/[.,!?']/g,'') !== word) return;
-
-      if(translated){
-        dictResult.innerHTML = `<span class="found"><strong>${word}</strong> → ${translated.toLowerCase()} <span class="src">(web)</span></span>`;
-      } else {
-        dictResult.innerHTML = `<span class="not-found">Não encontrei tradução para "${word}".</span>`;
-      }
-    } catch(err){
-      dictResult.innerHTML = `<span class="not-found">Sem conexão com o tradutor agora. Tente novamente em instantes.</span>`;
-    }
-  }
-
-
-
+renderDial();
+renderStreak();
+selectDay(currentDay);
 </script>
 </body>
 </html>
