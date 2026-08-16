@@ -37,7 +37,7 @@ Criar um site pessoal (HTML/CSS/JS puro, sem framework) para aprender inglês de
 | 3. Leitura | 10 min | Texto curto no nível do dia, vocabulário novo destacado |
 | 4. Expressão oral | 10 min | Gravação da voz + comparação de pronúncia |
 
-Trilha planejada: 14 dias visíveis na barra lateral (expansível), começando pelo **Dia 1 — Greetings & Introductions** (verbo *to be*, cumprimentos, apresentações).
+Trilha atual: **30 dias**, do A1 básico até uma ponte com A2 (ver seção 6 para a lista completa de tópicos). Estrutura orientada a dados: cada dia é um "registro" no objeto `lessons` do JavaScript (gramática, diálogo, leitura, fala), renderizado dinamicamente — não é mais HTML repetido por dia.
 
 ## 5. Identidade visual (design tokens)
 
@@ -49,31 +49,32 @@ Trilha planejada: 14 dias visíveis na barra lateral (expansível), começando p
 - **Cor principal (vermelho terracota):** `#B23A2E`
 - **Cor secundária (dourado):** `#C98F3F`
 - **Cor de destaque profundo (vinho):** `#7A2620`
+- **Verde de sucesso (streak/correção):** `#4A7A45`
 - **Tipografia:** Fraunces (display/serifada) + Work Sans (corpo) + IBM Plex Mono (números, tempo, dados)
 - **Elemento de assinatura:** "dial" circular de 50 minutos, dividido em 3 arcos coloridos proporcionais ao tempo de cada bloco da aula
 
 ## 6. Status atual (o que já existe)
 
-Arquivo: `index.html`
+Arquivo: `index.html` (arquitetura orientada a dados — objeto `lessons` no JS)
 
-- [x] Estrutura geral do site (sidebar + área principal)
-- [x] Barra lateral com trilha de 14 dias e contador de streak
-- [x] Dial de progresso de 50 minutos (SVG, elemento de assinatura visual)
+- [x] Estrutura geral do site (sidebar + área principal), agora com navegação real entre dias (clique no menu lateral, ou botões "Dia anterior / Próximo dia")
+- [x] **30 dias de conteúdo completo**, cada um com os 4 blocos (gramática, escuta, leitura, fala), história contínua com dois personagens recorrentes (Marcos, brasileiro aprendendo inglês, e Anna, amiga canadense) para dar coesão e contexto real ao vocabulário
+- [x] Trilha de tópicos: to be → preposições → artigos → plural → possessivos → there is/are → demonstrativos → present simple (afirm./neg./perguntas) → números e horas → advérbios de frequência → can/can't → adjetivos → família → quantificadores → pronomes objeto → present continuous → comparativos → superlativos → imperativos/direções → comida (would like) → clima → datas → past simple (to be, regulares, irregulares) → going to (futuro) → preposições de tempo → must/should → revisão geral (dia 30)
+- [x] Cada dia tem: explicação de gramática + 4 exemplos traduzidos, 2 exercícios interativos (preencher lacunas + múltipla escolha) com correção automática, diálogo com áudio via TTS (linha a linha ou completo) + 2-3 perguntas de compreensão, texto de leitura com vocabulário destacado, frase-alvo para gravação de voz com % de aproximação
+- [x] **Streak funcional de verdade**: salvo em `localStorage`. Botão "Marcar dia como concluído" em cada aula. Lógica: se o último dia concluído foi ontem, o streak soma +1; se foi hoje, não muda; se foi antes de ontem (quebrou a sequência), reinicia para 1. Progresso (X/30 dias) e streak exibidos na barra lateral, com bolinhas verde/dourado marcando dias concluídos
+- [x] Progresso persiste entre visitas (mesmo navegador) — fecha o site e volta no dia seguinte que o streak e os dias concluídos continuam salvos
 - [x] Paleta de cores em tons de vermelho (terracota, dourado, vinho)
-- [x] **Dicionário instantâneo**: caixa de busca sempre visível no topo da aula. Primeiro consulta um dicionário local (palavras da aula, resposta instantânea), e se não encontrar, busca automaticamente na API gratuita **MyMemory Translation** (`api.mymemory.translated.net`), sem precisar de chave/cadastro
-- [x] **Bloco 1 (Gramática) — Dia 1 completo**: explicação do verbo *to be* (afirmativa e negativa), tabela de conjugação, 6 exemplos com tradução, 2 exercícios interativos (preencher lacunas + múltipla escolha) com correção automática
-- [x] **Bloco 2 (Escuta) — Dia 1 completo**: diálogo de apresentação com áudio via Text-to-Speech (voz sintetizada do navegador), reproduzível linha a linha ou completo, + 4 perguntas de compreensão com correção
-- [x] **Bloco 3 (Leitura) — Dia 1 completo**: texto curto original com vocabulário novo destacado
-- [x] **Bloco 4 (Fala) — Dia 1 completo**: reprodução da frase-alvo (TTS) + gravação da voz do usuário via reconhecimento de voz do navegador, com cálculo de % de aproximação com a frase alvo
-- [ ] Sistema de progresso/streak funcionando de fato (hoje é só visual, não salva ainda em localStorage)
-- [ ] Conteúdo dos Dias 2 em diante (só o Dia 1 tem conteúdo completo)
-- [ ] Publicação no GitHub Pages (guia já formulado, aguardando o usuário executar)
+- [x] **Dicionário instantâneo**: caixa de busca sempre visível no topo. Primeiro consulta um dicionário local (~60 palavras das aulas, resposta instantânea), e se não encontrar, busca automaticamente na API gratuita **MyMemory Translation** (`api.mymemory.translated.net`), sem precisar de chave/cadastro
+- [x] Publicado no GitHub Pages: `https://lucasferraz46.github.io/rotina-ingl-s/`
+- [ ] Nível A2 completo (hoje o dia 30 é uma "ponte" de revisão — o conteúdo A2 pleno ainda não foi criado)
+- [ ] Dicionário local ainda cobre só o vocabulário das 30 aulas — o resto já é coberto pela API online, mas não há cache dessas buscas
+- [ ] Sem sistema de "dia bloqueado até completar o anterior" — hoje a navegação é livre entre todos os 30 dias
 
 ## 7. Como retomar
 
 1. Cole este documento inteiro no início de uma nova conversa com o Claude.
 2. Anexe (ou peça para eu recriar) o arquivo `index.html` atual.
-3. Diga qual é o próximo passo que quer atacar (ex: "vamos criar o conteúdo do Dia 2" ou "vamos fazer o progresso salvar de verdade").
+3. Diga qual é o próximo passo (ex: "vamos criar o nível A2" ou "vamos travar a navegação até completar o dia anterior").
 
 ## 8. Histórico de decisões (changelog)
 
@@ -87,5 +88,7 @@ Arquivo: `index.html`
 - **v0.4** — Exercícios e exemplos do Dia 1 expandidos (mais frases, mais questões nos quizzes).
 - **v0.4** — Dicionário instantâneo criado: local primeiro, com fallback para API gratuita de tradução (MyMemory) quando a palavra não está no dicionário da aula.
 - **v0.5** — Definido plano de publicação via GitHub Pages (gratuito, HTTPS automático — necessário para microfone e tradução online funcionarem em produção).
+- **v0.6** — Site publicado com sucesso em `https://lucasferraz46.github.io/rotina-ingl-s/` (corrigido erro de nome de arquivo duplicado, `index (3).html` → `index.html`).
+- **v0.7** — Reestruturação completa: site migrado de HTML estático (só Dia 1) para arquitetura orientada a dados. Criados **30 dias de conteúdo completo e diversificado**, com história contínua (Marcos e Anna) amarrando o vocabulário. Sistema de **streak real implementado**, salvando progresso em localStorage com lógica de sequência consecutiva.
 
 <!-- Ao continuar o projeto, adicione novas entradas aqui com a data e o que mudou. -->
