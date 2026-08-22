@@ -95,6 +95,10 @@
   .play-btn-wide{ background:var(--paper); border:1px solid var(--blue); color:var(--blue); padding:9px 16px; border-radius:8px; cursor:pointer; font-size:.85rem; font-family:'Work Sans', sans-serif; }
   .reading-text{ font-size:1.05rem; line-height:1.9; margin-bottom:14px; }
   .reading-text mark{ background:#F5DDA0; padding:1px 3px; border-radius:3px; }
+  .vocab-table{ width:100%; border-collapse:collapse; font-size:.92rem; margin-top:8px; }
+  .vocab-table th{ text-align:left; color:var(--ink-soft); font-weight:500; font-size:.76rem; text-transform:uppercase; letter-spacing:.04em; padding:7px 10px; border-bottom:1px solid var(--line); }
+  .vocab-table td{ padding:8px 10px; border-bottom:1px solid var(--line); }
+  .vocab-table td:first-child{ font-family:'IBM Plex Mono', monospace; color:var(--blue); }
   .challenge{ background:#FBF3EF; border:1px dashed var(--line); border-radius:10px; padding:14px 16px; margin-bottom:10px; }
   .challenge p{ margin:0 0 8px; font-size:.93rem; }
   .challenge input{ width:100%; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:.92rem; font-family:'Work Sans', sans-serif; margin-bottom:8px; }
@@ -126,6 +130,7 @@
     </div>
     <div class="nav-label"><span>Sua trilha</span><span id="progressLabel" class="mono">0/30</span></div>
     <ul class="day-list" id="dayList"></ul>
+    <button id="verbGuideBtn" class="day-item" style="margin-top:16px;border-top:1px solid var(--line);padding-top:16px;font-weight:500;">📖 Guia de Verbos (consulta)</button>
   </aside>
   <main>
     <div class="dict-box">
@@ -680,6 +685,236 @@ const extras = {
   reorder:[[["student","a","am","I"],"I am a student."],[["market","went","the","to","I"],"I went to the market."],[["travel","going","I'm","to"],"I'm going to travel."]] }
 };
 
+/* ============ GUIA DE VERBOS (recurso de consulta, não é por dia) ============ */
+const irregularVerbs = [
+["be","was/were","been","ser/estar"],["become","became","become","tornar-se"],["begin","began","begun","começar"],
+["break","broke","broken","quebrar"],["bring","brought","brought","trazer"],["build","built","built","construir"],
+["buy","bought","bought","comprar"],["catch","caught","caught","pegar"],["choose","chose","chosen","escolher"],
+["come","came","come","vir"],["cost","cost","cost","custar"],["cut","cut","cut","cortar"],
+["do","did","done","fazer"],["drink","drank","drunk","beber"],["drive","drove","driven","dirigir"],
+["eat","ate","eaten","comer"],["fall","fell","fallen","cair"],["feel","felt","felt","sentir"],
+["find","found","found","encontrar"],["fly","flew","flown","voar"],["forget","forgot","forgotten","esquecer"],
+["get","got","gotten/got","conseguir, pegar"],["give","gave","given","dar"],["go","went","gone","ir"],
+["have","had","had","ter"],["hear","heard","heard","ouvir"],["hold","held","held","segurar"],
+["keep","kept","kept","manter"],["know","knew","known","saber, conhecer"],["leave","left","left","sair, deixar"],
+["lose","lost","lost","perder"],["make","made","made","fazer"],["meet","met","met","conhecer, encontrar"],
+["pay","paid","paid","pagar"],["put","put","put","colocar"],["read","read","read","ler"],
+["run","ran","run","correr"],["say","said","said","dizer"],["see","saw","seen","ver"],
+["sell","sold","sold","vender"],["send","sent","sent","enviar"],["show","showed","shown","mostrar"],
+["sit","sat","sat","sentar"],["sleep","slept","slept","dormir"],["speak","spoke","spoken","falar"],
+["spend","spent","spent","gastar"],["stand","stood","stood","ficar em pé"],["swim","swam","swum","nadar"],
+["take","took","taken","pegar, levar"],["teach","taught","taught","ensinar"],["tell","told","told","contar, dizer"],
+["think","thought","thought","pensar"],["understand","understood","understood","entender"],
+["wake","woke","woken","acordar"],["wear","wore","worn","usar (roupa)"],["win","won","won","vencer"],
+["write","wrote","written","escrever"]
+];
+const stateVerbs = [
+["know","saber, conhecer","I know the answer.","I am knowing the answer."],
+["like","gostar","I like coffee.","I am liking coffee."],
+["want","querer","She wants a coffee.","She is wanting a coffee."],
+["believe","acreditar","I believe you.","I am believing you."],
+["understand","entender","We understand the rule.","We are understanding the rule."],
+["need","precisar","He needs help.","He is needing help."],
+["prefer","preferir","I prefer tea.","I am preferring tea."],
+["love","amar","She loves music.","She is loving music."],
+["hate","odiar","I hate waiting.","I am hating waiting."],
+["seem","parecer","It seems fine.","It is seeming fine."],
+["own","possuir","They own a house.","They are owning a house."],
+["belong","pertencer","This belongs to me.","This is belonging to me."]
+];
+const modalVerbs = [
+["can","capacidade, permissão informal","I can swim.","Habilidade atual ou pedido casual."],
+["could","capacidade no passado, pedido educado","Could you help me?","Passado de 'can', ou forma mais educada de pedir."],
+["may","permissão formal, possibilidade","May I come in?","Contextos formais, ou possibilidade ('it may rain')."],
+["might","possibilidade (mais incerta que may)","It might rain later.","Quando a chance é menor ou mais incerta."],
+["must","obrigação forte, dedução lógica","You must wear a seatbelt.","Regra obrigatória, ou conclusão óbvia ('He must be tired')."],
+["should","conselho, recomendação","You should rest.","Sugestão — não é obrigatório, é um conselho."],
+["will","decisão espontânea, previsão","I will call you later.","Decisão feita na hora, ou previsão sobre o futuro."],
+["would","hipótese, pedido educado, hábito passado","I would like a coffee.","Pedidos educados, condicionais, ou hábitos no passado ('When I was young, I would play outside')."]
+];
+const phrasalVerbs = [
+["wake up","acordar","I wake up at seven every day."],
+["get up","levantar (da cama)","He gets up early on weekdays."],
+["look for","procurar","She is looking for her keys."],
+["look after","cuidar de","Can you look after my dog?"],
+["turn on / off","ligar / desligar","Please turn off the lights."],
+["give up","desistir","Don't give up on your goals."],
+["find out","descobrir","I need to find out the truth."],
+["pick up","pegar, buscar","I'll pick you up at six."],
+["put on","vestir, colocar","Put on your jacket, it's cold."],
+["take off","tirar (roupa); decolar (avião)","The plane takes off at noon."],
+["get along","se dar bem","We get along very well."],
+["run out of","ficar sem","We ran out of milk."],
+["figure out","entender, resolver","I can't figure out this problem."],
+["hang out","sair, passar tempo com","Let's hang out this weekend."],
+["come back","voltar","She will come back tomorrow."]
+];
+const falseCognates = [
+["actually","na verdade (NÃO 'atualmente')","Atualmente = currently / nowadays"],
+["pretend","fingir (NÃO 'pretender')","Pretender = to intend / to plan"],
+["parents","pai e mãe (NÃO 'parentes')","Parentes = relatives"],
+["push","empurrar (NÃO 'puxar')","Puxar = to pull"],
+["pull","puxar (NÃO 'pular')","Pular = to jump"],
+["college","faculdade (NÃO 'colégio')","Colégio (ensino médio) = high school"],
+["fabric","tecido (NÃO 'fábrica')","Fábrica = factory"],
+["realize","perceber, dar-se conta (NÃO 'realizar')","Realizar (um sonho/evento) = to achieve / to hold"],
+["exquisite","refinado, primoroso (NÃO 'esquisito')","Esquisito = weird / strange"],
+["costume","fantasia (roupa) (NÃO 'costume')","Costume (hábito) = habit / custom"],
+["assist","ajudar (NÃO 'assistir')","Assistir (TV/filme) = to watch"],
+["lecture","palestra, aula (NÃO 'leitura')","Leitura = reading"],
+["library","biblioteca (NÃO 'livraria')","Livraria = bookstore"],
+["intend","pretender, ter intenção (NÃO 'entender')","Entender = to understand"],
+["sensible","sensato (NÃO 'sensível')","Sensível = sensitive"],
+["notice","perceber, aviso (NÃO 'notícia')","Notícia = news"],
+["resume","retomar, continuar (NÃO 'resumo')","Resumo (de texto) = summary"],
+["injury","ferimento (NÃO 'injúria')","Injúria (xingamento) = insult"],
+["prejudice","preconceito (NÃO 'prejuízo')","Prejuízo (financeiro) = loss / damage"],
+["mayor","prefeito (NÃO 'maior')","Maior (tamanho) = bigger / biggest"]
+];
+const tenseOverview = [
+["Present Simple","sujeito + verbo (+s na 3ª pessoa)","I work every day.","Rotinas, hábitos, fatos gerais."],
+["Present Continuous","am/is/are + verbo-ing","I am working now.","Ações acontecendo agora, ou planos já combinados."],
+["Past Simple","verbo no passado (-ed ou irregular)","I worked yesterday.","Ações completas e terminadas no passado."],
+["Going to (futuro)","am/is/are + going to + verbo","I am going to work tomorrow.","Planos e intenções já decididas."],
+["Will (futuro)","will + verbo base","I will work later.","Decisões espontâneas, previsões, promessas."]
+];
+const prepositionSummary = [
+["in","meses, anos, estações, cidades/países, períodos do dia","in July, in 2026, in Brazil, in the morning"],
+["on","dias da semana, datas, superfícies, ruas","on Monday, on July 5th, on the table, on Main Street"],
+["at","horas exatas, pontos específicos, noite","at 6pm, at the door, at night, at the corner"]
+];
+const dependentPrepositions = [
+["depend on","depender de","This depends on the weather."],
+["listen to","escutar (ouvir alguém/algo)","Listen to me, please."],
+["wait for","esperar por","We waited for the bus."],
+["look at","olhar para","Look at this photo!"],
+["believe in","acreditar em","I believe in you."],
+["apologize for","pedir desculpas por","He apologized for being late."],
+["worry about","preocupar-se com","Don't worry about it."],
+["agree with","concordar com","I agree with your idea."],
+["arrive at/in","chegar em (lugar pequeno/grande)","We arrived at the station. / We arrived in Canada."],
+["talk to / about","falar com / sobre","I need to talk to you about this."],
+["think about","pensar sobre, refletir","I'm thinking about my future."],
+["dream of/about","sonhar com","She dreams of traveling the world."],
+["laugh at","rir de","They laughed at the joke."],
+["complain about","reclamar de","He complained about the noise."],
+["insist on","insistir em","She insisted on paying the bill."],
+["congratulate on","parabenizar por","Congratulations on your new job!"],
+["focus on","focar em","Let's focus on the important things."],
+["consist of","consistir em, ser composto de","The team consists of five people."],
+["succeed in","ter sucesso em","He succeeded in passing the exam."],
+["compare to/with","comparar a/com","Don't compare yourself to others."]
+];
+const idioms = [
+["It's raining cats and dogs.","Está chovendo muito forte.","Used when it's raining heavily."],
+["Break a leg!","Boa sorte!","Said before a performance, exam, or important event."],
+["Piece of cake.","Muito fácil, moleza.","'This test was a piece of cake' = foi muito fácil."],
+["Hit the books.","Estudar bastante.","'I need to hit the books before the exam.'"],
+["Under the weather.","Meio doente, indisposto.","'I'm feeling a bit under the weather today.'"],
+["Cost an arm and a leg.","Custar muito caro.","'That car cost an arm and a leg.'"],
+["Once in a blue moon.","Muito raramente.","'We eat out once in a blue moon.'"],
+["The ball is in your court.","A decisão agora é sua.","Used when it's someone else's turn to act or decide."],
+["Speak of the devil!","Falando no diabo (a pessoa aparece).","Said when someone you were just talking about shows up."],
+["Hit the sack / hit the hay.","Ir dormir.","'I'm tired, I'm going to hit the sack.'"],
+["Let the cat out of the bag.","Revelar um segredo sem querer.","'He let the cat out of the bag about the surprise party.'"],
+["On the same page.","Concordando, alinhados.","'Let's make sure we're on the same page before we start.'"],
+["Better late than never.","Antes tarde do que nunca.","Used to comfort someone who did something late."],
+["Actions speak louder than words.","Ações falam mais que palavras.","Used to emphasize doing over just saying."],
+["A blessing in disguise.","Um mal que na verdade é um bem.","'Losing that job was a blessing in disguise.'"],
+["Bite the bullet.","Encarar algo difícil com coragem.","'I decided to bite the bullet and go to the dentist.'"]
+];
+function esc2(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function buildVerbGuideHtml(){
+  const irrRows = irregularVerbs.map(([b,p,pp,t]) => `<tr><td class="mono">${b}</td><td class="mono">${p}</td><td class="mono">${pp}</td><td>${t}</td></tr>`).join('');
+  const stateRows = stateVerbs.map(([v,t,right,wrong]) => `<tr><td class="mono">${v}</td><td>${t}</td><td style="color:var(--green)">${right}</td><td style="color:var(--coral);text-decoration:line-through">${wrong}</td></tr>`).join('');
+  const modalRows = modalVerbs.map(([v,use,ex,note]) => `<tr><td class="mono">${v}</td><td>${use}</td><td><em>${ex}</em></td><td>${note}</td></tr>`).join('');
+  const phrasalRows = phrasalVerbs.map(([v,t,ex]) => `<tr><td class="mono">${v}</td><td>${t}</td><td><em>${ex}</em></td></tr>`).join('');
+  const falseCogRows = falseCognates.map(([w,meaning,note]) => `<tr><td class="mono">${w}</td><td>${meaning}</td><td style="color:var(--ink-soft);font-size:.88rem">${note}</td></tr>`).join('');
+  const tenseRows = tenseOverview.map(([name,formula,ex,use]) => `<tr><td><strong>${name}</strong></td><td class="mono" style="font-size:.85rem">${formula}</td><td><em>${ex}</em></td><td style="font-size:.88rem">${use}</td></tr>`).join('');
+  const prepRows = prepositionSummary.map(([p,use,ex]) => `<tr><td class="mono">${p}</td><td>${use}</td><td class="mono" style="font-size:.85rem">${ex}</td></tr>`).join('');
+  const depPrepRows = dependentPrepositions.map(([v,t,ex]) => `<tr><td class="mono">${v}</td><td>${t}</td><td><em>${ex}</em></td></tr>`).join('');
+  const idiomRows = idioms.map(([phrase,meaning,use]) => `<tr><td class="mono" style="font-size:.85rem">${phrase}</td><td>${meaning}</td><td style="font-size:.86rem;color:var(--ink-soft)">${use}</td></tr>`).join('');
+  return `
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--blue)">Referência</div>
+      <h2 class="block-title">Verbos irregulares mais comuns</h2>
+      <p class="explain">Estes ~55 verbos não seguem a regra do -ed. Eles aparecem o tempo todo em conversas reais — vale a pena revisar esta tabela com frequência. <strong>Base</strong> = presente, <strong>Passado</strong> = Past Simple, <strong>Particípio</strong> = usado em tempos compostos (ex: have done, has gone).</p>
+      <table class="vocab-table"><thead><tr><th>Base</th><th>Passado</th><th>Particípio</th><th>Tradução</th></tr></thead><tbody>${irrRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--amber)">Referência</div>
+      <h2 class="block-title">Regra dos verbos regulares (-ed)</h2>
+      <p class="explain">A maioria dos verbos em inglês segue uma regra simples no passado, mas com três variações na escrita:</p>
+      <table class="vocab-table"><thead><tr><th>Regra</th><th>Exemplo</th></tr></thead><tbody>
+        <tr><td>Verbo termina em consoante → +ed</td><td class="mono">work → worked, play → played</td></tr>
+        <tr><td>Verbo termina em 'e' → +d</td><td class="mono">live → lived, like → liked</td></tr>
+        <tr><td>Consoante + 'y' → troca y por 'ied'</td><td class="mono">study → studied, cry → cried</td></tr>
+        <tr><td>Vogal curta + consoante → dobra a consoante + ed</td><td class="mono">stop → stopped, plan → planned</td></tr>
+      </tbody></table>
+      <p class="explain" style="margin-top:14px">A pronúncia do -ed muda conforme o som final do verbo: <strong>/t/</strong> depois de sons surdos (worked, watched), <strong>/d/</strong> depois de sons sonoros (played, called), e <strong>/ɪd/</strong> depois de t/d (wanted, needed).</p>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:#A6763B">Referência</div>
+      <h2 class="block-title">Verbos de estado (não usam -ing)</h2>
+      <p class="explain">Alguns verbos descrevem estados mentais, sentimentos ou posse — eles quase nunca aparecem no Present Continuous, mesmo falando do momento presente. É um dos erros mais comuns entre brasileiros aprendendo inglês.</p>
+      <table class="vocab-table"><thead><tr><th>Verbo</th><th>Tradução</th><th>✓ Correto</th><th>✗ Incorreto</th></tr></thead><tbody>${stateRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--coral)">Referência</div>
+      <h2 class="block-title">Verbos modais — quando usar cada um</h2>
+      <p class="explain">Modais mudam o "tom" de uma frase: obrigação, possibilidade, educação, hipótese. Nunca levam -s na terceira pessoa, e o verbo depois deles é sempre a forma base (sem 'to').</p>
+      <table class="vocab-table"><thead><tr><th>Modal</th><th>Uso principal</th><th>Exemplo</th><th>Quando usar</th></tr></thead><tbody>${modalRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--green)">Referência</div>
+      <h2 class="block-title">Phrasal verbs comuns</h2>
+      <p class="explain">Combinações de verbo + preposição que mudam completamente o significado. São essenciais para soar natural em inglês falado — nativos os usam o tempo todo.</p>
+      <table class="vocab-table"><thead><tr><th>Phrasal verb</th><th>Significado</th><th>Exemplo</th></tr></thead><tbody>${phrasalRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:#5A7A9E">Referência</div>
+      <h2 class="block-title">Falsos cognatos (false friends)</h2>
+      <p class="explain">Palavras que parecem óbvias por serem parecidas com o português, mas têm significado completamente diferente. Essa é uma das maiores fontes de mal-entendidos para brasileiros — vale muito a pena memorizar esta lista.</p>
+      <table class="vocab-table"><thead><tr><th>Palavra</th><th>Significado real</th><th>Cuidado</th></tr></thead><tbody>${falseCogRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:#8A5A9E">Referência</div>
+      <h2 class="block-title">Tempos verbais — visão geral comparativa</h2>
+      <p class="explain">Um resumo rápido dos tempos verbais estudados nas 30 aulas, lado a lado, para você comparar a estrutura e o uso de cada um.</p>
+      <table class="vocab-table"><thead><tr><th>Tempo verbal</th><th>Estrutura</th><th>Exemplo</th><th>Quando usar</th></tr></thead><tbody>${tenseRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--blue)">Referência</div>
+      <h2 class="block-title">Preposições de lugar e tempo — resumo</h2>
+      <p class="explain">As três preposições mais usadas do inglês, resumidas em uma tabela só. Se tiver dúvida na hora de escrever, volte aqui.</p>
+      <table class="vocab-table"><thead><tr><th>Preposição</th><th>Quando usar</th><th>Exemplos</th></tr></thead><tbody>${prepRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:#4A7A6E">Referência</div>
+      <h2 class="block-title">Verbos com preposições fixas</h2>
+      <p class="explain">Muitos verbos em inglês "exigem" uma preposição específica depois deles — e ela nem sempre é a tradução literal do português. Ex: em português "depender <strong>de</strong>", mas em inglês "depend <strong>on</strong>" (não "of"). Vale memorizar o par verbo+preposição como se fosse uma unidade só.</p>
+      <table class="vocab-table"><thead><tr><th>Verbo + preposição</th><th>Tradução</th><th>Exemplo</th></tr></thead><tbody>${depPrepRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:#9E6A3A">Referência</div>
+      <h2 class="block-title">Expressões idiomáticas comuns</h2>
+      <p class="explain">Idioms são expressões cujo significado não se explica pela tradução literal das palavras — são usadas o tempo todo por nativos e ajudam muito a soar natural. Não traduza ao pé da letra: aprenda o significado como um todo.</p>
+      <table class="vocab-table"><thead><tr><th>Expressão</th><th>Significado</th><th>Quando usar</th></tr></thead><tbody>${idiomRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block"><button class="nav-buttons" style="background:var(--paper);border:1px solid var(--line);padding:10px 18px;border-radius:8px;cursor:pointer;font-size:.85rem;" onclick="closeVerbGuide()">← Voltar para as aulas</button></div>
+  `;
+}
+
 /* ============ ESTADO / PROGRESSO (localStorage) ============ */
 function loadState(){
   try{ const raw = localStorage.getItem('rotina-en-state'); if(raw) return JSON.parse(raw); }catch(e){}
@@ -764,7 +999,10 @@ function renderLessonBody(){
     const opts = c.opts.map(([t,ok]) => `<label><input type="radio" name="l-${currentDay}-${idx}" value="${ok?'correct':'wrong'}"> ${t}</label>`).join('');
     return `<div class="q-choice"><p>${idx+1}. ${c.q}</p>${opts}</div>`;
   }).join('');
-  let vocabHtml = d.vocab.map(v => `<span class="mono chip">${v}</span>`).join(' ');
+  let vocabHtml = d.vocab.map(v => {
+    const t = dictionary[v.toLowerCase()] || '—';
+    return `<tr><td class="mono">${v}</td><td>${t}</td></tr>`;
+  }).join('');
 
   document.getElementById('lessonContent').innerHTML = `
     <div class="lesson-block">
@@ -818,7 +1056,8 @@ function renderLessonBody(){
       <div class="block-tag" style="background:#A6763B">Bloco 3 · Leitura</div>
       <h2 class="block-title">Texto do dia</h2>
       <p class="reading-text">${d.readingHtml}</p>
-      <p class="explain">Palavras novas: ${vocabHtml}</p>
+      <h3 class="mini-h">Vocabulário desta aula</h3>
+      <table class="vocab-table"><thead><tr><th>Inglês</th><th>Português</th></tr></thead><tbody>${vocabHtml}</tbody></table>
     </div>
 
     <div class="lesson-block">
@@ -966,7 +1205,158 @@ const dictionary = {
   "usually":"geralmente","sometimes":"às vezes","can":"poder, conseguir","must":"dever (obrigação)","should":"deveria (conselho)",
   "went":"foi (passado de go)","was":"era/estava","were":"eram/estavam","going":"indo","weather":"clima","summer":"verão",
   "winter":"inverno","birthday":"aniversário","market":"mercado","trip":"viagem","work":"trabalho","study":"estudar",
-  "relatives":"parentes","neighbors":"vizinhos","between":"entre","behind":"atrás de","bill":"conta (restaurante)"
+  "relatives":"parentes","neighbors":"vizinhos","between":"entre","behind":"atrás de","bill":"conta (restaurante)",
+  "abroad":"no exterior",
+  "active":"ativo(a)",
+  "advice":"conselho",
+  "after":"depois",
+  "amazing":"incrível",
+  "anything else":"mais alguma coisa",
+  "arrive":"chegar",
+  "asks":"pergunta",
+  "aunts":"tias",
+  "backpack":"mochila",
+  "bank":"banco",
+  "beautiful":"lindo(a)",
+  "bench":"banco (assento)",
+  "blocks":"quadras",
+  "break":"pausa, intervalo",
+  "breakfast":"café da manhã",
+  "brothers":"irmãos",
+  "busy":"ocupado(a)",
+  "buy":"comprar",
+  "call":"ligar, chamar",
+  "called":"ligou, chamou",
+  "calm":"calmo(a)",
+  "cat":"gato",
+  "celebrate":"celebrar",
+  "cities":"cidades",
+  "cleanest":"mais limpa",
+  "cloudy":"nublado",
+  "coin":"moeda",
+  "confident":"confiante",
+  "corner":"esquina",
+  "course":"curso",
+  "cousins":"primos",
+  "creative":"criativo(a)",
+  "decided":"decidiu, decidido",
+  "dedicated":"dedicado(a)",
+  "definitely":"definitivamente",
+  "desk":"mesa (escrivaninha)",
+  "dinner":"jantar",
+  "eat out":"comer fora",
+  "eggs":"ovos",
+  "enjoy":"aproveitar, curtir",
+  "enjoying":"aproveitando",
+  "enough":"suficiente",
+  "entrance":"entrada",
+  "especially":"especialmente",
+  "evening":"noite (início)",
+  "event":"evento",
+  "excited":"animado(a), empolgado(a)",
+  "exhausted":"exausto(a)",
+  "fast food":"comida rápida",
+  "finished":"terminou, terminado",
+  "finishes":"termina",
+  "floor":"andar, chão",
+  "forget":"esquecer",
+  "garden":"jardim",
+  "grandmother":"avó",
+  "guests":"convidados",
+  "guitar":"violão, guitarra",
+  "hard worker":"trabalhador(a) esforçado(a)",
+  "harder":"mais difícil",
+  "honor":"honra",
+  "hour":"hora",
+  "improving":"melhorando",
+  "instead":"em vez disso",
+  "instrument":"instrumento",
+  "interesting":"interessante",
+  "invite":"convidar",
+  "jacket":"jaqueta",
+  "january":"janeiro",
+  "kind":"gentil, bondoso(a)",
+  "learning":"aprendendo",
+  "leaves":"sai, parte (verbo)",
+  "left":"restante; saiu (passado de leave)",
+  "loves":"ama, adora",
+  "meals":"refeições",
+  "meeting":"reunião",
+  "memories":"memórias",
+  "mountain":"montanha",
+  "native speaker":"falante nativo",
+  "nearby":"por perto",
+  "noise":"barulho",
+  "noon":"meio-dia",
+  "notebook":"caderno",
+  "obligation":"obrigação",
+  "once":"uma vez",
+  "order":"pedido, pedir",
+  "ordinal":"ordinal (número)",
+  "organized":"organizado(a)",
+  "outside":"lá fora",
+  "party":"festa",
+  "peaceful":"pacífico(a), tranquilo(a)",
+  "people":"pessoas",
+  "pet":"animal de estimação",
+  "pharmacy":"farmácia",
+  "photo":"foto",
+  "plans":"planos",
+  "post office":"correios",
+  "practice":"prática, praticar",
+  "prediction":"previsão",
+  "progress":"progresso",
+  "proud":"orgulhoso(a)",
+  "raining":"chovendo",
+  "reach":"alcançar, chegar a",
+  "relaxing":"relaxante",
+  "report":"relatório",
+  "rest":"descansar, descanso",
+  "reunion":"reunião (de família/amigos)",
+  "routine":"rotina",
+  "salad":"salada",
+  "satisfied":"satisfeito(a)",
+  "scarf":"cachecol, echarpe",
+  "season":"estação (do ano)",
+  "shares":"compartilha",
+  "shelf":"prateleira",
+  "siblings":"irmãos (de modo geral)",
+  "sing":"cantar",
+  "skip":"pular, não fazer",
+  "sleep":"dormir",
+  "snacks":"lanches, salgadinhos",
+  "snow":"neve",
+  "souvenir":"lembrança (de viagem)",
+  "souvenirs":"lembranças (de viagem)",
+  "special":"especial",
+  "spicy":"picante",
+  "starts":"começa",
+  "straight":"reto, direto",
+  "stranger":"desconhecido(a), estranho(a)",
+  "studied":"estudou, estudado",
+  "sunny":"ensolarado",
+  "support":"apoio, apoiar",
+  "teaches":"ensina",
+  "team":"equipe, time",
+  "these days":"atualmente, hoje em dia",
+  "tiring":"cansativo(a)",
+  "toast":"torrada",
+  "together":"juntos",
+  "tonight":"hoje à noite",
+  "uncles":"tios",
+  "vacation":"férias",
+  "waiter":"garçom",
+  "wakes up":"acorda",
+  "walk":"caminhar, caminhada",
+  "walked":"caminhou",
+  "watched":"assistiu",
+  "weekdays":"dias úteis, dias de semana",
+  "weekend":"fim de semana",
+  "weekends":"fins de semana",
+  "whose":"de quem",
+  "windy":"ventoso, com vento",
+  "wonderful":"maravilhoso(a)",
+  "worked":"trabalhou"
 };
 const dictInput = document.getElementById('dictInput'); const dictResult = document.getElementById('dictResult');
 let dictTimeout;
@@ -999,6 +1389,23 @@ document.getElementById('startBtn').addEventListener('click', () => {
   document.getElementById('startBtn').textContent = isHidden ? 'Ocultar aula' : 'Começar aula';
   if(isHidden){ content.scrollIntoView({behavior:'smooth', block:'start'}); }
 });
+document.getElementById('verbGuideBtn').addEventListener('click', () => {
+  document.getElementById('dayEyebrow').textContent = 'Recurso de consulta';
+  document.getElementById('lessonTitle').textContent = 'Guia de Verbos';
+  document.getElementById('lessonSub').textContent = 'Tabelas de referência para consultar sempre que precisar — não faz parte da trilha diária.';
+  document.querySelector('.dial-row').style.display = 'none';
+  document.getElementById('startBtn').style.display = 'none';
+  const content = document.getElementById('lessonContent');
+  content.innerHTML = buildVerbGuideHtml();
+  content.style.display = 'block';
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+function closeVerbGuide(){
+  document.querySelector('.dial-row').style.display = 'flex';
+  document.getElementById('startBtn').style.display = 'inline-block';
+  selectDay(currentDay);
+}
+
 renderDial(); renderStreak(); selectDay(currentDay);
 </script>
 </body>
