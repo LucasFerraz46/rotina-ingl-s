@@ -1,1 +1,1523 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rotina — Inglês todo dia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F7ECE7; --paper: #FFF9F6; --ink: #331F1A; --ink-soft: #8A6A61; --line: #EAD3CA;
+    --blue: #B23A2E; --amber: #C98F3F; --coral: #7A2620; --green: #4A7A45; --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Work Sans', sans-serif; -webkit-font-smoothing:antialiased; }
+  h1,h2,h3{ font-family:'Fraunces', serif; font-weight:600; margin:0; }
+  .mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:.02em; }
+  .app{ display:grid; grid-template-columns: 280px 1fr; min-height:100vh; }
+  @media (max-width: 860px){ .app{ grid-template-columns: 1fr; } .sidebar{ position:static; border-right:none; border-bottom:1px solid var(--line); height:auto; } }
+  .sidebar{ background:var(--paper); border-right:1px solid var(--line); padding:28px 22px; position:sticky; top:0; height:100vh; overflow-y:auto; }
+  .brand{ display:flex; align-items:baseline; gap:8px; margin-bottom:6px; }
+  .brand h1{ font-size:1.4rem; }
+  .brand span{ color:var(--coral); font-family:'Fraunces', serif; font-style:italic; font-size:1.4rem; }
+  .tagline{ color:var(--ink-soft); font-size:.85rem; margin-bottom:28px; }
+  .streak{ display:flex; align-items:center; gap:10px; background:#F5DED4; border:1px solid var(--line); border-radius:var(--radius); padding:12px 14px; margin-bottom:26px; }
+  .streak .num{ font-family:'Fraunces', serif; font-size:1.6rem; color:var(--amber); line-height:1;}
+  .streak .label{ font-size:.72rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em;}
+  .nav-label{ font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); margin: 18px 0 10px; display:flex; justify-content:space-between; }
+  .day-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; max-height:480px; overflow-y:auto; }
+  .day-item{ display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:10px; cursor:pointer; font-size:.92rem; color:var(--ink-soft); border:none; background:none; width:100%; text-align:left; font-family:'Work Sans', sans-serif; }
+  .day-item .dot{ width:8px; height:8px; border-radius:50%; background:var(--line); flex-shrink:0; }
+  .day-item.active{ background:#F6E1D9; color:var(--ink); font-weight:500; }
+  .day-item.active .dot{ background:var(--blue); }
+  .day-item.done .dot{ background:#A6763B; }
+  .day-item .n{ font-family:'IBM Plex Mono', monospace; font-size:.78rem; color:var(--ink-soft); min-width:22px; }
+  .day-item .topic{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  main{ padding:44px 48px 80px; max-width:920px; }
+  @media (max-width: 640px){ main{ padding:28px 20px 60px; } }
+  .lesson-header{ margin-bottom:34px; }
+  .eyebrow{ color:var(--ink-soft); font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+  .lesson-header h2{ font-size:2.1rem; }
+  .lesson-sub{ color:var(--ink-soft); margin-top:8px; font-size:1rem; }
+  .dict-box{ display:flex; gap:16px; align-items:flex-start; background:var(--paper); border:1.5px solid var(--blue); border-radius:16px; padding:18px 22px; margin-bottom:24px; }
+  .dict-icon{ font-size:1.3rem; margin-top:6px; }
+  .dict-body{ flex:1; }
+  .dict-input{ width:100%; border:none; border-bottom:2px solid var(--line); font-family:'Fraunces', serif; font-size:1.3rem; padding:6px 2px; background:transparent; color:var(--ink); }
+  .dict-input:focus{ outline:none; border-bottom-color:var(--blue); }
+  .dict-result{ margin-top:10px; font-size:.92rem; color:var(--ink-soft); min-height:1.3em; }
+  .dict-result .found{ color:var(--ink); }
+  .dict-result .found strong{ color:var(--blue); font-family:'Fraunces', serif; font-size:1.05rem; }
+  .dict-result .not-found{ color:var(--coral); }
+  .dict-result .loading{ color:var(--amber); }
+  .dict-result .src{ color:var(--ink-soft); font-size:.78rem; font-style:italic; }
+  .dial-row{ display:flex; align-items:center; gap:28px; background:var(--paper); border:1px solid var(--line); border-radius:20px; padding:24px 28px; margin-bottom:40px; }
+  @media (max-width:640px){ .dial-row{ flex-direction:column; align-items:flex-start; } }
+  .dial-wrap{ flex-shrink:0; }
+  .dial-legend{ display:flex; flex-direction:column; gap:10px; }
+  .legend-item{ display:flex; align-items:center; gap:9px; font-size:.9rem; }
+  .swatch{ width:11px; height:11px; border-radius:3px; flex-shrink:0; }
+  .legend-time{ color:var(--ink-soft); margin-left:auto; font-family:'IBM Plex Mono', monospace; font-size:.8rem; }
+  @media (max-width:640px){ .legend-time{ margin-left:0; } }
+  .start-btn{ margin-bottom:24px; background:var(--ink); color:var(--paper); border:none; padding:14px 26px; border-radius:10px; font-size:.95rem; font-weight:500; cursor:pointer; font-family:'Work Sans', sans-serif; }
+  .start-btn:hover{ background:#4A2A22; }
+  .start-btn:focus-visible, .day-item:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+  .lesson-block{ background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:28px 30px; margin-bottom:24px; }
+  .block-tag{ display:inline-block; color:#fff; font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; padding:5px 12px; border-radius:20px; margin-bottom:14px; }
+  .block-title{ font-size:1.5rem; margin-bottom:14px; }
+  .explain{ color:var(--ink-soft); line-height:1.65; font-size:.95rem; margin:0 0 16px; }
+  .mini-h{ font-family:'Fraunces', serif; font-size:1.05rem; margin:22px 0 12px; }
+  .tip-box{ background:#FBF0DE; border-left:3px solid var(--amber); border-radius:8px; padding:12px 16px; font-size:.9rem; color:var(--ink); margin:0 0 18px; }
+  .tip-box strong{ color:var(--amber); }
+  .mistake-box{ background:#FBE9E5; border-left:3px solid var(--coral); border-radius:8px; padding:12px 16px; font-size:.9rem; color:var(--ink); margin:0 0 10px; }
+  .mistake-box .wrong{ color:var(--coral); text-decoration:line-through; }
+  .mistake-box .right{ color:var(--green); font-weight:600; }
+  .reorder-box{ background:#FBF3EF; border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:10px; }
+  .reorder-words{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+  .reorder-words .chip{ background:#fff; border:1px solid var(--line); color:var(--ink); }
+  .reorder-box input{ width:100%; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:.92rem; font-family:'Work Sans', sans-serif; margin-bottom:8px; }
+  .chip{ display:inline-block; background:#F3E4DC; color:var(--coral); padding:3px 9px; border-radius:6px; font-size:.82rem; margin:2px 3px 2px 0; }
+  .example-list{ list-style:none; margin:0 0 18px; padding:0; display:flex; flex-direction:column; gap:8px; }
+  .example-list li{ display:flex; justify-content:space-between; gap:16px; font-size:.94rem; padding:8px 12px; background:#FBF3EF; border-radius:8px; flex-wrap:wrap; }
+  .example-list .en{ color:var(--ink); }
+  .example-list .pt{ color:var(--ink-soft); font-style:italic; }
+  .quiz .q{ margin-bottom:12px; font-size:.98rem; }
+  .blank{ width:70px; text-align:center; font-family:'IBM Plex Mono', monospace; border:1px solid var(--line); border-radius:6px; padding:5px 6px; font-size:.9rem; background:#fff; }
+  .blank.correct{ border-color:var(--green); background:#EAF3E8; }
+  .blank.wrong{ border-color:var(--coral); background:#FBE9E5; }
+  .q-choice{ margin-bottom:14px; font-size:.95rem; }
+  .q-choice label{ display:inline-flex; align-items:center; gap:6px; margin-right:18px; color:var(--ink-soft); }
+  .check-btn{ background:var(--blue); color:#fff; border:none; padding:9px 18px; border-radius:8px; font-size:.85rem; cursor:pointer; font-family:'Work Sans', sans-serif; margin-top:6px; }
+  .quiz-feedback{ margin-top:10px; font-size:.9rem; font-weight:500; min-height:1.2em; }
+  .dialogue{ display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+  .line{ display:flex; align-items:center; gap:12px; font-size:.94rem; }
+  .play-btn{ width:32px; height:32px; border-radius:50%; border:1px solid var(--line); background:#fff; cursor:pointer; flex-shrink:0; color:var(--blue); font-size:.8rem; }
+  .play-btn-wide{ background:var(--paper); border:1px solid var(--blue); color:var(--blue); padding:9px 16px; border-radius:8px; cursor:pointer; font-size:.85rem; font-family:'Work Sans', sans-serif; }
+  .reading-text{ font-size:1.05rem; line-height:1.9; margin-bottom:14px; }
+  .reading-text mark{ background:#F5DDA0; padding:1px 3px; border-radius:3px; }
+  .vocab-table{ width:100%; border-collapse:collapse; font-size:.92rem; margin-top:8px; }
+  .vocab-table th{ text-align:left; color:var(--ink-soft); font-weight:500; font-size:.76rem; text-transform:uppercase; letter-spacing:.04em; padding:7px 10px; border-bottom:1px solid var(--line); }
+  .vocab-table td{ padding:8px 10px; border-bottom:1px solid var(--line); }
+  .vocab-table td:first-child{ font-family:'IBM Plex Mono', monospace; color:var(--blue); }
+  .challenge{ background:#FBF3EF; border:1px dashed var(--line); border-radius:10px; padding:14px 16px; margin-bottom:10px; }
+  .challenge p{ margin:0 0 8px; font-size:.93rem; }
+  .challenge input{ width:100%; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:.92rem; font-family:'Work Sans', sans-serif; margin-bottom:8px; }
+  .reveal-btn{ background:none; border:1px solid var(--amber); color:var(--amber); padding:6px 14px; border-radius:8px; font-size:.8rem; cursor:pointer; font-family:'Work Sans', sans-serif; }
+  .reveal-answer{ margin-top:8px; font-size:.9rem; color:var(--green); display:none; }
+  .speak-card{ background:#FBF3EF; border:1px solid var(--line); border-radius:14px; padding:20px 22px; }
+  .target-phrase{ font-family:'Fraunces', serif; font-size:1.2rem; margin-bottom:16px; }
+  .speak-controls{ display:flex; gap:12px; flex-wrap:wrap; }
+  .record-btn{ background:var(--coral); color:#fff; border:none; padding:9px 18px; border-radius:8px; cursor:pointer; font-size:.85rem; font-family:'Work Sans', sans-serif; }
+  .record-btn.recording{ background:#8C231C; }
+  .speak-result{ margin-top:14px; font-size:.92rem; color:var(--ink-soft); }
+  .complete-row{ display:flex; align-items:center; gap:16px; margin-top:8px; flex-wrap:wrap; }
+  .complete-btn{ background:var(--green); color:#fff; border:none; padding:13px 24px; border-radius:10px; font-size:.92rem; font-weight:500; cursor:pointer; font-family:'Work Sans', sans-serif; }
+  .complete-btn:disabled{ background:#B9C2AE; cursor:default; }
+  .complete-msg{ font-size:.88rem; color:var(--ink-soft); }
+  .nav-buttons{ display:flex; gap:10px; margin-top:22px; }
+  .nav-buttons button{ background:var(--paper); border:1px solid var(--line); padding:10px 18px; border-radius:8px; cursor:pointer; font-size:.85rem; color:var(--ink); font-family:'Work Sans', sans-serif; }
+  .nav-buttons button:hover{ border-color:var(--blue); }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><h1>Rotina</h1><span>en</span></div>
+    <p class="tagline">50 minutos por dia. Nível A1 → A2.</p>
+    <div class="streak">
+      <div class="num mono" id="streakNum">0</div>
+      <div class="label">dias seguidos</div>
+    </div>
+    <div class="nav-label"><span>Sua trilha</span><span id="progressLabel" class="mono">0/30</span></div>
+    <ul class="day-list" id="dayList"></ul>
+    <button id="verbGuideBtn" class="day-item" style="margin-top:16px;border-top:1px solid var(--line);padding-top:16px;font-weight:500;">📖 Guia de Verbos (consulta)</button>
+  </aside>
+  <main>
+    <div class="dict-box">
+      <div class="dict-icon">🔎</div>
+      <div class="dict-body">
+        <input type="text" id="dictInput" class="dict-input" placeholder="Digite uma palavra em inglês..." autocomplete="off">
+        <div class="dict-result" id="dictResult">Traduzo qualquer palavra em inglês — na hora.</div>
+      </div>
+    </div>
+    <div class="lesson-header">
+      <div class="eyebrow" id="dayEyebrow">Dia 1 · Nível A1</div>
+      <h2 id="lessonTitle">Greetings &amp; Introductions</h2>
+      <p class="lesson-sub" id="lessonSub"></p>
+    </div>
+    <div class="dial-row">
+      <div class="dial-wrap">
+        <svg id="dial" width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#E4E7DC" stroke-width="12"/>
+          <g id="dialArcs"></g>
+          <text x="60" y="56" text-anchor="middle" font-family="Fraunces, serif" font-size="22" fill="#331F1A">50</text>
+          <text x="60" y="74" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="10" fill="#8A6A61">minutos</text>
+        </svg>
+      </div>
+      <div class="dial-legend">
+        <div class="legend-item"><span class="swatch" style="background:#B23A2E"></span>Gramática<span class="legend-time">20 min</span></div>
+        <div class="legend-item"><span class="swatch" style="background:#C98F3F"></span>Escuta &amp; leitura<span class="legend-time">20 min</span></div>
+        <div class="legend-item"><span class="swatch" style="background:#7A2620"></span>Expressão oral<span class="legend-time">10 min</span></div>
+      </div>
+    </div>
+    <button class="start-btn" id="startBtn">Começar aula</button>
+    <section id="lessonContent" style="display:none;"></section>
+  </main>
+</div>
+<script>
+/* ============ CONTEÚDO DAS 30 AULAS (versão expandida) ============ */
+const lessons = {
+1:{ topic:"Alfabeto e primeiras palavras", title:"The Alphabet & First Words", sub:"Começando do zero: letras, sons e cortesia básica.",
+  grammarTitle:"O alfabeto em inglês e palavras de cortesia",
+  grammarHtml:"O inglês usa as mesmas 26 letras do português, mas muitos sons são diferentes. Antes de qualquer gramática, você precisa das palavras que abrem e fecham qualquer conversa: cumprimentos e cortesia. Essas palavras não mudam nunca, então são o primeiro degrau real do idioma.",
+  tip:"A letra 'H' em inglês tem som (parecido com um 'RR' fraco saindo pela boca, como em 'hello'), diferente do português onde H é mudo. E o 'R' em inglês nunca vibra como em 'carro' — é mais suave, quase como uma vogal.",
+  examples:[["Hello! / Hi!","Olá! / Oi!"],["Good morning!","Bom dia!"],["Good afternoon!","Boa tarde!"],["Good night!","Boa noite! (despedida)"],["Please.","Por favor."],["Thank you very much.","Muito obrigado(a)."],["You're welcome.","De nada."],["Excuse me.","Com licença / desculpe (para chamar atenção)."],["I'm sorry.","Eu sinto muito / desculpe (para erro/pesar)."],["See you later!","Até mais!"]],
+  fill:[["","Please"," , can you help me?"],["Thank you "," very"," much."],["","Excuse"," me, where is the bank?"],["I'm "," sorry"," for being late."],["","Good"," morning, everyone!"]],
+  choice:[{q:"Usado para pedir passagem ou chamar atenção de alguém:",opts:[["Excuse me",1],["I'm sorry",0]]},{q:"Usado quando você cometeu um erro ou magoou alguém:",opts:[["Excuse me",0],["I'm sorry",1]]},{q:"Resposta educada para 'Thank you':",opts:[["You're welcome",1],["Please",0]]},{q:"Saudação usada à noite, ao chegar (não ao sair):",opts:[["Good night",0],["Good evening",1]]}],
+  challenge:[["Muito obrigado, e até mais!","Thank you very much, and see you later!"],["Com licença, você pode me ajudar, por favor?","Excuse me, can you help me, please?"],["Bom dia! Como você está?","Good morning! How are you?"]],
+  dialogue:[["Anna","Good morning! How are you today?"],["Marcos","Good morning, Anna! I'm fine, thank you. And you?"],["Anna","I'm great, thanks! Excuse me, I need to go now."],["Marcos","No problem! See you later."],["Anna","Thank you, see you soon!"],["Marcos","You're welcome, bye!"]],
+  listenQ:[{q:"How does Marcos feel today?",opts:[["Fine",1],["Tired",0]]},{q:"Why does Anna say 'Excuse me'?",opts:[["She needs to leave",1],["She made a mistake",0]]},{q:"How do they say goodbye?",opts:[["See you later / See you soon",1],["Good night",0]]}],
+  readingHtml:"Every day, Marcos says <mark>good morning</mark> to his neighbors. He always says <mark>please</mark> and <mark>thank you</mark>, because good manners matter everywhere. When he makes a mistake, he says <mark>I'm sorry</mark>. When he needs attention, he says <mark>excuse me</mark>.",
+  vocab:["hello","please","thank you","sorry","excuse me","good morning","you're welcome","see you later"],
+  speak:"Good morning! Thank you very much, and see you later!" },
+
+2:{ topic:"Números e cores", title:"Numbers & Colors", sub:"Contando de 0 a 12 e nomeando cores básicas.",
+  grammarTitle:"Números (0-12) e cores",
+  grammarHtml:"Números e cores são blocos básicos de qualquer frase — você vai usá-los para dizer idade, horas, preços, quantidades e para descrever qualquer objeto. Aprenda-os de cor (literalmente!), porque eles aparecem em praticamente toda conversa do dia a dia.",
+  tip:"Cuidado com a pronúncia: 'thirteen' (13) e 'thirty' (30) soam parecidos para iniciantes — a diferença está na sílaba tônica. Em '13', o final '-teen' é mais forte; em '30', o começo 'thir-' é mais forte.",
+  examples:[["I have one brother.","Eu tenho um irmão."],["She has two cats.","Ela tem dois gatos."],["My favorite color is blue.","Minha cor favorita é azul."],["The apple is red.","A maçã é vermelha."],["I see five birds.","Eu vejo cinco pássaros."],["The sky is blue today.","O céu está azul hoje."],["He has ten dollars.","Ele tem dez dólares."],["This shirt is green.","Esta camisa é verde."]],
+  fill:[["I have "," three"," books."],["The car is "," red","."],["She has "," two"," brothers."],["My favorite color is "," blue","."],["I count from "," zero"," to ten."]],
+  choice:[{q:"7 in English:",opts:[["seven",1],["six",0]]},{q:"The color of grass:",opts:[["green",1],["yellow",0]]},{q:"9 in English:",opts:[["nine",1],["five",0]]},{q:"The color of the sky:",opts:[["blue",1],["brown",0]]}],
+  challenge:[["Eu tenho três maçãs vermelhas.","I have three red apples."],["Qual é a sua cor favorita?","What is your favorite color?"],["Ela tem cinco livros azuis.","She has five blue books."]],
+  dialogue:[["Marcos","How many brothers do you have?"],["Anna","I have one brother and two sisters."],["Marcos","What's your favorite color?"],["Anna","I like blue. What about you?"],["Marcos","I like green and red."],["Anna","Nice! Green is a beautiful color."]],
+  listenQ:[{q:"How many brothers does Anna have?",opts:[["One",1],["Two",0]]},{q:"What is Anna's favorite color?",opts:[["Blue",1],["Green",0]]},{q:"What colors does Marcos like?",opts:[["Green and red",1],["Blue and yellow",0]]}],
+  readingHtml:"Anna has one <mark>brother</mark> and two sisters — three siblings in total. Her favorite <mark>color</mark> is <mark>blue</mark>, like the sky. Marcos likes <mark>green</mark> and <mark>red</mark>. Together they counted <mark>ten</mark> colorful birds in the park.",
+  vocab:["number","color","red","blue","green","one","five","ten"],
+  speak:"I have three red apples and two blue books." },
+
+3:{ topic:"Pronomes pessoais e sala de aula", title:"Personal Pronouns & Classroom", sub:"I, you, he, she... e o vocabulário básico da sala de aula.",
+  grammarTitle:"Pronomes pessoais",
+  grammarHtml:"Pronomes pessoais substituem nomes de pessoas ou coisas: <strong>I</strong> (eu), <strong>you</strong> (você), <strong>he</strong> (ele), <strong>she</strong> (ela), <strong>it</strong> (ele/ela para objetos e animais), <strong>we</strong> (nós), <strong>they</strong> (eles/elas). Eles são a base de toda frase em inglês — sem eles, não dá para conjugar nenhum verbo corretamente.",
+  tip:"Em inglês, 'you' serve tanto para 'você' quanto para 'vocês' — não existe distinção como em português. O contexto é que mostra se é uma pessoa ou um grupo.",
+  examples:[["I am a student.","Eu sou estudante."],["You are my friend.","Você é meu amigo."],["He is tall.","Ele é alto."],["She is smart.","Ela é inteligente."],["It is a pen.","Isso é uma caneta."],["We are classmates.","Nós somos colegas de classe."],["They are teachers.","Eles são professores."]],
+  fill:[["","I"," am a student."],["","She"," is smart."],["","It"," is a pen."],["","We"," are classmates."],["","They"," are teachers."]],
+  choice:[{q:"Substitui 'Marcos e Anna' (duas pessoas):",opts:[["they",1],["it",0]]},{q:"Substitui um objeto, como 'a book':",opts:[["it",1],["he",0]]},{q:"Substitui 'você e seus amigos':",opts:[["you",1],["I",0]]}],
+  challenge:[["Ela é minha professora, e ele é meu colega.","She is my teacher, and he is my classmate."],["Isto é um lápis, e aquilo é uma cadeira.","This is a pencil, and that is a chair."]],
+  dialogue:[["Anna","Is this your pen?"],["Marcos","Yes, it is. And that is my pencil."],["Anna","Where is the table?"],["Marcos","It's next to the window, near the door."],["Anna","Great, let's sit at the table."],["Marcos","Sure, this classroom is nice."]],
+  listenQ:[{q:"Whose pen is it?",opts:[["Marcos's",1],["Anna's",0]]},{q:"Where is the table?",opts:[["Next to the window",1],["Near the door only",0]]},{q:"Where will they sit?",opts:[["At the table",1],["On the chair",0]]}],
+  readingHtml:"This is Marcos's <mark>pen</mark>, and that is his <mark>pencil</mark>. The <mark>table</mark> is next to the <mark>window</mark>, near the <mark>door</mark>. Every <mark>classroom</mark> needs a good table and comfortable chairs for students.",
+  vocab:["pen","pencil","table","chair","door","window","classroom"],
+  speak:"This is my pen, and that is your chair." },
+
+4:{ topic:"To be & saudações", title:"Greetings & Introductions", sub:"O verbo to be e como se apresentar.",
+  grammarTitle:"O verbo to be",
+  grammarHtml:"Em português usamos <strong>ser</strong> ou <strong>estar</strong>. Em inglês, um único verbo faz os dois papéis: <strong>to be</strong> (am/is/are). É o verbo mais usado do idioma — aparece em apresentações, descrições, sentimentos e no tempo.",
+  tip:"Contrações são essenciais para soar natural: I'm, you're, he's, she's, we're, they're. Nativos quase nunca falam 'I am' completo em conversas informais.",
+  examples:[["I am Marcos.","Eu sou o Marcos."],["She is happy.","Ela está feliz."],["We are friends.","Nós somos amigos."],["It is Monday today.","Hoje é segunda-feira."],["They are not ready.","Eles não estão prontos."],["Am I late?","Eu estou atrasado?"]],
+  fill:[["I ","am"," Brazilian."],["My sister ","is"," a doctor."],["You and I ","are"," classmates."],["It ","is"," cold today."],["We ","are"," at home."]],
+  choice:[{q:"She ___ my friend.",opts:[["is",1],["are",0],["am",0]]},{q:"We ___ happy today.",opts:[["is",0],["are",1],["am",0]]},{q:"___ you a teacher?",opts:[["Are",1],["Is",0],["Am",0]]}],
+  challenge:[["Eu sou estudante e ela é professora.","I am a student and she is a teacher."],["Eles não estão em casa agora.","They are not at home now."]],
+  dialogue:[["Anna","Hi! My name is Anna. What is your name?"],["Marcos","Hello Anna, I am Marcos. Nice to meet you."],["Anna","Nice to meet you too. Are you a student?"],["Marcos","Yes, I am. I am from Brazil."],["Anna","That's great! Is this your first time in Canada?"],["Marcos","Yes, it is. I am very excited."]],
+  listenQ:[{q:"What is the woman's name?",opts:[["Marcos",0],["Anna",1]]},{q:"Where is Marcos from?",opts:[["Brazil",1],["Portugal",0]]},{q:"Is this Marcos's first time in Canada?",opts:[["Yes",1],["No",0]]}],
+  readingHtml:"My name is <strong>Marcos</strong>. I <mark>am</mark> from Brazil. I <mark>am</mark> a student. My friend <mark>is</mark> Anna. She <mark>is</mark> from Canada. We <mark>are</mark> classmates. This <mark>is</mark> my first trip abroad, and I <mark>am</mark> very happy to be here.",
+  vocab:["friend","classmate","student","from","abroad","excited"],
+  speak:"Hi! My name is Marcos. I am from Brazil, and I am very excited." },
+
+5:{ topic:"Preposições de lugar", title:"In, On, At", sub:"Como descrever onde as coisas estão.",
+  grammarTitle:"Preposições in / on / at",
+  grammarHtml:"Usamos <strong>in</strong> para espaços fechados e áreas grandes (cidades, países, salas), <strong>on</strong> para superfícies e ruas, e <strong>at</strong> para pontos específicos (endereços, eventos).",
+  tip:"Pense em círculos: 'in' é dentro de um espaço, 'on' é sobre uma superfície, 'at' é um ponto exato no mapa.",
+  examples:[["The book is on the table.","O livro está na mesa."],["Anna is in the kitchen.","Anna está na cozinha."],["Marcos is at school.","Marcos está na escola."],["The keys are in my bag.","As chaves estão na minha bolsa."],["I live in São Paulo.","Eu moro em São Paulo."],["Meet me at the entrance.","Me encontre na entrada."]],
+  fill:[["The cat is "," on"," the sofa."],["We are "," in"," Brazil."],["She is "," at"," the door."],["He lives "," in"," Canada."],["The party is "," at"," 8pm."]],
+  choice:[{q:"My phone is ___ the table.",opts:[["on",1],["in",0]]},{q:"They are ___ the classroom.",opts:[["at",0],["in",1]]},{q:"See you ___ the bus stop.",opts:[["at",1],["on",0]]}],
+  challenge:[["As chaves estão na mesa da cozinha.","The keys are on the kitchen table."],["Nos encontramos na entrada da escola.","We meet at the school entrance."]],
+  dialogue:[["Anna","Where is the coffee shop?"],["Marcos","It's on Main Street, near the park."],["Anna","Is it in the city center?"],["Marcos","Yes, it's at the corner of Main and 2nd."],["Anna","Perfect, I'll meet you there at noon."],["Marcos","Sounds good, see you at the coffee shop!"]],
+  listenQ:[{q:"Where is the coffee shop?",opts:[["On Main Street",1],["On Park Street",0]]},{q:"Is it in the city center?",opts:[["Yes",1],["No",0]]},{q:"What time will they meet?",opts:[["Noon",1],["8am",0]]}],
+  readingHtml:"Marcos's house is <mark>in</mark> São Paulo. His room is <mark>on</mark> the second floor. His books are <mark>on</mark> the shelf, and his backpack is <mark>at</mark> the door, ready for school. Every morning, he waits <mark>at</mark> the bus stop <mark>on</mark> the corner.",
+  vocab:["shelf","backpack","corner","floor","entrance","nearby"],
+  speak:"The coffee shop is on Main Street, at the corner near the park." },
+
+6:{ topic:"Artigos a/an/the", title:"A, An, The", sub:"Quando usar cada artigo em inglês.",
+  grammarTitle:"Artigos definidos e indefinidos",
+  grammarHtml:"Use <strong>a</strong> antes de som de consoante, <strong>an</strong> antes de som de vogal, e <strong>the</strong> quando o ouvinte já sabe exatamente do que se fala (algo específico ou já mencionado antes).",
+  tip:"O que importa é o SOM, não a letra: 'an hour' (h muda) mas 'a university' (soa como 'iu').",
+  examples:[["I have a dog.","Eu tenho um cachorro."],["She is an engineer.","Ela é engenheira."],["The dog is friendly.","O cachorro é simpático."],["He eats an apple every day.","Ele come uma maçã todo dia."],["It's an honor to meet you.","É uma honra te conhecer."],["The sun is very bright today.","O sol está muito forte hoje."]],
+  fill:[[""," A"," book is on the table."],["She is "," an"," artist."],["Close "," the"," door, please."],["He waited for "," an"," hour."],["I saw "," the"," movie you recommended."]],
+  choice:[{q:"I need ___ umbrella.",opts:[["a",0],["an",1]]},{q:"___ sun is very hot today.",opts:[["A",0],["The",1]]},{q:"She is ___ university student.",opts:[["a",1],["an",0]]}],
+  challenge:[["Ela é uma artista incrível.","She is an amazing artist."],["Feche a janela, por favor.","Close the window, please."]],
+  dialogue:[["Marcos","Do you have a pet?"],["Anna","Yes, I have a cat and an old dog."],["Marcos","What's the cat's name?"],["Anna","The cat's name is Luna."],["Marcos","That's a beautiful name."],["Anna","Thanks! The dog's name is Max."]],
+  listenQ:[{q:"What pets does Anna have?",opts:[["A cat and a dog",1],["Only a cat",0]]},{q:"What is the cat's name?",opts:[["Luna",1],["Anna",0]]},{q:"What is the dog's name?",opts:[["Max",1],["Luna",0]]}],
+  readingHtml:"Anna has <mark>a</mark> cat and <mark>an</mark> old dog. <mark>The</mark> cat, Luna, sleeps all day. <mark>The</mark> dog, Max, is very active and loves <mark>a</mark> long walk every morning. It takes about <mark>an</mark> hour.",
+  vocab:["pet","cat","active","walk","hour","honor"],
+  speak:"I have a cat and an old dog, and I love them." },
+
+7:{ topic:"Plural dos substantivos", title:"Plural Nouns", sub:"Como formar o plural em inglês.",
+  grammarTitle:"Plural: -s, -es e irregulares",
+  grammarHtml:"A maioria dos substantivos ganha <strong>-s</strong> no plural. Palavras terminadas em -s/-sh/-ch/-x ganham <strong>-es</strong>. Palavras terminadas em consoante+y trocam o y por <strong>-ies</strong> (city→cities). Alguns são irregulares: child→children, man→men, person→people.",
+  tip:"Substantivos incontáveis (como 'information', 'advice', 'money') não têm plural em inglês — nunca diga 'informations'.",
+  examples:[["one book, two books","um livro, dois livros"],["one box, two boxes","uma caixa, duas caixas"],["one child, two children","uma criança, duas crianças"],["one woman, two women","uma mulher, duas mulheres"],["one city, two cities","uma cidade, duas cidades"],["one person, many people","uma pessoa, muitas pessoas"]],
+  fill:[["I have three "," books","."],["There are two "," boxes"," here."],["She has two "," children","."],["I visited three "," cities"," last year."],["Many "," people"," were there."]],
+  choice:[{q:"Plural of 'man':",opts:[["mans",0],["men",1]]},{q:"Plural of 'city':",opts:[["citys",0],["cities",1]]},{q:"Plural of 'person':",opts:[["persons",0],["people",1]]}],
+  challenge:[["Ela tem três irmãos e duas irmãs.","She has three brothers and two sisters."],["Muitas pessoas visitam esta cidade.","Many people visit this city."]],
+  dialogue:[["Anna","How many brothers do you have?"],["Marcos","I have two brothers and one sister."],["Anna","Wow, three siblings!"],["Marcos","Yes, and five cousins too."],["Anna","Big family! Do you all live in the same city?"],["Marcos","No, we live in three different cities."]],
+  listenQ:[{q:"How many brothers does Marcos have?",opts:[["Two",1],["Three",0]]},{q:"How many cousins?",opts:[["Five",1],["Two",0]]},{q:"How many cities do they live in?",opts:[["Three",1],["One",0]]}],
+  readingHtml:"Marcos has two <mark>brothers</mark> and one <mark>sister</mark>. He also has five <mark>cousins</mark> and four <mark>friends</mark> from school who visit every weekend. His family lives in three different <mark>cities</mark>, but they always meet during holidays.",
+  vocab:["siblings","cousins","brothers","weekend","people","cities"],
+  speak:"I have two brothers, one sister, and five cousins in three cities." },
+
+8:{ topic:"Pronomes possessivos", title:"Possessives", sub:"my, your, his, her, our, their.",
+  grammarTitle:"Pronomes possessivos",
+  grammarHtml:"Usamos possessivos antes de um substantivo para mostrar posse: <strong>my</strong> (meu), <strong>your</strong> (seu), <strong>his/her</strong> (dele/dela), <strong>our</strong> (nosso), <strong>their</strong> (deles). Diferente do português, não concordam em gênero com o objeto — 'his car' e 'his house' usam o mesmo 'his'.",
+  tip:"Não confunda 'its' (possessivo de 'it', sem apóstrofo) com 'it's' (contração de 'it is'). Isso engana até estudantes avançados!",
+  examples:[["This is my book.","Este é meu livro."],["Is that your car?","Aquele é seu carro?"],["Her name is Anna.","O nome dela é Anna."],["Their house is big.","A casa deles é grande."],["The dog wagged its tail.","O cachorro balançou o rabo."],["Our team won the game.","Nosso time ganhou o jogo."]],
+  fill:[["This is "," my"," phone."],["Is that "," your"," bag?"],["That is "," her"," jacket."],["The cat licked "," its"," paw."],["This is "," our"," classroom."]],
+  choice:[{q:"That is ___ dog (belongs to him).",opts:[["his",1],["her",0]]},{q:"This is ___ classroom (belongs to us).",opts:[["their",0],["our",1]]},{q:"The cat lost ___ toy.",opts:[["it's",0],["its",1]]}],
+  challenge:[["Este é o carro dela, não o meu.","This is her car, not mine."],["Nossa casa é perto da escola.","Our house is near the school."]],
+  dialogue:[["Marcos","Is this your notebook?"],["Anna","No, it's not my notebook. It's his."],["Marcos","Whose bag is this, then?"],["Anna","That's our teacher's bag."],["Marcos","And that jacket over there?"],["Anna","That's her jacket, she left it yesterday."]],
+  listenQ:[{q:"Whose notebook is it?",opts:[["His",1],["Anna's",0]]},{q:"Whose bag is it?",opts:[["The teacher's",1],["Marcos's",0]]},{q:"Whose jacket is on the chair?",opts:[["Hers",1],["His",0]]}],
+  readingHtml:"Every student has <mark>their</mark> own notebook. Marcos keeps <mark>his</mark> notebook in <mark>his</mark> backpack. Anna keeps <mark>her</mark> notebook on <mark>her</mark> desk at home. <mark>Our</mark> classroom always has extra pens for students who forget <mark>their</mark> own.",
+  vocab:["notebook","desk","whose","teacher","forget","jacket"],
+  speak:"This is my notebook, and that is her bag over there." },
+
+9:{ topic:"There is / there are", title:"There is / There are", sub:"Como dizer que algo existe ou está em algum lugar.",
+  grammarTitle:"There is / there are",
+  grammarHtml:"<strong>There is</strong> para singular, <strong>there are</strong> para plural. Usamos para dizer que algo existe ou está em um lugar. Negativa: there isn't / there aren't. Pergunta: Is there...? / Are there...?",
+  tip:"Não confunda com 'it is' — 'there is' introduz algo novo na conversa; 'it is' se refere a algo já mencionado.",
+  examples:[["There is a park near my house.","Há um parque perto da minha casa."],["There are three chairs in the room.","Há três cadeiras na sala."],["There isn't any milk.","Não há leite nenhum."],["Are there any questions?","Há alguma pergunta?"],["There was a problem yesterday.","Houve um problema ontem."],["There aren't enough seats.","Não há assentos suficientes."]],
+  fill:[[""," There is"," a cat in the garden."],[""," There are"," five books here."],["","Is there"," a bank near here?"],[""," There isn't"," any coffee left."],[""," Are there"," any seats available?"]],
+  choice:[{q:"___ a good restaurant on this street.",opts:[["There is",1],["There are",0]]},{q:"___ many students in the class.",opts:[["There is",0],["There are",1]]},{q:"___ any problems with the plan?",opts:[["Is there",0],["Are there",1]]}],
+  challenge:[["Há um banco perto da minha casa.","There is a bank near my house."],["Não há assentos suficientes na sala.","There aren't enough seats in the room."]],
+  dialogue:[["Anna","Is there a supermarket near here?"],["Marcos","Yes, there is one on Elm Street."],["Anna","Are there any pharmacies too?"],["Marcos","Yes, there are two, very close."],["Anna","Great, is there a bus stop nearby too?"],["Marcos","Yes, there's one right at the corner."]],
+  listenQ:[{q:"Is there a supermarket nearby?",opts:[["Yes",1],["No",0]]},{q:"How many pharmacies are there?",opts:[["Two",1],["One",0]]},{q:"Is there a bus stop nearby?",opts:[["Yes",1],["No",0]]}],
+  readingHtml:"<mark>There is</mark> a small park near Marcos's house. <mark>There are</mark> many trees and <mark>there is</mark> a nice bench where he reads books in the afternoon. <mark>There isn't</mark> much noise there, so it's a peaceful place to relax.",
+  vocab:["nearby","pharmacy","bench","garden","noise","peaceful"],
+  speak:"There is a park near my house, and there are many trees." },
+
+10:{ topic:"Demonstrativos", title:"This, That, These, Those", sub:"Apontando para coisas perto e longe.",
+  grammarTitle:"This / that / these / those",
+  grammarHtml:"<strong>This/these</strong> = perto (singular/plural). <strong>That/those</strong> = longe (singular/plural). Também usamos 'this/that' para introduzir alguém ao telefone ('This is Anna') ou referir-se a uma ideia inteira mencionada antes.",
+  tip:"No telefone, os ingleses dizem 'This is Anna speaking', nunca 'I am Anna' — é uma exceção comum que confunde estudantes.",
+  examples:[["This is my pen.","Esta é minha caneta."],["That is your house.","Aquela é sua casa."],["These are my keys.","Estas são minhas chaves."],["Those are nice shoes.","Aqueles são sapatos bonitos."],["This is Anna speaking.","Aqui é a Anna (ao telefone)."],["That was a great movie!","Aquele foi um ótimo filme!"]],
+  fill:[[""," This"," is my desk (near me)."],[""," That"," is your car (far away)."],[""," These"," are my books (near, plural)."],[""," Those"," are your friends (far, plural)."],[""," This"," is Anna speaking."]],
+  choice:[{q:"___ shoes over there are expensive.",opts:[["These",0],["Those",1]]},{q:"___ apple in my hand is sweet.",opts:[["This",1],["That",0]]},{q:"On the phone: '___ is Marcos.'",opts:[["This",1],["That",0]]}],
+  challenge:[["Este é meu amigo Marcos.","This is my friend Marcos."],["Aqueles sapatos são muito caros.","Those shoes are very expensive."]],
+  dialogue:[["Marcos","What is this?"],["Anna","This is a Canadian coin."],["Marcos","And what are those, over there?"],["Anna","Those are old photos from my trip."],["Marcos","This one is beautiful, where was it taken?"],["Anna","That was in the mountains, last winter."]],
+  listenQ:[{q:"What is 'this'?",opts:[["A Canadian coin",1],["A photo",0]]},{q:"What are 'those'?",opts:[["Old photos",1],["Coins",0]]},{q:"Where was the photo taken?",opts:[["In the mountains",1],["At the beach",0]]}],
+  readingHtml:"<mark>This</mark> is Anna's favorite coin from Canada. <mark>Those</mark> photos on the wall are from her last trip. <mark>These</mark> souvenirs mean a lot to her. <mark>That</mark> mountain photo, in particular, reminds her of her favorite winter vacation.",
+  vocab:["coin","photo","trip","souvenir","mountain","vacation"],
+  speak:"This is my pen, and those are my books over there." },
+
+11:{ topic:"Present Simple (afirmativo)", title:"Present Simple — Affirmative", sub:"Falando sobre rotinas e hábitos.",
+  grammarTitle:"Present Simple",
+  grammarHtml:"Usamos o Present Simple para rotinas, hábitos e fatos gerais. Com he/she/it, o verbo ganha <strong>-s</strong>: I work → he work<strong>s</strong>. Verbos terminados em -o, -ch, -sh, -ss, -x ganham <strong>-es</strong>: go→goes, watch→watches.",
+  tip:"O verbo 'have' é irregular na terceira pessoa: 'he haves' está errado — o correto é 'he has'.",
+  examples:[["I work every day.","Eu trabalho todos os dias."],["She studies English.","Ela estuda inglês."],["We live in São Paulo.","Nós moramos em São Paulo."],["He plays soccer on Sundays.","Ele joga futebol aos domingos."],["He watches TV at night.","Ele assiste TV à noite."],["She has two brothers.","Ela tem dois irmãos."]],
+  fill:[["She "," studies"," English every day."],["He "," plays"," soccer on weekends."],["I "," work"," in an office."],["He "," watches"," the news every night."],["She "," has"," a new car."]],
+  choice:[{q:"Anna ___ coffee every morning.",opts:[["drink",0],["drinks",1]]},{q:"They ___ in Toronto.",opts:[["live",1],["lives",0]]},{q:"He ___ to work by bus.",opts:[["go",0],["goes",1]]}],
+  challenge:[["Ela trabalha em um banco todos os dias.","She works at a bank every day."],["Ele assiste filmes todo fim de semana.","He watches movies every weekend."]],
+  dialogue:[["Anna","What do you do, Marcos?"],["Marcos","I work in a bank. I start at 9am."],["Anna","And what does your sister do?"],["Marcos","She teaches at a school."],["Anna","Does she like her job?"],["Marcos","Yes, she loves it very much."]],
+  listenQ:[{q:"Where does Marcos work?",opts:[["A bank",1],["A school",0]]},{q:"What does his sister do?",opts:[["She teaches",1],["She studies",0]]},{q:"Does she like her job?",opts:[["Yes",1],["No",0]]}],
+  readingHtml:"Marcos <mark>works</mark> at a bank. He <mark>starts</mark> at nine and <mark>finishes</mark> at five. His sister <mark>teaches</mark> English at a local school every morning. She <mark>loves</mark> her job and always <mark>has</mark> fun stories to share at dinner.",
+  vocab:["starts","finishes","teaches","bank","loves","shares"],
+  speak:"I work in a bank, and I start at nine every day." },
+
+12:{ topic:"Present Simple (negativo/perguntas)", title:"Present Simple — Negative & Questions", sub:"don't, doesn't e perguntas com do/does.",
+  grammarTitle:"Negativa e perguntas",
+  grammarHtml:"Negativa: <strong>don't/doesn't</strong> + verbo base (sem -s!). Perguntas: <strong>Do/Does</strong> + sujeito + verbo base? Erro comum: 'She doesn't likes' está errado — o certo é 'She doesn't like' (sem -s no verbo depois de doesn't).",
+  tip:"Respostas curtas são muito usadas: 'Do you like coffee?' → 'Yes, I do.' / 'No, I don't.' Não repita a frase toda.",
+  examples:[["I don't like coffee.","Eu não gosto de café."],["She doesn't work on Sundays.","Ela não trabalha aos domingos."],["Do you speak English?","Você fala inglês?"],["Does he live here?","Ele mora aqui?"],["They don't have a car.","Eles não têm carro."],["Does it rain a lot here?","Chove muito aqui?"]],
+  fill:[["I "," don't"," like tea."],["She "," doesn't"," eat meat."],[""," Do"," you like music?"],["They "," don't"," have a car."],[""," Does"," it rain a lot here?"]],
+  choice:[{q:"He ___ speak French.",opts:[["don't",0],["doesn't",1]]},{q:"___ they live in Canada?",opts:[["Do",1],["Does",0]]},{q:"'Do you like it?' 'Yes, I ___.'",opts:[["do",1],["like",0]]}],
+  challenge:[["Ele não trabalha aos sábados.","He doesn't work on Saturdays."],["Vocês falam espanhol?","Do you speak Spanish?"]],
+  dialogue:[["Marcos","Do you like Brazilian food?"],["Anna","Yes, I do! But I don't like very spicy food."],["Marcos","Does Canada have good coffee?"],["Anna","Yes, it does, especially in Toronto."],["Marcos","Do you drink coffee every day?"],["Anna","No, I don't. Just on weekends."]],
+  listenQ:[{q:"Does Anna like Brazilian food?",opts:[["Yes",1],["No",0]]},{q:"Does she like spicy food?",opts:[["No",1],["Yes",0]]},{q:"Does she drink coffee every day?",opts:[["No, just weekends",1],["Yes",0]]}],
+  readingHtml:"Anna <mark>doesn't</mark> like very spicy food, but she <mark>likes</mark> Brazilian food a lot. Marcos <mark>doesn't</mark> drink coffee at night because he <mark>doesn't</mark> sleep well after. He always <mark>asks</mark>: <mark>Do</mark> you want tea instead?",
+  vocab:["spicy","especially","sleep","enjoy","instead","asks"],
+  speak:"I don't like spicy food, but I like coffee." },
+
+13:{ topic:"Números e horários", title:"Numbers & Time", sub:"Contando e dizendo as horas.",
+  grammarTitle:"Números e como dizer as horas",
+  grammarHtml:"Para horas: <strong>It's 3 o'clock</strong>, <strong>It's half past three</strong> (3:30), <strong>It's a quarter to four</strong> (3:45), <strong>It's a quarter past three</strong> (3:15). Para minutos avulsos: it's ten past three (3:10) ou it's twenty to four (3:40).",
+  tip:"Nos EUA e Canadá, também é comum dizer direto os números: 'It's three thirty' em vez de 'half past three'. Ambos estão corretos.",
+  examples:[["It's three o'clock.","São três horas."],["It's half past seven.","São sete e meia."],["It's a quarter to nine.","São quinze para as nove."],["The class starts at 10am.","A aula começa às 10h."],["It's ten past six.","São seis e dez."],["It's noon / It's midnight.","É meio-dia / é meia-noite."]],
+  fill:[["It's "," half"," past six."],["The train leaves at "," seven"," o'clock."],["It's a "," quarter"," to five."],["It's ten "," past"," six."],["It's "," noon"," now."]],
+  choice:[{q:"3:30 in English:",opts:[["Half past three",1],["Quarter past three",0]]},{q:"8:45 in English:",opts:[["Quarter to nine",1],["Half past eight",0]]},{q:"12:00pm is:",opts:[["Noon",1],["Midnight",0]]}],
+  challenge:[["São dez e meia agora.","It's half past ten now."],["A aula começa às oito e quinze.","The class starts at a quarter past eight."]],
+  dialogue:[["Marcos","What time is it?"],["Anna","It's a quarter past eight."],["Marcos","What time does the movie start?"],["Anna","At half past nine."],["Marcos","So we have an hour to eat."],["Anna","Perfect, let's go now."]],
+  listenQ:[{q:"What time is it now?",opts:[["8:15",1],["8:45",0]]},{q:"What time does the movie start?",opts:[["9:30",1],["9:15",0]]},{q:"How much time do they have to eat?",opts:[["An hour",1],["Half an hour",0]]}],
+  readingHtml:"Marcos wakes up at <mark>seven o'clock</mark>. He has breakfast at a <mark>quarter past seven</mark> and leaves home at <mark>half past seven</mark> to arrive at work by nine. At <mark>noon</mark>, he takes a short lunch break.",
+  vocab:["wakes up","breakfast","leaves","arrive","noon","break"],
+  speak:"It's a quarter past eight. The movie starts at half past nine." },
+
+14:{ topic:"Advérbios de frequência", title:"Adverbs of Frequency", sub:"always, usually, sometimes, never.",
+  grammarTitle:"Advérbios de frequência",
+  grammarHtml:"Ficam antes do verbo principal, mas depois de 'to be': always (sempre, 100%), usually (geralmente, ~80%), often (frequentemente), sometimes (às vezes, ~30%), rarely (raramente), never (nunca, 0%).",
+  tip:"Ordem de frequência decrescente: always > usually > often > sometimes > rarely > never. Use isso para escolher a palavra certa ao descrever hábitos.",
+  examples:[["I always drink coffee.","Eu sempre tomo café."],["She is usually late.","Ela geralmente está atrasada."],["We sometimes go to the beach.","Nós às vezes vamos à praia."],["He never eats breakfast.","Ele nunca toma café da manhã."],["They often study together.","Eles estudam juntos frequentemente."],["I rarely watch TV.","Eu raramente assisto TV."]],
+  fill:[["I "," always"," study at night."],["She is "," never"," late."],["We "," sometimes"," walk to school."],["They "," often"," study together."],["I "," rarely"," eat fast food."]],
+  choice:[{q:"He ___ plays soccer on Fridays. (100% of the time)",opts:[["always",1],["never",0]]},{q:"I ___ drink tea. (0% of the time)",opts:[["usually",0],["never",1]]},{q:"She ___ arrives on time. (~80%)",opts:[["usually",1],["rarely",0]]}],
+  challenge:[["Eu quase nunca chego atrasado ao trabalho.","I rarely arrive late to work."],["Nós frequentemente estudamos juntos aos sábados.","We often study together on Saturdays."]],
+  dialogue:[["Anna","Do you usually cook dinner?"],["Marcos","Yes, I always cook on weekdays."],["Anna","I sometimes cook, but I usually order food."],["Marcos","That's fun too!"],["Anna","Do you ever eat out?"],["Marcos","Rarely, maybe once a month."]],
+  listenQ:[{q:"Does Marcos always cook?",opts:[["Yes, on weekdays",1],["No, never",0]]},{q:"What does Anna usually do?",opts:[["Order food",1],["Cook every day",0]]},{q:"How often does Marcos eat out?",opts:[["Rarely",1],["Every day",0]]}],
+  readingHtml:"Marcos <mark>always</mark> cooks dinner on weekdays. Anna <mark>usually</mark> orders food, but she <mark>sometimes</mark> cooks on weekends. She <mark>never</mark> eats fast food, and she <mark>rarely</mark> eats out, maybe once a month.",
+  vocab:["order","weekdays","weekends","fast food","eat out","once"],
+  speak:"I always cook dinner, but I sometimes order food." },
+
+15:{ topic:"Can / can't", title:"Can & Can't", sub:"Habilidade e permissão.",
+  grammarTitle:"Can / can't",
+  grammarHtml:"<strong>Can</strong> expressa habilidade, permissão ou possibilidade: I can swim. <strong>Can't</strong> é a negativa: She can't drive. Também usamos para pedir algo educadamente: Can you help me, please?",
+  tip:"'Can' nunca leva -s na terceira pessoa: 'he cans' está errado; o correto é 'he can'.",
+  examples:[["I can speak Portuguese.","Eu consigo falar português."],["She can't drive yet.","Ela ainda não sabe dirigir."],["Can you help me?","Você pode me ajudar?"],["We can meet tomorrow.","Nós podemos nos encontrar amanhã."],["Can I open the window?","Posso abrir a janela?"],["They can't come to the party.","Eles não podem vir à festa."]],
+  fill:[["I "," can"," swim very well."],["He "," can't"," cook at all."],[""," Can"," you speak French?"],[""," Can"," I ask a question?"],["They "," can't"," come tonight."]],
+  choice:[{q:"She ___ play the piano beautifully.",opts:[["can",1],["can't",0]]},{q:"___ you drive a car?",opts:[["Can",1],["Do",0]]},{q:"Polite request: '___ you pass the salt?'",opts:[["Can",1],["Are",0]]}],
+  challenge:[["Você pode me ajudar com isso, por favor?","Can you help me with this, please?"],["Ela não consegue dirigir ainda, mas está aprendendo.","She can't drive yet, but she is learning."]],
+  dialogue:[["Marcos","Can you play any instrument?"],["Anna","Yes, I can play the guitar. Can you?"],["Marcos","No, I can't, but I can sing!"],["Anna","That's great, let's play together."],["Marcos","Can we practice this weekend?"],["Anna","Sure, I can meet you on Saturday."]],
+  listenQ:[{q:"Can Anna play the guitar?",opts:[["Yes",1],["No",0]]},{q:"Can Marcos play an instrument?",opts:[["No, but he can sing",1],["Yes, the guitar",0]]},{q:"When can Anna meet?",opts:[["Saturday",1],["Sunday",0]]}],
+  readingHtml:"Anna <mark>can</mark> play the guitar very well. Marcos <mark>can't</mark> play any instrument, but he <mark>can</mark> sing. Together they <mark>can</mark> make good music. They <mark>can't</mark> practice every day, but they meet every weekend.",
+  vocab:["instrument","guitar","sing","together","practice","meet"],
+  speak:"I can't play guitar, but I can sing." },
+
+16:{ topic:"Adjetivos descritivos", title:"Descriptive Adjectives", sub:"Descrevendo pessoas e coisas.",
+  grammarTitle:"Adjetivos em inglês",
+  grammarHtml:"Adjetivos ficam antes do substantivo e não mudam de forma (não têm plural/gênero): a tall man, tall women. Também podem vir depois de 'to be': She is tall.",
+  tip:"Ordem dos adjetivos em inglês segue uma sequência: opinião, tamanho, idade, forma, cor, origem, material. Ex: 'a beautiful small old round Brazilian wooden table'.",
+  examples:[["She is tall and friendly.","Ela é alta e simpática."],["It's a small, old house.","É uma casa pequena e antiga."],["He is very funny.","Ele é muito engraçado."],["This coffee is too hot.","Este café está quente demais."],["That's an interesting idea.","Essa é uma ideia interessante."],["They live in a beautiful old house.","Eles moram numa bela casa antiga."]],
+  fill:[["She has "," long"," hair."],["It's a "," big"," city."],["He is very "," kind","."],["This is an "," interesting"," book."],["It's a "," beautiful"," old house."]],
+  choice:[{q:"The opposite of 'big' is:",opts:[["small",1],["tall",0]]},{q:"The opposite of 'happy' is:",opts:[["sad",1],["funny",0]]},{q:"The opposite of 'expensive' is:",opts:[["cheap",1],["hot",0]]}],
+  challenge:[["Ele é um homem alto, simpático e engraçado.","He is a tall, friendly, and funny man."],["Essa é uma casa antiga e bonita.","That's a beautiful old house."]],
+  dialogue:[["Anna","What is Marcos like?"],["Friend","He's tall, friendly, and very funny."],["Anna","And is he a hard worker?"],["Friend","Yes, he's very organized too."],["Anna","Sounds like a great person."],["Friend","He really is!"]],
+  listenQ:[{q:"How is Marcos described?",opts:[["Tall, friendly, funny",1],["Short and quiet",0]]},{q:"Is he organized?",opts:[["Yes",1],["No",0]]},{q:"What does Anna think about him?",opts:[["He sounds great",1],["He sounds boring",0]]}],
+  readingHtml:"Marcos is <mark>tall</mark>, <mark>friendly</mark>, and <mark>funny</mark>. He is also very <mark>organized</mark> at work. Anna is <mark>creative</mark> and always has <mark>interesting</mark> ideas. Together, they make a <mark>great</mark> team.",
+  vocab:["organized","creative","hard worker","kind","interesting","team"],
+  speak:"She is tall, friendly, and very creative." },
+
+17:{ topic:"Família e relações", title:"Family & Relationships", sub:"Vocabulário de família e posse.",
+  grammarTitle:"Vocabulário de família",
+  grammarHtml:"Vocabulário essencial: parents (pais), mother/father, brother/sister, grandmother/grandfather, aunt/uncle, cousin, niece/nephew, in-laws (parentes por casamento, como sogra/sogro).",
+  tip:"'Parents' significa apenas 'pai e mãe', nunca 'parentes' em geral — para isso usamos 'relatives'. É um falso cognato clássico!",
+  examples:[["My mother is a teacher.","Minha mãe é professora."],["His grandfather is 80 years old.","O avô dele tem 80 anos."],["Her aunt lives in Rio.","A tia dela mora no Rio."],["Our cousins visit every summer.","Nossos primos visitam todo verão."],["I have many relatives in Brazil.","Eu tenho muitos parentes no Brasil."],["My niece is very smart.","Minha sobrinha é muito inteligente."]],
+  fill:[["My "," mother"," is a doctor."],["His "," grandfather"," is very old."],["Her "," aunt"," lives in Rio."],["I have many "," relatives"," in Brazil."],["My "," niece"," is very smart."]],
+  choice:[{q:"Your mother's sister is your:",opts:[["aunt",1],["cousin",0]]},{q:"Your father's father is your:",opts:[["uncle",0],["grandfather",1]]},{q:"'Parentes' in general (not just mom/dad):",opts:[["parents",0],["relatives",1]]}],
+  challenge:[["Eu tenho muitos parentes que moram longe.","I have many relatives who live far away."],["Minha sobrinha visita a gente todo verão.","My niece visits us every summer."]],
+  dialogue:[["Marcos","Do you have a big family?"],["Anna","Yes! I have two aunts, three uncles, and many cousins."],["Marcos","Do you see them often?"],["Anna","We meet every Christmas."],["Marcos","That must be a big reunion!"],["Anna","It is, over twenty relatives in one house!"]],
+  listenQ:[{q:"How many aunts does Anna have?",opts:[["Two",1],["Three",0]]},{q:"When does the family meet?",opts:[["Every Christmas",1],["Every summer",0]]},{q:"How many relatives come to the reunion?",opts:[["Over twenty",1],["Ten",0]]}],
+  readingHtml:"Anna has a big family: two <mark>aunts</mark>, three <mark>uncles</mark>, and many <mark>cousins</mark>. Every Christmas, her whole <mark>family</mark> meets at her <mark>grandmother's</mark> house — over twenty <mark>relatives</mark> in one place.",
+  vocab:["aunts","uncles","cousins","grandmother","relatives","reunion"],
+  speak:"My family meets every Christmas at my grandmother's house." },
+
+18:{ topic:"Quantificadores", title:"Some, Any, A lot of", sub:"Falando sobre quantidades.",
+  grammarTitle:"Some / any / a lot of / a little / a few",
+  grammarHtml:"<strong>Some</strong> em frases afirmativas, <strong>any</strong> em negativas/perguntas. <strong>A lot of</strong> = muito(s), funciona com contáveis e incontáveis. <strong>A little</strong> = um pouco (incontáveis: a little sugar). <strong>A few</strong> = alguns (contáveis: a few friends).",
+  tip:"'Little' sozinho (sem 'a') tem sentido negativo — 'I have little time' significa 'quase não tenho tempo', diferente de 'a little time' (um pouco de tempo, neutro).",
+  examples:[["I have some money.","Eu tenho um pouco de dinheiro."],["There isn't any milk.","Não há leite nenhum."],["She has a lot of friends.","Ela tem muitos amigos."],["We need a little sugar.","Precisamos de um pouco de açúcar."],["I have a few questions.","Eu tenho algumas perguntas."],["He has very little time.","Ele tem pouquíssimo tempo."]],
+  fill:[["I have "," some"," questions."],["There isn't "," any"," bread."],["She has "," a lot"," of books."],["We need "," a little"," sugar."],["I have "," a few"," friends here."]],
+  choice:[{q:"Do you have ___ time today?",opts:[["some",0],["any",1]]},{q:"He has ___ money (not much).",opts:[["a little",1],["a lot of",0]]},{q:"I have ___ friends in this city (some, countable).",opts:[["a few",1],["a little",0]]}],
+  challenge:[["Nós temos algumas perguntas para você.","We have a few questions for you."],["Ela tem muito pouco tempo livre.","She has very little free time."]],
+  dialogue:[["Marcos","Do we have any coffee left?"],["Anna","Yes, we have some, but not a lot."],["Marcos","Ok, I'll buy a little more."],["Anna","Good idea, thanks!"],["Marcos","Do we need anything else?"],["Anna","Just a few eggs, I think."]],
+  listenQ:[{q:"Is there a lot of coffee?",opts:[["No, just some",1],["Yes, a lot",0]]},{q:"What will Marcos do?",opts:[["Buy more coffee",1],["Nothing",0]]},{q:"What else do they need?",opts:[["A few eggs",1],["A lot of milk",0]]}],
+  readingHtml:"They have <mark>some</mark> coffee, but not <mark>a lot</mark>. Marcos doesn't have <mark>any</mark> plans today, so he will buy <mark>a little</mark> more coffee at the market, plus <mark>a few</mark> eggs for breakfast.",
+  vocab:["market","plans","left","buy","eggs","enough"],
+  speak:"We have some coffee, but not a lot." },
+
+19:{ topic:"Pronomes objeto", title:"Object Pronouns", sub:"me, him, her, us, them.",
+  grammarTitle:"Pronomes objeto",
+  grammarHtml:"Usados depois do verbo ou de uma preposição: me, you, him, her, it, us, them. Ex: I see him. She calls me. Give it to us.",
+  tip:"Não confunda sujeito (he, she, they) com objeto (him, her, them) — 'Me and him went' está errado; o correto é 'He and I went'.",
+  examples:[["She calls me every day.","Ela me liga todos os dias."],["I see him at work.","Eu o vejo no trabalho."],["We invited them to dinner.","Nós os convidamos para jantar."],["Can you help us?","Você pode nos ajudar?"],["Give it to her, please.","Dê isso a ela, por favor."],["Listen to me carefully.","Me escute com atenção."]],
+  fill:[["She calls "," me"," every day."],["I see "," him"," at school."],["Can you help "," us","?"],["Give it "," to"," her, please."],["Listen "," to"," me carefully."]],
+  choice:[{q:"I know Anna. I see ___ often.",opts:[["her",1],["him",0]]},{q:"They are my friends. I trust ___.",opts:[["they",0],["them",1]]},{q:"He and ___ went to the party.",opts:[["I",1],["me",0]]}],
+  challenge:[["Ela me convidou para o jantar dela.","She invited me to her dinner."],["Você pode dar isso a eles, por favor?","Can you give it to them, please?"]],
+  dialogue:[["Anna","Can you call me tonight?"],["Marcos","Sure, I'll call you at eight."],["Anna","Great, and can you invite them too?"],["Marcos","Yes, I'll invite them right now."],["Anna","Perfect, tell them to bring snacks."],["Marcos","I'll tell them right away."]],
+  listenQ:[{q:"What time will Marcos call?",opts:[["Eight",1],["Nine",0]]},{q:"Will he invite them?",opts:[["Yes",1],["No",0]]},{q:"What should the guests bring?",opts:[["Snacks",1],["Drinks",0]]}],
+  readingHtml:"Anna asked Marcos to call <mark>her</mark> tonight. He will call <mark>her</mark> at eight and invite <mark>them</mark> — their friends — to the party too. He will also tell <mark>them</mark> to bring snacks for everyone.",
+  vocab:["invite","tonight","party","call","snacks","guests"],
+  speak:"I'll call you at eight and invite them too." },
+
+20:{ topic:"Present Continuous", title:"Present Continuous", sub:"O que está acontecendo agora.",
+  grammarTitle:"Present Continuous (be + -ing)",
+  grammarHtml:"Usamos para ações acontecendo agora: am/is/are + verbo-ing. Ex: I am studying now. Também usamos para planos futuros já combinados: We are meeting tomorrow.",
+  tip:"Alguns verbos (como 'know', 'like', 'want', 'believe') quase nunca são usados no continuous, mesmo referindo-se ao presente — dizemos 'I know' e não 'I am knowing'.",
+  examples:[["I am studying English now.","Estou estudando inglês agora."],["She is cooking dinner.","Ela está cozinhando o jantar."],["They are watching a movie.","Eles estão assistindo a um filme."],["We are waiting for the bus.","Estamos esperando o ônibus."],["I am meeting Anna tomorrow.","Vou me encontrar com a Anna amanhã."],["He is not listening.","Ele não está prestando atenção."]],
+  fill:[["I am "," studying"," right now."],["She is "," cooking"," dinner."],["They are "," watching"," TV."],["We are "," waiting"," for the bus."],["He is "," not"," listening."]],
+  choice:[{q:"Right now, he ___ (work).",opts:[["is working",1],["works",0]]},{q:"We ___ (wait) for you.",opts:[["are waiting",1],["wait",0]]},{q:"I ___ (know) the answer. (state verb — no -ing)",opts:[["know",1],["am knowing",0]]}],
+  challenge:[["Ela está estudando inglês agora mesmo.","She is studying English right now."],["Eu vou me encontrar com meus amigos amanhã.","I am meeting my friends tomorrow."]],
+  dialogue:[["Marcos","What are you doing right now?"],["Anna","I'm cooking dinner. What about you?"],["Marcos","I'm studying for my English class."],["Anna","Nice! Are you enjoying it?"],["Marcos","Yes, I'm learning a lot these days."],["Anna","That's great to hear!"]],
+  listenQ:[{q:"What is Anna doing?",opts:[["Cooking dinner",1],["Studying",0]]},{q:"What is Marcos doing?",opts:[["Studying English",1],["Watching TV",0]]},{q:"Is Marcos enjoying his classes?",opts:[["Yes",1],["No",0]]}],
+  readingHtml:"Right now, Anna <mark>is cooking</mark> dinner while Marcos <mark>is studying</mark> English. Outside, it <mark>is raining</mark>, and their neighbors <mark>are walking</mark> their dog in the rain. Marcos <mark>is learning</mark> a lot these days.",
+  vocab:["raining","neighbors","enjoying","outside","learning","these days"],
+  speak:"I'm studying English, and it's raining outside." },
+
+21:{ topic:"Comparativos", title:"Comparatives", sub:"Comparando duas coisas.",
+  grammarTitle:"Adjetivos comparativos",
+  grammarHtml:"Adjetivos curtos (1 sílaba): +er (taller). Adjetivos longos (2+ sílabas): more + adjetivo (more interesting). Irregulares: good→better, bad→worse, far→farther. Use 'than' para comparar duas coisas.",
+  tip:"Adjetivos terminados em 'y' trocam o y por 'ier': happy → happier, easy → easier.",
+  examples:[["Marcos is taller than Anna.","Marcos é mais alto que Anna."],["This book is more interesting than that one.","Este livro é mais interessante que aquele."],["Today is worse than yesterday.","Hoje está pior que ontem."],["English is easier than Chinese for me.","Inglês é mais fácil que chinês para mim."],["She is happier now.","Ela está mais feliz agora."],["This is a better idea than mine.","Esta é uma ideia melhor que a minha."]],
+  fill:[["He is "," taller"," than me."],["This is "," more"," interesting than that."],["Today is "," better"," than yesterday."],["She is "," happier"," now."],["This city is "," bigger"," than mine."]],
+  choice:[{q:"Comparative of 'big':",opts:[["bigger",1],["more big",0]]},{q:"Comparative of 'expensive':",opts:[["expensiver",0],["more expensive",1]]},{q:"Comparative of 'happy':",opts:[["happyer",0],["happier",1]]}],
+  challenge:[["Este restaurante é melhor que aquele.","This restaurant is better than that one."],["Ela é mais organizada que eu.","She is more organized than me."]],
+  dialogue:[["Anna","Is Portuguese harder than English?"],["Marcos","For me, English is harder than Portuguese."],["Anna","Really? I think Portuguese is more difficult!"],["Marcos","Maybe it's easier for native speakers."],["Anna","True, practice makes it easier over time."],["Marcos","I agree, I'm getting better every day."]],
+  listenQ:[{q:"What does Marcos think is harder?",opts:[["English",1],["Portuguese",0]]},{q:"What does Anna think?",opts:[["Portuguese is harder",1],["English is harder",0]]},{q:"Is Marcos improving?",opts:[["Yes",1],["No",0]]}],
+  readingHtml:"For Marcos, English is <mark>harder</mark> than Portuguese. For Anna, Portuguese is <mark>more difficult</mark> than English. Learning is always <mark>easier</mark> with practice and a <mark>better</mark> routine. Marcos feels <mark>happier</mark> and more confident every day.",
+  vocab:["harder","native speaker","practice","routine","confident","improving"],
+  speak:"English is harder for me than Portuguese." },
+
+22:{ topic:"Superlativos", title:"Superlatives", sub:"O mais / a mais de um grupo.",
+  grammarTitle:"Adjetivos superlativos",
+  grammarHtml:"Curtos: the + adj + est (the tallest). Longos: the most + adj (the most interesting). Irregulares: the best, the worst, the farthest. Sempre usa 'the' antes do superlativo.",
+  tip:"Superlativo compara um item com TODO um grupo (3 ou mais), enquanto comparativo compara só dois itens — não confunda os contextos.",
+  examples:[["Marcos is the tallest in his family.","Marcos é o mais alto da família."],["This is the most interesting book I've read.","Este é o livro mais interessante que já li."],["It was the best day ever.","Foi o melhor dia de todos."],["That was the worst movie.","Aquele foi o pior filme."],["This is the cheapest option.","Esta é a opção mais barata."],["She is the youngest in the group.","Ela é a mais jovem do grupo."]],
+  fill:[["He is the "," tallest"," in his class."],["This is the "," most"," beautiful city."],["It was the "," best"," trip ever."],["This is the "," cheapest"," option."],["She is the "," youngest"," here."]],
+  choice:[{q:"Superlative of 'fast':",opts:[["fastest",1],["most fast",0]]},{q:"Superlative of 'good':",opts:[["goodest",0],["best",1]]},{q:"Superlative of 'cheap':",opts:[["cheapest",1],["most cheap",0]]}],
+  challenge:[["Este é o melhor café da cidade.","This is the best coffee in the city."],["Ela é a estudante mais dedicada da turma.","She is the most dedicated student in the class."]],
+  dialogue:[["Anna","What's the best city you've visited?"],["Marcos","Rio, definitely. It's the most beautiful."],["Anna","For me, it's Vancouver, the most peaceful."],["Marcos","I'd love to visit it one day."],["Anna","You should! It's also the cleanest city I know."],["Marcos","Adding it to my list right now."]],
+  listenQ:[{q:"Marcos's favorite city:",opts:[["Rio",1],["Vancouver",0]]},{q:"Anna's favorite city:",opts:[["Vancouver",1],["Rio",0]]},{q:"What else does Anna say about Vancouver?",opts:[["It's the cleanest",1],["It's the biggest",0]]}],
+  readingHtml:"For Marcos, Rio is <mark>the most beautiful</mark> city he knows. For Anna, Vancouver is <mark>the most peaceful</mark> and <mark>the cleanest</mark> place she has visited. They agree travel gives <mark>the best</mark> memories of their lives.",
+  vocab:["peaceful","memories","definitely","beautiful","cleanest","dedicated"],
+  speak:"Rio is the most beautiful city I've visited." },
+
+23:{ topic:"Imperativos e direções", title:"Directions", sub:"Dando instruções e pedindo direções.",
+  grammarTitle:"Imperativo e direções",
+  grammarHtml:"O imperativo usa o verbo base sem sujeito: Turn left. Go straight. Negativa: Don't turn right. Palavras úteis: turn left/right, go straight, next to, across from, between, behind.",
+  tip:"Para pedir direções educadamente, comece com 'Excuse me, could you tell me how to get to...?' em vez de ir direto ao imperativo.",
+  examples:[["Turn left at the corner.","Vire à esquerda na esquina."],["Go straight for two blocks.","Siga reto por duas quadras."],["The bank is next to the pharmacy.","O banco fica ao lado da farmácia."],["It's across from the park.","Fica em frente ao parque."],["Don't turn right here.","Não vire à direita aqui."],["It's between the bakery and the bank.","Fica entre a padaria e o banco."]],
+  fill:[[""," Turn"," left at the light."],[""," Go"," straight ahead."],["The shop is "," next"," to the bank."],["It's "," between"," the two buildings."],[""," Don't"," turn right here."]],
+  choice:[{q:"'Vire à direita' in English:",opts:[["Turn right",1],["Turn left",0]]},{q:"'Em frente a' in English:",opts:[["Across from",1],["Next to",0]]},{q:"'Entre' (posição) in English:",opts:[["Between",1],["Behind",0]]}],
+  challenge:[["Siga reto e vire à esquerda no semáforo.","Go straight and turn left at the traffic light."],["A farmácia fica entre o banco e a padaria.","The pharmacy is between the bank and the bakery."]],
+  dialogue:[["Marcos","Excuse me, where is the post office?"],["Stranger","Go straight, then turn right at the bank."],["Marcos","Is it far from here?"],["Stranger","No, it's just two blocks away."],["Marcos","Thank you so much!"],["Stranger","You're welcome, have a good day!"]],
+  listenQ:[{q:"Where should he turn right?",opts:[["At the bank",1],["At the park",0]]},{q:"How far is it?",opts:[["Two blocks",1],["Five blocks",0]]},{q:"How does Marcos react?",opts:[["He thanks the stranger",1],["He gets lost",0]]}],
+  readingHtml:"To reach the post office, <mark>go straight</mark> for one block, then <mark>turn right</mark> at the bank. The post office is <mark>next to</mark> the pharmacy, <mark>across from</mark> the park, and <mark>between</mark> two small shops.",
+  vocab:["post office","blocks","straight","stranger","between","reach"],
+  speak:"Go straight, then turn right at the bank." },
+
+24:{ topic:"Comida e would like", title:"Food & Would Like", sub:"Pedindo comida educadamente.",
+  grammarTitle:"Would like (forma educada)",
+  grammarHtml:"<strong>Would like</strong> = 'gostaria', mais educado que 'want'. Ex: I would like a coffee, please. (I'd like...) Pergunta: Would you like...? Também usamos para convites: Would you like to join us?",
+  tip:"'I want' soa direto demais em restaurantes ou situações formais — sempre prefira 'I'd like' para soar mais educado.",
+  examples:[["I'd like a coffee, please.","Eu gostaria de um café, por favor."],["Would you like some water?","Você gostaria de água?"],["She'd like the chicken salad.","Ela gostaria da salada de frango."],["We'd like to order now.","Nós gostaríamos de pedir agora."],["Would you like to join us for dinner?","Você gostaria de se juntar a nós para o jantar?"],["I'd like the bill, please.","Eu gostaria da conta, por favor."]],
+  fill:[["I'd "," like"," a coffee, please."],["Would you "," like"," some tea?"],["We'd like "," to"," order now."],["Would you like to "," join"," us?"],["I'd like the "," bill",", please."]],
+  choice:[{q:"Polite way to say 'I want a coffee':",opts:[["I'd like a coffee",1],["I want coffee now",0]]},{q:"'Would you like...' is used for:",opts:[["Offering something politely",1],["Giving an order",0]]},{q:"Asking for the check:",opts:[["I'd like the bill",1],["Give me money",0]]}],
+  challenge:[["Eu gostaria de pedir a sopa e uma salada.","I'd like to order the soup and a salad."],["Você gostaria de se juntar a nós amanhã?","Would you like to join us tomorrow?"]],
+  dialogue:[["Waiter","What would you like to order?"],["Anna","I'd like the chicken salad, please."],["Waiter","And for you, sir?"],["Marcos","I'd like a coffee and toast."],["Waiter","Would you like anything else?"],["Marcos","No, thank you, that's all."]],
+  listenQ:[{q:"What does Anna order?",opts:[["Chicken salad",1],["Toast",0]]},{q:"What does Marcos order?",opts:[["Coffee and toast",1],["Salad",0]]},{q:"Does Marcos want anything else?",opts:[["No",1],["Yes",0]]}],
+  readingHtml:"At the café, Anna would like the <mark>chicken salad</mark>, and Marcos would like <mark>coffee</mark> and <mark>toast</mark>. The waiter writes down their <mark>order</mark> and asks if they would like anything else before bringing the <mark>bill</mark>.",
+  vocab:["waiter","order","toast","salad","bill","anything else"],
+  speak:"I'd like a coffee and toast, please." },
+
+25:{ topic:"Clima e estações", title:"Weather & Seasons", sub:"Falando sobre o tempo e as estações do ano.",
+  grammarTitle:"Vocabulário do clima",
+  grammarHtml:"Usamos 'it' para o clima: It's sunny/rainy/cold/hot/windy/cloudy. Estações: spring, summer, autumn/fall, winter. Perguntas: What's the weather like today?",
+  tip:"'Weather' é sempre incontável — nunca diga 'weathers' ou 'a weather'. Para perguntar, use 'What's the weather like?', não 'How is the weather?' (embora ambos sejam entendidos).",
+  examples:[["It's sunny today.","Está ensolarado hoje."],["It's very cold in winter.","Faz muito frio no inverno."],["It rains a lot in autumn.","Chove muito no outono."],["Summer is my favorite season.","Verão é minha estação favorita."],["It's windy and cloudy today.","Está ventando e nublado hoje."],["What's the weather like tomorrow?","Como está o tempo amanhã?"]],
+  fill:[["It's very "," cold"," today."],["It "," rains"," a lot here."],["My favorite season is "," summer","."],["It's "," windy"," today."],["What's the "," weather"," like tomorrow?"]],
+  choice:[{q:"Cold season with snow:",opts:[["Winter",1],["Summer",0]]},{q:"'Ensolarado' in English:",opts:[["Sunny",1],["Rainy",0]]},{q:"'Weather' as a countable noun:",opts:[["Correct",0],["Incorrect — it's uncountable",1]]}],
+  challenge:[["Está muito nublado e ventando hoje.","It's very cloudy and windy today."],["Qual estação você prefere, verão ou inverno?","Which season do you prefer, summer or winter?"]],
+  dialogue:[["Anna","How's the weather in Brazil now?"],["Marcos","It's hot and sunny, it's summer here."],["Anna","Here it's cold, it's winter in Canada."],["Marcos","I'd love to see snow one day!"],["Anna","You should visit in December, it snows a lot."],["Marcos","That sounds amazing, I'll plan a trip."]],
+  listenQ:[{q:"What season is it in Brazil?",opts:[["Summer",1],["Winter",0]]},{q:"What season is it in Canada?",opts:[["Winter",1],["Summer",0]]},{q:"When does Anna suggest visiting?",opts:[["December",1],["July",0]]}],
+  readingHtml:"In Brazil, it is <mark>summer</mark> and the weather is <mark>hot</mark> and <mark>sunny</mark>. In Canada, it is <mark>winter</mark>, and it is <mark>cold</mark> with a lot of snow. Marcos wants to visit in December to see the snow for the first time.",
+  vocab:["sunny","snow","hot","season","windy","cloudy"],
+  speak:"It's hot and sunny in Brazil, but cold in Canada." },
+
+26:{ topic:"Dias, meses e datas", title:"Days, Months & Dates", sub:"Como dizer datas em inglês.",
+  grammarTitle:"Dizendo datas",
+  grammarHtml:"Datas: 'on' + dia (on Monday), 'in' + mês/ano (in July, in 2026). Ex: My birthday is on July 5th. Números ordinais (1st, 2nd, 3rd, 4th...) são usados para dias do mês.",
+  tip:"No formato americano a ordem é mês/dia/ano (07/05/2026 = 5 de julho), mas no formato britânico e brasileiro é dia/mês/ano — sempre confirme qual formato está sendo usado!",
+  examples:[["My birthday is in July.","Meu aniversário é em julho."],["The meeting is on Monday.","A reunião é na segunda."],["We're going on vacation in December.","Vamos viajar em dezembro."],["Today is the 15th of August.","Hoje é dia 15 de agosto."],["The event is on the 3rd of October.","O evento é no dia 3 de outubro."],["I was born in 1998.","Eu nasci em 1998."]],
+  fill:[["My birthday is "," in"," July."],["The class is "," on"," Monday."],["It's the 15th "," of"," August."],["The event is "," on"," the 3rd."],["I was born "," in"," 1998."]],
+  choice:[{q:"Use before a month:",opts:[["in",1],["on",0]]},{q:"Use before a day of the week:",opts:[["in",0],["on",1]]},{q:"Ordinal number for '3':",opts:[["3rd",1],["3th",0]]}],
+  challenge:[["A reunião é na sexta-feira, dia 10 de outubro.","The meeting is on Friday, October 10th."],["Nós nascemos no mesmo mês, julho.","We were born in the same month, July."]],
+  dialogue:[["Marcos","When is your birthday?"],["Anna","It's in October, on the 3rd."],["Marcos","Mine is in July, on the 5th."],["Anna","Let's celebrate both this year!"],["Marcos","Great idea, maybe a trip together?"],["Anna","Perfect, let's plan it for August."]],
+  listenQ:[{q:"When is Anna's birthday?",opts:[["October 3rd",1],["July 5th",0]]},{q:"When is Marcos's birthday?",opts:[["July 5th",1],["October 3rd",0]]},{q:"When will they plan their trip?",opts:[["August",1],["December",0]]}],
+  readingHtml:"Anna's birthday is <mark>in</mark> October, <mark>on</mark> the third. Marcos's birthday is <mark>in</mark> July, <mark>on</mark> the fifth. They plan to celebrate both together this year, with a trip planned <mark>in</mark> August.",
+  vocab:["birthday","celebrate","vacation","meeting","event","ordinal"],
+  speak:"My birthday is in July, on the fifth." },
+
+27:{ topic:"Past Simple — to be", title:"Past Simple — Was / Were", sub:"Falando sobre o passado com to be.",
+  grammarTitle:"Was / were",
+  grammarHtml:"Passado de to be: I/he/she/it → <strong>was</strong>. You/we/they → <strong>were</strong>. Negativa: wasn't/weren't. Pergunta: Was/Were + sujeito...?",
+  tip:"'There was/there were' também segue essa regra: 'There was a party' (singular) vs 'There were many people' (plural).",
+  examples:[["I was tired yesterday.","Eu estava cansado ontem."],["They were at the party.","Eles estavam na festa."],["She wasn't happy.","Ela não estava feliz."],["Were you at home?","Você estava em casa?"],["There was a problem.","Havia um problema."],["We weren't ready.","Nós não estávamos prontos."]],
+  fill:[["I "," was"," tired yesterday."],["They "," were"," at the party."],["She "," wasn't"," happy."],[""," Were"," you at home?"],["There "," was"," a problem."]],
+  choice:[{q:"We ___ at school last week.",opts:[["was",0],["were",1]]},{q:"He ___ born in 1995.",opts:[["was",1],["were",0]]},{q:"___ they ready for the test?",opts:[["Was",0],["Were",1]]}],
+  challenge:[["Nós não estávamos prontos para a reunião.","We weren't ready for the meeting."],["Havia muitas pessoas na festa ontem.","There were many people at the party yesterday."]],
+  dialogue:[["Anna","Where were you yesterday?"],["Marcos","I was at work until seven."],["Anna","Was the meeting long?"],["Marcos","Yes, it was very long and tiring."],["Anna","Were you able to finish everything?"],["Marcos","Yes, but I was exhausted after."]],
+  listenQ:[{q:"Where was Marcos yesterday?",opts:[["At work",1],["At home",0]]},{q:"How was the meeting?",opts:[["Long and tiring",1],["Short",0]]},{q:"How did Marcos feel after?",opts:[["Exhausted",1],["Energetic",0]]}],
+  readingHtml:"Yesterday, Marcos <mark>was</mark> at work until seven. The meeting <mark>was</mark> very long. Anna <mark>was</mark> at home, and her evening <mark>was</mark> calm and relaxing. After the long day, Marcos <mark>was</mark> exhausted but satisfied.",
+  vocab:["tiring","relaxing","evening","calm","exhausted","satisfied"],
+  speak:"I was at work yesterday, and the meeting was long." },
+
+28:{ topic:"Past Simple — verbos regulares", title:"Past Simple — Regular Verbs", sub:"Verbos regulares no passado (-ed).",
+  grammarTitle:"Verbos regulares no passado",
+  grammarHtml:"Verbos regulares ganham <strong>-ed</strong> no passado: work → worked, study → studied, play → played. Verbos terminados em 'e' ganham só '-d': live → lived. Consoante+y vira '-ied': study → studied.",
+  tip:"A pronúncia do -ed varia: /t/ depois de sons surdos (worked), /d/ depois de sons sonoros (played), /ɪd/ depois de t/d (wanted, needed).",
+  examples:[["I worked late yesterday.","Eu trabalhei até tarde ontem."],["She studied for two hours.","Ela estudou por duas horas."],["We walked to the park.","Nós caminhamos até o parque."],["They watched a movie last night.","Eles assistiram a um filme ontem à noite."],["He lived in Canada for a year.","Ele morou no Canadá por um ano."],["I wanted to call you.","Eu queria te ligar."]],
+  fill:[["I "," worked"," until 8pm."],["She "," studied"," all day."],["We "," walked"," to the park."],["He "," lived"," in Canada."],["I "," wanted"," to call you."]],
+  choice:[{q:"Past of 'play':",opts:[["played",1],["playd",0]]},{q:"Past of 'study':",opts:[["studyed",0],["studied",1]]},{q:"Past of 'live':",opts:[["lived",1],["liveed",0]]}],
+  challenge:[["Eu estudei inglês por duas horas ontem.","I studied English for two hours yesterday."],["Eles caminharam até o parque de manhã.","They walked to the park in the morning."]],
+  dialogue:[["Anna","What did you do yesterday?"],["Marcos","I worked, then I studied English at night."],["Anna","I walked in the park and watched a movie."],["Marcos","Sounds relaxing!"],["Anna","It was! I also called my mom."],["Marcos","Nice, I wanted to call mine too."]],
+  listenQ:[{q:"What did Marcos do at night?",opts:[["Studied English",1],["Watched a movie",0]]},{q:"What did Anna do?",opts:[["Walked and watched a movie",1],["Worked all day",0]]},{q:"Who did Anna call?",opts:[["Her mom",1],["Her friend",0]]}],
+  readingHtml:"Yesterday, Marcos <mark>worked</mark> all day and <mark>studied</mark> English at night. Anna <mark>walked</mark> in the park and <mark>watched</mark> a movie. She also <mark>called</mark> her mom. Both <mark>wanted</mark> a relaxing evening after a busy day.",
+  vocab:["walked","watched","worked","studied","called","busy"],
+  speak:"I worked all day and studied English at night." },
+
+29:{ topic:"Past Simple — irregulares", title:"Past Simple — Irregular Verbs", sub:"Os verbos irregulares mais comuns.",
+  grammarTitle:"Verbos irregulares comuns",
+  grammarHtml:"Não seguem a regra do -ed: go→went, have→had, eat→ate, see→saw, buy→bought, get→got, make→made, take→took. Precisam ser memorizados um a um.",
+  tip:"Não existe fórmula para os irregulares — a melhor estratégia é aprendê-los em grupos pequenos e revisar com frequência, sempre dentro de frases.",
+  examples:[["I went to the market.","Eu fui ao mercado."],["She had a great trip.","Ela teve uma ótima viagem."],["We ate at a new restaurant.","Nós comemos em um restaurante novo."],["They saw a great movie.","Eles viram um filme ótimo."],["He got a new job.","Ele conseguiu um novo emprego."],["I made a mistake.","Eu cometi um erro."]],
+  fill:[["I "," went"," to the market."],["She "," had"," a great trip."],["We "," ate"," at a new place."],["He "," got"," a new job."],["I "," made"," a mistake."]],
+  choice:[{q:"Past of 'go':",opts:[["goed",0],["went",1]]},{q:"Past of 'see':",opts:[["saw",1],["seed",0]]},{q:"Past of 'buy':",opts:[["buyed",0],["bought",1]]}],
+  challenge:[["Nós compramos presentes para todos.","We bought presents for everyone."],["Ela conseguiu um novo emprego mês passado.","She got a new job last month."]],
+  dialogue:[["Marcos","Did you go anywhere last weekend?"],["Anna","Yes! I went to Montreal and saw old friends."],["Marcos","Nice, did you eat well there?"],["Anna","We ate amazing French food."],["Marcos","Did you buy anything special?"],["Anna","Yes, I bought a nice scarf for winter."]],
+  listenQ:[{q:"Where did Anna go?",opts:[["Montreal",1],["Toronto",0]]},{q:"What did they eat?",opts:[["French food",1],["Italian food",0]]},{q:"What did Anna buy?",opts:[["A scarf",1],["A book",0]]}],
+  readingHtml:"Last weekend, Anna <mark>went</mark> to Montreal. She <mark>saw</mark> old friends and <mark>ate</mark> amazing French food. She <mark>had</mark> a wonderful trip, <mark>bought</mark> a warm scarf, and <mark>got</mark> souvenirs for Marcos too.",
+  vocab:["wonderful","amazing","souvenirs","weekend","scarf","special"],
+  speak:"I went to Montreal, saw friends, and ate great food." },
+
+30:{ topic:"Going to (futuro)", title:"Going to — Future Plans", sub:"Falando sobre planos futuros.",
+  grammarTitle:"Be going to",
+  grammarHtml:"Usamos <strong>am/is/are going to</strong> + verbo base para planos e intenções já decididas: I am going to travel next month. Diferente de 'will', que é mais para decisões espontâneas.",
+  tip:"'Going to' é ótimo para planos já combinados; 'will' é melhor para previsões ou decisões feitas na hora (Ex: 'It's cold, I will close the window' — decisão espontânea).",
+  examples:[["I'm going to travel next month.","Eu vou viajar mês que vem."],["She's going to study abroad.","Ela vai estudar no exterior."],["We're going to visit Anna.","Nós vamos visitar a Anna."],["Are you going to call him?","Você vai ligar para ele?"],["They're not going to come.","Eles não vão vir."],["It's going to rain today.","Vai chover hoje (previsão)."]],
+  fill:[["I'm "," going"," to travel soon."],["She's "," going"," to study abroad."],[""," Are"," you going to call him?"],["They're "," not"," going to come."],["It's "," going"," to rain today."]],
+  choice:[{q:"Plan for the future:",opts:[["going to",1],["did",0]]},{q:"'Ele vai estudar' in English:",opts:[["He is going to study",1],["He studied",0]]},{q:"Weather prediction: 'It ___ rain.'",opts:[["is going to",1],["did",0]]}],
+  challenge:[["Nós vamos viajar para o Canadá ano que vem.","We are going to travel to Canada next year."],["Vai chover mais tarde hoje.","It's going to rain later today."]],
+  dialogue:[["Anna","What are you going to do this weekend?"],["Marcos","I'm going to visit my parents."],["Anna","Nice! I'm going to start a new English course."],["Marcos","That's great news!"],["Anna","Are you going to keep studying too?"],["Marcos","Yes, I'm going to study every day."]],
+  listenQ:[{q:"What is Marcos going to do?",opts:[["Visit his parents",1],["Study English",0]]},{q:"What is Anna going to do?",opts:[["Start an English course",1],["Travel",0]]},{q:"Is Marcos going to keep studying?",opts:[["Yes",1],["No",0]]}],
+  readingHtml:"This weekend, Marcos <mark>is going to</mark> visit his parents. Anna <mark>is going to</mark> start a new English course. Next year, they <mark>are going to</mark> travel to Canada together, and Marcos <mark>is going to</mark> keep studying every single day.",
+  vocab:["parents","course","together","weekend","prediction","decided"],
+  speak:"I'm going to visit my parents this weekend." },
+
+31:{ topic:"Preposições de tempo", title:"Prepositions of Time", sub:"in, on, at aplicados ao tempo.",
+  grammarTitle:"Preposições de tempo: in / on / at",
+  grammarHtml:"<strong>In</strong>: meses, anos, estações, períodos do dia (in July, in 2026, in the morning). <strong>On</strong>: dias e datas (on Monday, on July 5th). <strong>At</strong>: horas exatas e momentos (at 6pm, at night, at noon).",
+  tip:"Exceção importante: dizemos 'at night' mas 'in the morning/afternoon/evening' — é uma das poucas irregularidades que precisa ser decorada.",
+  examples:[["I wake up at 7am.","Eu acordo às 7h."],["The meeting is on Friday.","A reunião é na sexta."],["We were born in 1995.","Nós nascemos em 1995."],["She studies at night.","Ela estuda à noite."],["I go for a walk in the morning.","Eu caminho de manhã."],["See you on Monday morning.","Te vejo segunda de manhã."]],
+  fill:[["I wake up "," at"," seven."],["The party is "," on"," Saturday."],["He was born "," in"," 1998."],["She studies "," at"," night."],["I walk "," in"," the morning."]],
+  choice:[{q:"'At night' or 'in night'?",opts:[["At night",1],["In night",0]]},{q:"'On Monday' or 'at Monday'?",opts:[["On Monday",1],["At Monday",0]]},{q:"'In the morning' or 'at the morning'?",opts:[["In the morning",1],["At the morning",0]]}],
+  challenge:[["Eu acordo às sete da manhã.","I wake up at seven in the morning."],["A reunião é na sexta à noite.","The meeting is on Friday night."]],
+  dialogue:[["Marcos","When do you usually study?"],["Anna","I study at night, after dinner."],["Marcos","And on weekends?"],["Anna","On Saturdays I rest, but on Sundays I study too."],["Marcos","What about in the morning?"],["Anna","I don't study in the morning, I'm too tired."]],
+  listenQ:[{q:"When does Anna study?",opts:[["At night",1],["In the morning",0]]},{q:"When does she rest?",opts:[["On Saturdays",1],["On Sundays",0]]},{q:"Does she study in the morning?",opts:[["No",1],["Yes",0]]}],
+  readingHtml:"Anna studies <mark>at night</mark>, after dinner. <mark>On</mark> Saturdays she rests, but <mark>on</mark> Sundays she studies again. She never studies <mark>in the morning</mark> because she feels tired. She started this routine <mark>in</mark> January.",
+  vocab:["routine","rest","dinner","January","tired","after"],
+  speak:"I study at night, and I rest on Saturdays." },
+
+32:{ topic:"Verbos modais", title:"Must & Should", sub:"Obrigação e conselho.",
+  grammarTitle:"Must (obrigação) e should (conselho)",
+  grammarHtml:"<strong>Must</strong> expressa obrigação forte ou regra: You must wear a seatbelt. <strong>Should</strong> expressa conselho ou sugestão: You should rest more. Negativas: mustn't (proibido!) e shouldn't (não deveria).",
+  tip:"Cuidado: 'mustn't' significa 'é proibido', bem mais forte que 'don't have to' (que significa 'não é necessário'). São frequentemente confundidos!",
+  examples:[["You must wear a seatbelt.","Você deve usar cinto de segurança (obrigatório)."],["You should sleep more.","Você deveria dormir mais (conselho)."],["We must finish this today.","Nós temos que terminar isso hoje."],["She should call the doctor.","Ela deveria ligar para o médico."],["You mustn't smoke here.","É proibido fumar aqui."],["You shouldn't work so much.","Você não deveria trabalhar tanto."]],
+  fill:[["You "," must"," wear a seatbelt."],["You "," should"," rest more."],["We "," must"," finish today."],["You "," mustn't"," smoke here."],["You "," shouldn't"," work so much."]],
+  choice:[{q:"Strong obligation:",opts:[["must",1],["should",0]]},{q:"Friendly advice:",opts:[["must",0],["should",1]]},{q:"'É proibido fumar':",opts:[["You mustn't smoke",1],["You shouldn't smoke",0]]}],
+  challenge:[["Você não deveria trabalhar tanto assim.","You shouldn't work so much."],["É proibido estacionar aqui.","You mustn't park here."]],
+  dialogue:[["Anna","You look tired. You should rest."],["Marcos","I know, but I must finish this report."],["Anna","You should take a break at least."],["Marcos","You're right, I should."],["Anna","And you mustn't skip meals either!"],["Marcos","Okay, okay, I'll eat something now."]],
+  listenQ:[{q:"What should Marcos do?",opts:[["Rest / take a break",1],["Work more",0]]},{q:"What must he finish?",opts:[["A report",1],["A trip",0]]},{q:"What mustn't he do?",opts:[["Skip meals",1],["Sleep",0]]}],
+  readingHtml:"Marcos looks tired, so Anna says he <mark>should</mark> rest. But Marcos says he <mark>must</mark> finish his report first. Anna reminds him he <mark>mustn't</mark> skip meals. Everyone <mark>should</mark> take breaks, but sometimes we <mark>must</mark> work.",
+  vocab:["report","break","obligation","advice","skip","meals"],
+  speak:"You should rest, but I must finish this first." },
+
+33:{ topic:"Revisão geral A1", title:"Review — You Made It!", sub:"Revisão de tudo o que você aprendeu no nível A1.",
+  grammarTitle:"Revisão geral",
+  grammarHtml:"Você completou 30 dias! Revise: to be, present simple, past simple, going to, comparativos, superlativos, modais (can/must/should), preposições de tempo e lugar. Este exercício mistura um pouco de tudo que você aprendeu.",
+  tip:"O segredo da fluência agora é prática constante: continue ouvindo, lendo e falando inglês todos os dias, mesmo que só 10 minutos.",
+  examples:[["I am a student and I study every day.","Eu sou estudante e estudo todos os dias."],["Yesterday I went to the market and bought fruit.","Ontem eu fui ao mercado e comprei fruta."],["Next month, I'm going to travel.","Mês que vem, eu vou viajar."],["You should practice English every day.","Você deveria praticar inglês todos os dias."],["This is the best thing I've learned this year.","Esta é a melhor coisa que aprendi este ano."],["I can speak much more English now than before.","Eu consigo falar muito mais inglês agora do que antes."]],
+  fill:[["I "," am"," a student."],["Yesterday I "," went"," to the market."],["Next year I'm "," going"," to travel."],["This is the "," best"," thing I've learned."],["I "," can"," speak more English now."]],
+  choice:[{q:"Past of 'go':",opts:[["went",1],["goed",0]]},{q:"Advice, not obligation:",opts:[["should",1],["must",0]]},{q:"Superlative of 'good':",opts:[["best",1],["goodest",0]]}],
+  challenge:[["Eu aprendi muito nos últimos 30 dias.","I learned a lot in the last 30 days."],["Agora eu consigo falar muito mais inglês do que antes.","Now I can speak much more English than before."]],
+  dialogue:[["Anna","You finished the whole A1 course! How do you feel?"],["Marcos","I feel great! I can speak much more now."],["Anna","You should be proud. What's next?"],["Marcos","I'm going to start level A2!"],["Anna","That's amazing progress in just 30 days."],["Marcos","Thank you for helping me practice every day."]],
+  listenQ:[{q:"How does Marcos feel?",opts:[["Great",1],["Tired",0]]},{q:"What's his next step?",opts:[["Start A2",1],["Stop studying",0]]},{q:"How long did the course take?",opts:[["30 days",1],["30 weeks",0]]}],
+  readingHtml:"Marcos <mark>finished</mark> the A1 course after 30 days of practice. He <mark>can</mark> introduce himself, talk about routines, the past, and future plans. Now he <mark>is going to</mark> start level A2 with Anna's support, feeling more <mark>confident</mark> than ever.",
+  vocab:["finished","proud","support","practice","confident","progress"],
+  speak:"I finished level A1, and I'm going to start A2!" }
+};
+const TOTAL_DAYS = 33;
+
+/* ============ CONTEÚDO EXTRA (camada de aprofundamento) ============
+   Para cada dia: mais frases contextualizadas, erros comuns de brasileiros
+   aprendendo inglês, e um exercício de reordenar palavras. */
+const extras = {
+1:{ moreExamples:[["Good evening, how are you?","Boa noite, como vai você?"],["No problem, see you soon!","Sem problema, até breve!"]],
+  mistakes:[["Excuse me for being late.","I'm sorry for being late.","Para pedir desculpas por um erro, use 'I'm sorry', não 'Excuse me'."],["Thanks you.","Thank you.","A forma correta é 'thank you' ou só 'thanks', nunca 'thanks you'."]],
+  reorder:[[["much","Thank","very","you"],"Thank you very much"],[["me","help","can","you","Excuse"],"Excuse me can you help"],[["morning","Good","everyone"],"Good morning everyone"]] },
+2:{ moreExamples:[["I have four yellow pencils.","Eu tenho quatro lápis amarelos."],["He counted six black cats.","Ele contou seis gatos pretos."]],
+  mistakes:[["I have two brother.","I have two brothers.","Depois de um número maior que 1, o substantivo vai para o plural."],["The color of sky is blue.","The color of the sky is blue.","Não esqueça o artigo 'the' antes de substantivos específicos como 'sky'."]],
+  reorder:[[["books","three","have","I"],"I have three books"],[["red","is","apple","The"],"The apple is red"],[["favorite","blue","My","is","color"],"My favorite color is blue"]] },
+3:{ moreExamples:[["He is my classmate, and she is my friend.","Ele é meu colega, e ela é minha amiga."],["We are in the classroom now.","Nós estamos na sala de aula agora."]],
+  mistakes:[["Her is my friend.","She is my friend.","'Her' é pronome objeto; o pronome sujeito correto é 'she'."],["Us are classmates.","We are classmates.","'Us' é pronome objeto; o pronome sujeito correto é 'we'."]],
+  reorder:[[["classmates","are","We"],"We are classmates"],[["pen","my","is","This"],"This is my pen"],[["window","the","near","is","It"],"It is near the window"]] },
+
+4:{ moreExamples:[["Are you ready for the trip?","Você está pronto para a viagem?"],["It is not easy, but it is fun.","Não é fácil, mas é divertido."]],
+  mistakes:[["I is Marcos.","I am Marcos.","Nunca use 'is' com 'I' — só 'am'."],["She are happy.","She is happy.","'She/he/it' sempre usa 'is', nunca 'are'."]],
+  reorder:[[["from","I","Brazil","am"],"I am from Brazil."],[["your","is","name","What"],"What is your name?"],[["not","ready","We","are"],"We are not ready."]] },
+5:{ moreExamples:[["The restaurant is at the end of the street.","O restaurante fica no fim da rua."],["He works in a big office building.","Ele trabalha em um prédio de escritórios grande."]],
+  mistakes:[["I am in the bus.","I am on the bus.","Usamos 'on' para meios de transporte públicos (bus, train, plane)."],["She is in home.","She is at home.","A expressão fixa é 'at home', não 'in home'."]],
+  reorder:[[["table","is","the","on","book","The"],"The book is on the table."],[["school","at","Marcos","is"],"Marcos is at school."],[["Street","on","is","It","Main"],"It is on Main Street."]] },
+6:{ moreExamples:[["This is a unique opportunity.","Esta é uma oportunidade única."],["I need an hour to finish this.","Eu preciso de uma hora para terminar isso."]],
+  mistakes:[["I have an dog.","I have a dog.","'Dog' começa com som de consoante, então usa-se 'a', não 'an'."],["She is a engineer.","She is an engineer.","'Engineer' começa com som de vogal, precisa de 'an'."]],
+  reorder:[[["cat","have","a","I"],"I have a cat."],[["artist","is","an","She"],"She is an artist."],[["door","the","Close","please"],"Close the door please"]] },
+7:{ moreExamples:[["There are many opportunities here.","Há muitas oportunidades aqui."],["I met three interesting people today.","Eu conheci três pessoas interessantes hoje."]],
+  mistakes:[["I have two informations.","I have two pieces of information.","'Information' é incontável, não tem plural em inglês."],["She has two child.","She has two children.","'Child' é irregular: o plural é 'children', não 'childs'."]],
+  reorder:[[["brothers","have","two","I"],"I have two brothers."],[["here","people","are","Many"],"Many people are here."],[["cities","visited","three","I"],"I visited three cities."]] },
+8:{ moreExamples:[["Their car is parked outside.","O carro deles está estacionado lá fora."],["Is this seat yours?","Este assento é seu?"]],
+  mistakes:[["This is the book of Anna.","This is Anna's book.","Em inglês, usamos o possessivo 's, não 'of' para pessoas."],["The dog wags it's tail.","The dog wags its tail.","'Its' possessivo não tem apóstrofo — só 'it's' (it is) tem."]],
+  reorder:[[["phone","my","This","is"],"This is my phone."],[["bag","your","that","Is"],"Is that your bag?"],[["Anna's","book","This","is"],"This is Anna's book."]] },
+9:{ moreExamples:[["There are two ways to solve this.","Há duas formas de resolver isso."],["Is there a solution to this problem?","Há uma solução para esse problema?"]],
+  mistakes:[["It has a park near my house.","There is a park near my house.","Para dizer que algo existe, usamos 'there is/are', não 'it has'."],["There is many people.","There are many people.","'People' é plural, então precisa de 'there are'."]],
+  reorder:[[["park","is","a","There","near"],"There is a park near."],[["books","are","five","There"],"There are five books."],[["bank","a","Is","near","there","here"],"Is there a bank near here?"]] },
+10:{ moreExamples:[["This idea sounds great to me.","Essa ideia me parece ótima."],["Those days were the best of my life.","Aqueles dias foram os melhores da minha vida."]],
+  mistakes:[["This are my keys.","These are my keys.","'This' é singular; para plural, use 'these'."],["That shoes are nice.","Those shoes are nice.","'That' é singular; para plural e longe, use 'those'."]],
+  reorder:[[["pen","my","is","This"],"This is my pen."],[["house","your","is","That"],"That is your house."],[["keys","my","are","These"],"These are my keys."]] },
+11:{ moreExamples:[["My father works as an engineer.","Meu pai trabalha como engenheiro."],["We usually meet on Fridays.","Nós geralmente nos encontramos nas sextas."]],
+  mistakes:[["She work every day.","She works every day.","Na 3ª pessoa (he/she/it), o verbo ganha -s no Present Simple."],["He go to school by bus.","He goes to school by bus.","Verbos terminados em -o ganham -es: go→goes."]],
+  reorder:[[["works","She","bank","a","at"],"She works at a bank."],[["Sundays","plays","He","soccer","on"],"He plays soccer on Sundays."],[["English","study","We"],"We study English."]] },
+12:{ moreExamples:[["I don't understand this exercise.","Eu não entendo esse exercício."],["Does she know the answer?","Ela sabe a resposta?"]],
+  mistakes:[["She don't like it.","She doesn't like it.","Na 3ª pessoa, a negativa correta é 'doesn't', não 'don't'."],["Does she likes coffee?","Does she like coffee?","Depois de 'does', o verbo NÃO leva -s."]],
+  reorder:[[["tea","like","don't","I"],"I don't like tea."],[["English","you","speak","Do"],"Do you speak English"],[["here","live","doesn't","He"],"He doesn't live here."]] },
+13:{ moreExamples:[["The store opens at nine.","A loja abre às nove."],["We arrived a little late.","Nós chegamos um pouco atrasados."]],
+  mistakes:[["It's three hours.","It's three o'clock.","Para dizer as horas, usamos 'o'clock', não 'hours'."],["What hours is it?","What time is it?","A pergunta correta é 'What time', não 'What hours'."]],
+  reorder:[[["six","past","half","It's"],"It's half past six."],[["seven","leaves","at","train","The"],"The train leaves at seven."],[["five","to","quarter","a","It's"],"It's a quarter to five."]] },
+14:{ moreExamples:[["I hardly ever go to the gym.","Eu quase nunca vou à academia."],["She is always on time.","Ela está sempre na hora."]],
+  mistakes:[["I drink always coffee.","I always drink coffee.","Advérbios de frequência ficam ANTES do verbo principal."],["She is usually happy.","She is usually happy.","Correto! Com 'to be', o advérbio vem DEPOIS do verbo."]],
+  reorder:[[["night","study","always","at","I"],"I always study at night."],[["late","is","never","She"],"She is never late."],[["school","sometimes","walk","to","We"],"We sometimes walk to school."]] },
+15:{ moreExamples:[["Can I use your phone for a minute?","Posso usar seu telefone por um minuto?"],["We can try again tomorrow.","Podemos tentar de novo amanhã."]],
+  mistakes:[["She can to swim.","She can swim.","Depois de 'can', o verbo NUNCA leva 'to'."],["He cans play guitar.","He can play guitar.","'Can' nunca leva -s, nem na 3ª pessoa."]],
+  reorder:[[["swim","can","well","very","I"],"I can swim very well."],[["cook","can't","He","all","at"],"He can't cook at all."],[["French","speak","you","Can"],"Can you speak French"]] },
+16:{ moreExamples:[["This dress is absolutely beautiful.","Este vestido é absolutamente lindo."],["He is smarter than he looks.","Ele é mais esperto do que parece."]],
+  mistakes:[["She is a tall woman very.","She is a very tall woman.","O advérbio de intensidade ('very') vem antes do adjetivo."],["He is more tall.","He is taller.","Adjetivos curtos (1 sílaba) usam -er, não 'more'."]],
+  reorder:[[["hair","has","long","She"],"She has long hair."],[["city","is","a","big","It"],"It is a big city."],[["very","He","kind","is"],"He is very kind."]] },
+17:{ moreExamples:[["My grandparents live in the countryside.","Meus avós moram no interior."],["He takes care of his younger siblings.","Ele cuida dos irmãos mais novos."]],
+  mistakes:[["I have many parents in Brazil.","I have many relatives in Brazil.","'Parents' = pai e mãe apenas; 'relatives' = parentes em geral."],["She is my cousin's mother.","She is my aunt.","Se é mãe do seu primo, o termo correto e mais simples é 'aunt' (tia)."]],
+  reorder:[[["doctor","mother","a","is","My"],"My mother is a doctor."],[["old","is","very","His","grandfather"],"His grandfather is very old."],[["Rio","lives","aunt","in","Her"],"Her aunt lives in Rio."]] },
+18:{ moreExamples:[["There isn't much time left.","Não sobra muito tempo."],["A few students were absent today.","Alguns estudantes faltaram hoje."]],
+  mistakes:[["I have some question.","I have some questions.","Depois de 'some' com contáveis, o substantivo vai para o plural."],["There is much people here.","There are a lot of people here.","'Much' não combina com plural contável; use 'a lot of' ou 'many'."]],
+  reorder:[[["questions","have","some","I"],"I have some questions."],[["bread","any","isn't","There"],"There isn't any bread."],[["books","lot","has","a","of","She"],"She has a lot of books."]] },
+19:{ moreExamples:[["Please send it to me by email.","Por favor, envie para mim por e-mail."],["I really appreciate you.","Eu realmente aprecio você."]],
+  mistakes:[["Me and him went home.","He and I went home.","Sujeito da frase usa pronome sujeito (I, he), não objeto (me, him)."],["Give the book to she.","Give the book to her.","Depois de preposição ('to'), usa-se pronome objeto: her, not she."]],
+  reorder:[[["day","every","calls","She","me"],"She calls me every day."],[["work","him","see","I","at"],"I see him at work."],[["dinner","invited","them","We","to"],"We invited them to dinner."]] },
+20:{ moreExamples:[["She is currently living in Toronto.","Ela está morando em Toronto atualmente."],["They are planning a big trip.","Eles estão planejando uma grande viagem."]],
+  mistakes:[["I am liking this song.","I like this song.","Verbos de estado (like, know, want) não usam a forma -ing."],["She is study now.","She is studying now.","O verbo precisa da terminação -ing no Present Continuous."]],
+  reorder:[[["now","studying","right","am","I"],"I am studying right now."],[["dinner","cooking","is","She"],"She is cooking dinner."],[["movie","watching","a","are","They"],"They are watching a movie."]] },
+21:{ moreExamples:[["This year is better than the last one.","Este ano está melhor que o anterior."],["My phone is more useful than my laptop.","Meu celular é mais útil que meu laptop."]],
+  mistakes:[["He is more taller than me.","He is taller than me.","Nunca combine 'more' com adjetivos que já usam '-er'."],["This is gooder than that.","This is better than that.","'Good' é irregular: o comparativo é 'better', não 'gooder'."]],
+  reorder:[[["me","than","taller","is","He"],"He is taller than me."],[["that","than","interesting","more","This","is"],"This is more interesting than that."],[["yesterday","better","is","Today","than"],"Today is better than yesterday."]] },
+22:{ moreExamples:[["This is by far the funniest movie.","Este é de longe o filme mais engraçado."],["He is the kindest person I know.","Ele é a pessoa mais gentil que eu conheço."]],
+  mistakes:[["He is the more tall in class.","He is the tallest in class.","Superlativo de adjetivo curto usa '-est', não 'the more'."],["This is the goodest day.","This is the best day.","'Good' é irregular: o superlativo é 'the best'."]],
+  reorder:[[["class","tallest","is","He","the","in"],"He is the tallest in class."],[["city","most","This","the","beautiful","is"],"This is the most beautiful city."],[["ever","best","trip","It","the","was"],"It was the best trip ever."]] },
+23:{ moreExamples:[["Keep going until you see the sign.","Continue até ver a placa."],["The hotel is a short walk from here.","O hotel fica a uma curta caminhada daqui."]],
+  mistakes:[["Turn to left.","Turn left.","Com 'turn', não usamos 'to' antes de 'left/right'."],["It's next the bank.","It's next to the bank.","A expressão completa é 'next to', nunca só 'next'."]],
+  reorder:[[["light","Turn","the","left","at"],"Turn left at the light."],[["ahead","straight","Go"],"Go straight ahead."],[["bank","next","is","to","The","shop","the"],"The shop is next to the bank."]] },
+24:{ moreExamples:[["Could I have the menu, please?","Poderia me trazer o cardápio, por favor?"],["I'd love to try the local specialty.","Eu adoraria experimentar a especialidade local."]],
+  mistakes:[["I want a coffee.","I'd like a coffee, please.","'I want' soa rude em restaurantes; prefira 'I'd like'."],["Would you like order now?","Would you like to order now?","Depois de 'would like', use 'to' + verbo quando há uma ação."]],
+  reorder:[[["coffee","like","a","I'd","please"],"I'd like a coffee please"],[["water","like","you","Would","some"],"Would you like some water"],[["now","order","to","like","We'd"],"We'd like to order now."]] },
+25:{ moreExamples:[["It's freezing outside today.","Está congelante lá fora hoje."],["The forecast says it will rain tomorrow.","A previsão diz que vai chover amanhã."]],
+  mistakes:[["The weather is good today, is hot.","The weather is good today, it's hot.","Sempre use 'it' como sujeito para falar do clima."],["How is the weathers?","What's the weather like?","'Weather' não tem plural, e a pergunta correta usa 'like'."]],
+  reorder:[[["today","sunny","It's"],"It's sunny today."],[["winter","cold","in","very","It's"],"It's very cold in winter."],[["autumn","rains","a","in","It","lot"],"It rains a lot in autumn."]] },
+26:{ moreExamples:[["The deadline is on the 20th.","O prazo é no dia 20."],["We got married in June.","Nós nos casamos em junho."]],
+  mistakes:[["My birthday is on July.","My birthday is in July.","Meses usam 'in', não 'on' (só dias específicos usam 'on')."],["The meeting is in Monday.","The meeting is on Monday.","Dias da semana usam 'on', não 'in'."]],
+  reorder:[[["July","birthday","in","My","is"],"My birthday is in July."],[["Monday","class","is","The","on"],"The class is on Monday."],[["August","15th","of","the","It's"],"It's the 15th of August."]] },
+27:{ moreExamples:[["Were they satisfied with the result?","Eles ficaram satisfeitos com o resultado?"],["The trip was worth every minute.","A viagem valeu cada minuto."]],
+  mistakes:[["I were tired.","I was tired.","Com 'I/he/she/it', o passado de 'to be' é 'was', não 'were'."],["They was at the party.","They were at the party.","Com 'they/we/you', o passado de 'to be' é 'were', não 'was'."]],
+  reorder:[[["yesterday","was","tired","I"],"I was tired yesterday."],[["party","the","were","at","They"],"They were at the party."],[["happy","wasn't","She"],"She wasn't happy."]] },
+28:{ moreExamples:[["We planned this trip for months.","Planejamos essa viagem por meses."],["She helped me finish the project.","Ela me ajudou a terminar o projeto."]],
+  mistakes:[["I studyed all day.","I studied all day.","Verbos terminados em consoante+y trocam o y por -ied."],["She liveed in Canada.","She lived in Canada.","Verbos terminados em 'e' ganham só '-d', não '-ed' duplicado."]],
+  reorder:[[["8pm","worked","until","I"],"I worked until 8pm."],[["day","studied","all","She"],"She studied all day."],[["park","walked","the","to","We"],"We walked to the park."]] },
+29:{ moreExamples:[["He found the keys under the sofa.","Ele encontrou as chaves debaixo do sofá."],["We took a lot of photos there.","Nós tiramos muitas fotos lá."]],
+  mistakes:[["I goed to the market.","I went to the market.","'Go' é irregular: o passado é 'went', nunca 'goed'."],["She buyed a new dress.","She bought a new dress.","'Buy' é irregular: o passado é 'bought', nunca 'buyed'."]],
+  reorder:[[["market","went","the","I","to"],"I went to the market."],[["trip","great","had","a","She"],"She had a great trip."],[["restaurant","ate","new","We","a","at"],"We ate at a new restaurant."]] },
+30:{ moreExamples:[["I'm going to change my routine.","Eu vou mudar minha rotina."],["They are going to renovate the house.","Eles vão reformar a casa."]],
+  mistakes:[["I go to travel next month.","I am going to travel next month.","Precisa do verbo 'to be' antes de 'going to'."],["She's going travel.","She's going to travel.","Falta o 'to' entre 'going' e o verbo principal."]],
+  reorder:[[["month","travel","going","I'm","next","to"],"I'm going to travel next month."],[["abroad","study","going","She's","to"],"She's going to study abroad."],[["Anna","going","visit","We're","to"],"We're going to visit Anna."]] },
+31:{ moreExamples:[["The store closes at 10pm.","A loja fecha às 22h."],["I'll see you in the afternoon.","Te vejo à tarde."]],
+  mistakes:[["I study in night.","I study at night.","A expressão fixa é 'at night', exceção às outras regras de tempo."],["See you at Monday.","See you on Monday.","Dias da semana sempre usam 'on', nunca 'at'."]],
+  reorder:[[["seven","up","at","wake","I"],"I wake up at seven."],[["Saturday","is","party","The","on"],"The party is on Saturday."],[["1998","born","was","He","in"],"He was born in 1998."]] },
+32:{ moreExamples:[["You really should see a doctor.","Você realmente deveria ver um médico."],["We mustn't be late for the flight.","Nós não podemos nos atrasar para o voo."]],
+  mistakes:[["You should to rest.","You should rest.","Depois de 'should' e 'must', o verbo NUNCA leva 'to'."],["She musts finish it.","She must finish it.","'Must' nunca leva -s, nem na 3ª pessoa."]],
+  reorder:[[["seatbelt","must","wear","a","You"],"You must wear a seatbelt."],[["more","should","sleep","You"],"You should sleep more."],[["today","finish","must","this","We"],"We must finish this today."]] },
+33:{ moreExamples:[["I'm proud of how far I've come.","Estou orgulhoso de até onde cheguei."],["Keep practicing, and you'll improve fast.","Continue praticando, e você vai melhorar rápido."]],
+  mistakes:[["I speak English good now.","I speak English well now.","'Good' é adjetivo; para modificar um verbo, use o advérbio 'well'."],["I am agree with you.","I agree with you.","'Agree' já é verbo; não precisa (nem pode) usar 'am' antes."]],
+  reorder:[[["student","a","am","I"],"I am a student."],[["market","went","the","to","I"],"I went to the market."],[["travel","going","I'm","to"],"I'm going to travel."]] }
+};
+
+/* ============ GUIA DE VERBOS (recurso de consulta, não é por dia) ============ */
+const irregularVerbs = [
+["be","was/were","been","ser/estar"],["become","became","become","tornar-se"],["begin","began","begun","começar"],
+["break","broke","broken","quebrar"],["bring","brought","brought","trazer"],["build","built","built","construir"],
+["buy","bought","bought","comprar"],["catch","caught","caught","pegar"],["choose","chose","chosen","escolher"],
+["come","came","come","vir"],["cost","cost","cost","custar"],["cut","cut","cut","cortar"],
+["do","did","done","fazer"],["drink","drank","drunk","beber"],["drive","drove","driven","dirigir"],
+["eat","ate","eaten","comer"],["fall","fell","fallen","cair"],["feel","felt","felt","sentir"],
+["find","found","found","encontrar"],["fly","flew","flown","voar"],["forget","forgot","forgotten","esquecer"],
+["get","got","gotten/got","conseguir, pegar"],["give","gave","given","dar"],["go","went","gone","ir"],
+["have","had","had","ter"],["hear","heard","heard","ouvir"],["hold","held","held","segurar"],
+["keep","kept","kept","manter"],["know","knew","known","saber, conhecer"],["leave","left","left","sair, deixar"],
+["lose","lost","lost","perder"],["make","made","made","fazer"],["meet","met","met","conhecer, encontrar"],
+["pay","paid","paid","pagar"],["put","put","put","colocar"],["read","read","read","ler"],
+["run","ran","run","correr"],["say","said","said","dizer"],["see","saw","seen","ver"],
+["sell","sold","sold","vender"],["send","sent","sent","enviar"],["show","showed","shown","mostrar"],
+["sit","sat","sat","sentar"],["sleep","slept","slept","dormir"],["speak","spoke","spoken","falar"],
+["spend","spent","spent","gastar"],["stand","stood","stood","ficar em pé"],["swim","swam","swum","nadar"],
+["take","took","taken","pegar, levar"],["teach","taught","taught","ensinar"],["tell","told","told","contar, dizer"],
+["think","thought","thought","pensar"],["understand","understood","understood","entender"],
+["wake","woke","woken","acordar"],["wear","wore","worn","usar (roupa)"],["win","won","won","vencer"],
+["write","wrote","written","escrever"]
+];
+const stateVerbs = [
+["know","saber, conhecer","I know the answer.","I am knowing the answer."],
+["like","gostar","I like coffee.","I am liking coffee."],
+["want","querer","She wants a coffee.","She is wanting a coffee."],
+["believe","acreditar","I believe you.","I am believing you."],
+["understand","entender","We understand the rule.","We are understanding the rule."],
+["need","precisar","He needs help.","He is needing help."],
+["prefer","preferir","I prefer tea.","I am preferring tea."],
+["love","amar","She loves music.","She is loving music."],
+["hate","odiar","I hate waiting.","I am hating waiting."],
+["seem","parecer","It seems fine.","It is seeming fine."],
+["own","possuir","They own a house.","They are owning a house."],
+["belong","pertencer","This belongs to me.","This is belonging to me."]
+];
+const modalVerbs = [
+["can","capacidade, permissão informal","I can swim.","Habilidade atual ou pedido casual."],
+["could","capacidade no passado, pedido educado","Could you help me?","Passado de 'can', ou forma mais educada de pedir."],
+["may","permissão formal, possibilidade","May I come in?","Contextos formais, ou possibilidade ('it may rain')."],
+["might","possibilidade (mais incerta que may)","It might rain later.","Quando a chance é menor ou mais incerta."],
+["must","obrigação forte, dedução lógica","You must wear a seatbelt.","Regra obrigatória, ou conclusão óbvia ('He must be tired')."],
+["should","conselho, recomendação","You should rest.","Sugestão — não é obrigatório, é um conselho."],
+["will","decisão espontânea, previsão","I will call you later.","Decisão feita na hora, ou previsão sobre o futuro."],
+["would","hipótese, pedido educado, hábito passado","I would like a coffee.","Pedidos educados, condicionais, ou hábitos no passado ('When I was young, I would play outside')."]
+];
+const phrasalVerbs = [
+["wake up","acordar","I wake up at seven every day."],
+["get up","levantar (da cama)","He gets up early on weekdays."],
+["look for","procurar","She is looking for her keys."],
+["look after","cuidar de","Can you look after my dog?"],
+["turn on / off","ligar / desligar","Please turn off the lights."],
+["give up","desistir","Don't give up on your goals."],
+["find out","descobrir","I need to find out the truth."],
+["pick up","pegar, buscar","I'll pick you up at six."],
+["put on","vestir, colocar","Put on your jacket, it's cold."],
+["take off","tirar (roupa); decolar (avião)","The plane takes off at noon."],
+["get along","se dar bem","We get along very well."],
+["run out of","ficar sem","We ran out of milk."],
+["figure out","entender, resolver","I can't figure out this problem."],
+["hang out","sair, passar tempo com","Let's hang out this weekend."],
+["come back","voltar","She will come back tomorrow."]
+];
+const falseCognates = [
+["actually","na verdade (NÃO 'atualmente')","Atualmente = currently / nowadays"],
+["pretend","fingir (NÃO 'pretender')","Pretender = to intend / to plan"],
+["parents","pai e mãe (NÃO 'parentes')","Parentes = relatives"],
+["push","empurrar (NÃO 'puxar')","Puxar = to pull"],
+["pull","puxar (NÃO 'pular')","Pular = to jump"],
+["college","faculdade (NÃO 'colégio')","Colégio (ensino médio) = high school"],
+["fabric","tecido (NÃO 'fábrica')","Fábrica = factory"],
+["realize","perceber, dar-se conta (NÃO 'realizar')","Realizar (um sonho/evento) = to achieve / to hold"],
+["exquisite","refinado, primoroso (NÃO 'esquisito')","Esquisito = weird / strange"],
+["costume","fantasia (roupa) (NÃO 'costume')","Costume (hábito) = habit / custom"],
+["assist","ajudar (NÃO 'assistir')","Assistir (TV/filme) = to watch"],
+["lecture","palestra, aula (NÃO 'leitura')","Leitura = reading"],
+["library","biblioteca (NÃO 'livraria')","Livraria = bookstore"],
+["intend","pretender, ter intenção (NÃO 'entender')","Entender = to understand"],
+["sensible","sensato (NÃO 'sensível')","Sensível = sensitive"],
+["notice","perceber, aviso (NÃO 'notícia')","Notícia = news"],
+["resume","retomar, continuar (NÃO 'resumo')","Resumo (de texto) = summary"],
+["injury","ferimento (NÃO 'injúria')","Injúria (xingamento) = insult"],
+["prejudice","preconceito (NÃO 'prejuízo')","Prejuízo (financeiro) = loss / damage"],
+["mayor","prefeito (NÃO 'maior')","Maior (tamanho) = bigger / biggest"]
+];
+const tenseOverview = [
+["Present Simple","sujeito + verbo (+s na 3ª pessoa)","I work every day.","Rotinas, hábitos, fatos gerais."],
+["Present Continuous","am/is/are + verbo-ing","I am working now.","Ações acontecendo agora, ou planos já combinados."],
+["Past Simple","verbo no passado (-ed ou irregular)","I worked yesterday.","Ações completas e terminadas no passado."],
+["Going to (futuro)","am/is/are + going to + verbo","I am going to work tomorrow.","Planos e intenções já decididas."],
+["Will (futuro)","will + verbo base","I will work later.","Decisões espontâneas, previsões, promessas."]
+];
+const prepositionSummary = [
+["in","meses, anos, estações, cidades/países, períodos do dia","in July, in 2026, in Brazil, in the morning"],
+["on","dias da semana, datas, superfícies, ruas","on Monday, on July 5th, on the table, on Main Street"],
+["at","horas exatas, pontos específicos, noite","at 6pm, at the door, at night, at the corner"]
+];
+const dependentPrepositions = [
+["depend on","depender de","This depends on the weather."],
+["listen to","escutar (ouvir alguém/algo)","Listen to me, please."],
+["wait for","esperar por","We waited for the bus."],
+["look at","olhar para","Look at this photo!"],
+["believe in","acreditar em","I believe in you."],
+["apologize for","pedir desculpas por","He apologized for being late."],
+["worry about","preocupar-se com","Don't worry about it."],
+["agree with","concordar com","I agree with your idea."],
+["arrive at/in","chegar em (lugar pequeno/grande)","We arrived at the station. / We arrived in Canada."],
+["talk to / about","falar com / sobre","I need to talk to you about this."],
+["think about","pensar sobre, refletir","I'm thinking about my future."],
+["dream of/about","sonhar com","She dreams of traveling the world."],
+["laugh at","rir de","They laughed at the joke."],
+["complain about","reclamar de","He complained about the noise."],
+["insist on","insistir em","She insisted on paying the bill."],
+["congratulate on","parabenizar por","Congratulations on your new job!"],
+["focus on","focar em","Let's focus on the important things."],
+["consist of","consistir em, ser composto de","The team consists of five people."],
+["succeed in","ter sucesso em","He succeeded in passing the exam."],
+["compare to/with","comparar a/com","Don't compare yourself to others."]
+];
+const idioms = [
+["It's raining cats and dogs.","Está chovendo muito forte.","Used when it's raining heavily."],
+["Break a leg!","Boa sorte!","Said before a performance, exam, or important event."],
+["Piece of cake.","Muito fácil, moleza.","'This test was a piece of cake' = foi muito fácil."],
+["Hit the books.","Estudar bastante.","'I need to hit the books before the exam.'"],
+["Under the weather.","Meio doente, indisposto.","'I'm feeling a bit under the weather today.'"],
+["Cost an arm and a leg.","Custar muito caro.","'That car cost an arm and a leg.'"],
+["Once in a blue moon.","Muito raramente.","'We eat out once in a blue moon.'"],
+["The ball is in your court.","A decisão agora é sua.","Used when it's someone else's turn to act or decide."],
+["Speak of the devil!","Falando no diabo (a pessoa aparece).","Said when someone you were just talking about shows up."],
+["Hit the sack / hit the hay.","Ir dormir.","'I'm tired, I'm going to hit the sack.'"],
+["Let the cat out of the bag.","Revelar um segredo sem querer.","'He let the cat out of the bag about the surprise party.'"],
+["On the same page.","Concordando, alinhados.","'Let's make sure we're on the same page before we start.'"],
+["Better late than never.","Antes tarde do que nunca.","Used to comfort someone who did something late."],
+["Actions speak louder than words.","Ações falam mais que palavras.","Used to emphasize doing over just saying."],
+["A blessing in disguise.","Um mal que na verdade é um bem.","'Losing that job was a blessing in disguise.'"],
+["Bite the bullet.","Encarar algo difícil com coragem.","'I decided to bite the bullet and go to the dentist.'"]
+];
+function esc2(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function buildVerbGuideHtml(){
+  const irrRows = irregularVerbs.map(([b,p,pp,t]) => `<tr><td class="mono">${b}</td><td class="mono">${p}</td><td class="mono">${pp}</td><td>${t}</td></tr>`).join('');
+  const stateRows = stateVerbs.map(([v,t,right,wrong]) => `<tr><td class="mono">${v}</td><td>${t}</td><td style="color:var(--green)">${right}</td><td style="color:var(--coral);text-decoration:line-through">${wrong}</td></tr>`).join('');
+  const modalRows = modalVerbs.map(([v,use,ex,note]) => `<tr><td class="mono">${v}</td><td>${use}</td><td><em>${ex}</em></td><td>${note}</td></tr>`).join('');
+  const phrasalRows = phrasalVerbs.map(([v,t,ex]) => `<tr><td class="mono">${v}</td><td>${t}</td><td><em>${ex}</em></td></tr>`).join('');
+  const falseCogRows = falseCognates.map(([w,meaning,note]) => `<tr><td class="mono">${w}</td><td>${meaning}</td><td style="color:var(--ink-soft);font-size:.88rem">${note}</td></tr>`).join('');
+  const tenseRows = tenseOverview.map(([name,formula,ex,use]) => `<tr><td><strong>${name}</strong></td><td class="mono" style="font-size:.85rem">${formula}</td><td><em>${ex}</em></td><td style="font-size:.88rem">${use}</td></tr>`).join('');
+  const prepRows = prepositionSummary.map(([p,use,ex]) => `<tr><td class="mono">${p}</td><td>${use}</td><td class="mono" style="font-size:.85rem">${ex}</td></tr>`).join('');
+  const depPrepRows = dependentPrepositions.map(([v,t,ex]) => `<tr><td class="mono">${v}</td><td>${t}</td><td><em>${ex}</em></td></tr>`).join('');
+  const idiomRows = idioms.map(([phrase,meaning,use]) => `<tr><td class="mono" style="font-size:.85rem">${phrase}</td><td>${meaning}</td><td style="font-size:.86rem;color:var(--ink-soft)">${use}</td></tr>`).join('');
+  return `
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--blue)">Referência</div>
+      <h2 class="block-title">Verbos irregulares mais comuns</h2>
+      <p class="explain">Estes ~55 verbos não seguem a regra do -ed. Eles aparecem o tempo todo em conversas reais — vale a pena revisar esta tabela com frequência. <strong>Base</strong> = presente, <strong>Passado</strong> = Past Simple, <strong>Particípio</strong> = usado em tempos compostos (ex: have done, has gone).</p>
+      <table class="vocab-table"><thead><tr><th>Base</th><th>Passado</th><th>Particípio</th><th>Tradução</th></tr></thead><tbody>${irrRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--amber)">Referência</div>
+      <h2 class="block-title">Regra dos verbos regulares (-ed)</h2>
+      <p class="explain">A maioria dos verbos em inglês segue uma regra simples no passado, mas com três variações na escrita:</p>
+      <table class="vocab-table"><thead><tr><th>Regra</th><th>Exemplo</th></tr></thead><tbody>
+        <tr><td>Verbo termina em consoante → +ed</td><td class="mono">work → worked, play → played</td></tr>
+        <tr><td>Verbo termina em 'e' → +d</td><td class="mono">live → lived, like → liked</td></tr>
+        <tr><td>Consoante + 'y' → troca y por 'ied'</td><td class="mono">study → studied, cry → cried</td></tr>
+        <tr><td>Vogal curta + consoante → dobra a consoante + ed</td><td class="mono">stop → stopped, plan → planned</td></tr>
+      </tbody></table>
+      <p class="explain" style="margin-top:14px">A pronúncia do -ed muda conforme o som final do verbo: <strong>/t/</strong> depois de sons surdos (worked, watched), <strong>/d/</strong> depois de sons sonoros (played, called), e <strong>/ɪd/</strong> depois de t/d (wanted, needed).</p>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:#A6763B">Referência</div>
+      <h2 class="block-title">Verbos de estado (não usam -ing)</h2>
+      <p class="explain">Alguns verbos descrevem estados mentais, sentimentos ou posse — eles quase nunca aparecem no Present Continuous, mesmo falando do momento presente. É um dos erros mais comuns entre brasileiros aprendendo inglês.</p>
+      <table class="vocab-table"><thead><tr><th>Verbo</th><th>Tradução</th><th>✓ Correto</th><th>✗ Incorreto</th></tr></thead><tbody>${stateRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--coral)">Referência</div>
+      <h2 class="block-title">Verbos modais — quando usar cada um</h2>
+      <p class="explain">Modais mudam o "tom" de uma frase: obrigação, possibilidade, educação, hipótese. Nunca levam -s na terceira pessoa, e o verbo depois deles é sempre a forma base (sem 'to').</p>
+      <table class="vocab-table"><thead><tr><th>Modal</th><th>Uso principal</th><th>Exemplo</th><th>Quando usar</th></tr></thead><tbody>${modalRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--green)">Referência</div>
+      <h2 class="block-title">Phrasal verbs comuns</h2>
+      <p class="explain">Combinações de verbo + preposição que mudam completamente o significado. São essenciais para soar natural em inglês falado — nativos os usam o tempo todo.</p>
+      <table class="vocab-table"><thead><tr><th>Phrasal verb</th><th>Significado</th><th>Exemplo</th></tr></thead><tbody>${phrasalRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:#5A7A9E">Referência</div>
+      <h2 class="block-title">Falsos cognatos (false friends)</h2>
+      <p class="explain">Palavras que parecem óbvias por serem parecidas com o português, mas têm significado completamente diferente. Essa é uma das maiores fontes de mal-entendidos para brasileiros — vale muito a pena memorizar esta lista.</p>
+      <table class="vocab-table"><thead><tr><th>Palavra</th><th>Significado real</th><th>Cuidado</th></tr></thead><tbody>${falseCogRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:#8A5A9E">Referência</div>
+      <h2 class="block-title">Tempos verbais — visão geral comparativa</h2>
+      <p class="explain">Um resumo rápido dos tempos verbais estudados nas 30 aulas, lado a lado, para você comparar a estrutura e o uso de cada um.</p>
+      <table class="vocab-table"><thead><tr><th>Tempo verbal</th><th>Estrutura</th><th>Exemplo</th><th>Quando usar</th></tr></thead><tbody>${tenseRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--blue)">Referência</div>
+      <h2 class="block-title">Preposições de lugar e tempo — resumo</h2>
+      <p class="explain">As três preposições mais usadas do inglês, resumidas em uma tabela só. Se tiver dúvida na hora de escrever, volte aqui.</p>
+      <table class="vocab-table"><thead><tr><th>Preposição</th><th>Quando usar</th><th>Exemplos</th></tr></thead><tbody>${prepRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:#4A7A6E">Referência</div>
+      <h2 class="block-title">Verbos com preposições fixas</h2>
+      <p class="explain">Muitos verbos em inglês "exigem" uma preposição específica depois deles — e ela nem sempre é a tradução literal do português. Ex: em português "depender <strong>de</strong>", mas em inglês "depend <strong>on</strong>" (não "of"). Vale memorizar o par verbo+preposição como se fosse uma unidade só.</p>
+      <table class="vocab-table"><thead><tr><th>Verbo + preposição</th><th>Tradução</th><th>Exemplo</th></tr></thead><tbody>${depPrepRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:#9E6A3A">Referência</div>
+      <h2 class="block-title">Expressões idiomáticas comuns</h2>
+      <p class="explain">Idioms são expressões cujo significado não se explica pela tradução literal das palavras — são usadas o tempo todo por nativos e ajudam muito a soar natural. Não traduza ao pé da letra: aprenda o significado como um todo.</p>
+      <table class="vocab-table"><thead><tr><th>Expressão</th><th>Significado</th><th>Quando usar</th></tr></thead><tbody>${idiomRows}</tbody></table>
+    </div>
+
+    <div class="lesson-block"><button class="nav-buttons" style="background:var(--paper);border:1px solid var(--line);padding:10px 18px;border-radius:8px;cursor:pointer;font-size:.85rem;" onclick="closeVerbGuide()">← Voltar para as aulas</button></div>
+  `;
+}
+
+/* ============ ESTADO / PROGRESSO (localStorage) ============ */
+function loadState(){
+  try{ const raw = localStorage.getItem('rotina-en-state'); if(raw) return JSON.parse(raw); }catch(e){}
+  return { completed:[], streak:0, lastDate:null, currentDay:1 };
+}
+function saveState(){ localStorage.setItem('rotina-en-state', JSON.stringify(state)); }
+let state = loadState();
+let currentDay = state.currentDay || 1;
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function yesterdayStr(){ const d = new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); }
+function markDayComplete(day){
+  if(!state.completed.includes(day)) state.completed.push(day);
+  const today = todayStr();
+  if(state.lastDate !== today){
+    if(state.lastDate === yesterdayStr()){ state.streak += 1; } else { state.streak = 1; }
+    state.lastDate = today;
+  }
+  saveState(); renderSidebar(); renderStreak(); renderLessonBody();
+}
+
+/* ============ SIDEBAR ============ */
+function renderSidebar(){
+  const dayList = document.getElementById('dayList');
+  dayList.innerHTML = '';
+  for(let i=1; i<=TOTAL_DAYS; i++){
+    const li = document.createElement('li');
+    const btn = document.createElement('button');
+    btn.className = 'day-item' + (i===currentDay ? ' active' : '') + (state.completed.includes(i) ? ' done' : '');
+    btn.innerHTML = `<span class="dot"></span><span class="n">${String(i).padStart(2,'0')}</span><span class="topic">${lessons[i].topic}</span>`;
+    btn.addEventListener('click', () => selectDay(i));
+    li.appendChild(btn);
+    dayList.appendChild(li);
+  }
+  document.getElementById('progressLabel').textContent = `${state.completed.length}/${TOTAL_DAYS}`;
+}
+function renderStreak(){ document.getElementById('streakNum').textContent = state.streak; }
+function selectDay(day){
+  currentDay = day; state.currentDay = day; saveState();
+  const d = lessons[day];
+  document.getElementById('dayEyebrow').textContent = `Dia ${day} · ${day<=3?'Fundamentos':day<=23?'Nível A1':'Nível A1/A2'}`;
+  document.getElementById('lessonTitle').textContent = d.title;
+  document.getElementById('lessonSub').textContent = d.sub;
+  document.getElementById('lessonContent').style.display = 'none';
+  document.getElementById('startBtn').textContent = 'Começar aula';
+  renderSidebar(); renderLessonBody();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ============ RENDERIZAÇÃO DO CONTEÚDO ============ */
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function renderLessonBody(){
+  const d = lessons[currentDay];
+  const ex = extras[currentDay] || {moreExamples:[],mistakes:[],reorder:[]};
+  const isDone = state.completed.includes(currentDay);
+  let allExamples = d.examples.concat(ex.moreExamples);
+  let examplesHtml = allExamples.map(([en,pt]) => `<li><span class="en">${en}</span><span class="pt">${pt}</span></li>`).join('');
+  let mistakesHtml = ex.mistakes.map(([wrong,right,note]) => `<div class="mistake-box"><span class="wrong">${wrong}</span> → <span class="right">${right}</span><br><span style="font-size:.85rem;color:var(--ink-soft)">${note}</span></div>`).join('');
+  let reorderHtml = ex.reorder.map((r,idx) => {
+    const words = r[0];
+    const answer = r[1].toLowerCase().replace(/[.,!?]/g,'');
+    const chips = words.map(w => `<span class="chip">${w}</span>`).join(' ');
+    return `<div class="reorder-box" data-answer="${esc(answer)}">
+      <p><strong>${idx+1}.</strong> Reordene:</p>
+      <div class="reorder-words">${chips}</div>
+      <input type="text" class="reorder-input" placeholder="Escreva a frase correta...">
+    </div>`;
+  }).join('');
+  let fillHtml = d.fill.map((f,idx) => `<div class="q" data-answer="${esc(f[1]).toLowerCase()}"><p>${idx+1}. ${f[0]}<input type="text" class="blank" maxlength="12" placeholder="___">${f[2]}</p></div>`).join('');
+  let choiceHtml = d.choice.map((c,idx) => {
+    const opts = c.opts.map(([t,ok]) => `<label><input type="radio" name="c-${currentDay}-${idx}" value="${ok?'correct':'wrong'}"> ${t}</label>`).join('');
+    return `<div class="q-choice"><p>${idx+1}. ${c.q}</p>${opts}</div>`;
+  }).join('');
+  let challengeHtml = d.challenge.map((c,idx) => `
+    <div class="challenge">
+      <p><strong>${idx+1}.</strong> ${c[0]}</p>
+      <input type="text" placeholder="Escreva em inglês...">
+      <button class="reveal-btn" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">Ver resposta modelo</button>
+      <p class="reveal-answer">${c[1]}</p>
+    </div>`).join('');
+  let dialogueHtml = d.dialogue.map(([speaker,text]) => `<div class="line"><button class="play-btn" onclick="speak('${text.replace(/'/g,"\\'")}')">▶</button><span><strong>${speaker}:</strong> ${text}</span></div>`).join('');
+  let listenQHtml = d.listenQ.map((c,idx) => {
+    const opts = c.opts.map(([t,ok]) => `<label><input type="radio" name="l-${currentDay}-${idx}" value="${ok?'correct':'wrong'}"> ${t}</label>`).join('');
+    return `<div class="q-choice"><p>${idx+1}. ${c.q}</p>${opts}</div>`;
+  }).join('');
+  let vocabHtml = d.vocab.map(v => {
+    const t = dictionary[v.toLowerCase()] || '—';
+    return `<tr><td class="mono">${v}</td><td>${t}</td></tr>`;
+  }).join('');
+
+  document.getElementById('lessonContent').innerHTML = `
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--blue)">Bloco 1 · Gramática</div>
+      <h2 class="block-title">${d.grammarTitle}</h2>
+      <p class="explain">${d.grammarHtml}</p>
+      <div class="tip-box"><strong>Dica extra:</strong> ${d.tip}</div>
+      <h3 class="mini-h">Exemplos</h3>
+      <ul class="example-list">${examplesHtml}</ul>
+      <h3 class="mini-h">Exercício 1 — Complete as frases</h3>
+      <div class="quiz" id="quizFill">
+        ${fillHtml}
+        <button class="check-btn" onclick="checkFill()">Corrigir</button>
+        <p class="quiz-feedback" id="feedback-quizFill"></p>
+      </div>
+      <h3 class="mini-h">Exercício 2 — Escolha a opção correta</h3>
+      <div class="quiz" id="quizChoice">
+        ${choiceHtml}
+        <button class="check-btn" onclick="checkChoiceGroup('quizChoice', ${d.choice.length}, 'c-${currentDay}')">Corrigir</button>
+        <p class="quiz-feedback" id="feedback-quizChoice"></p>
+      </div>
+      <h3 class="mini-h">Exercício 3 — Desafio de tradução</h3>
+      <p class="explain">Escreva a frase em inglês, depois clique para ver a resposta modelo (pode haver mais de uma forma correta).</p>
+      ${challengeHtml}
+      <h3 class="mini-h">Exercício 4 — Reordene as palavras</h3>
+      <p class="explain">Coloque as palavras na ordem certa para formar uma frase correta.</p>
+      <div class="quiz" id="quizReorder">
+        ${reorderHtml}
+        <button class="check-btn" onclick="checkReorder()">Corrigir</button>
+        <p class="quiz-feedback" id="feedback-quizReorder"></p>
+      </div>
+      <h3 class="mini-h">⚠️ Erros comuns nesta gramática</h3>
+      ${mistakesHtml}
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--amber)">Bloco 2 · Compreensão auditiva</div>
+      <h2 class="block-title">Ouça o diálogo</h2>
+      <p class="explain">Clique para ouvir cada fala. Depois responda às perguntas.</p>
+      <div class="dialogue">${dialogueHtml}</div>
+      <button class="play-btn-wide" onclick="speakAll(${currentDay})">▶ Ouvir diálogo completo</button>
+      <h3 class="mini-h">Perguntas</h3>
+      <div class="quiz" id="quizListen">
+        ${listenQHtml}
+        <button class="check-btn" onclick="checkChoiceGroup('quizListen', ${d.listenQ.length}, 'l-${currentDay}')">Corrigir</button>
+        <p class="quiz-feedback" id="feedback-quizListen"></p>
+      </div>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:#A6763B">Bloco 3 · Leitura</div>
+      <h2 class="block-title">Texto do dia</h2>
+      <p class="reading-text">${d.readingHtml}</p>
+      <h3 class="mini-h">Vocabulário desta aula</h3>
+      <table class="vocab-table"><thead><tr><th>Inglês</th><th>Português</th></tr></thead><tbody>${vocabHtml}</tbody></table>
+    </div>
+
+    <div class="lesson-block">
+      <div class="block-tag" style="background:var(--coral)">Bloco 4 · Expressão oral</div>
+      <h2 class="block-title">Repita e grave sua voz</h2>
+      <p class="explain">Ouça a frase, depois grave e compare sua pronúncia.</p>
+      <div class="speak-card">
+        <p class="target-phrase">"${d.speak}"</p>
+        <div class="speak-controls">
+          <button class="play-btn-wide" onclick="speak('${d.speak.replace(/'/g,"\\'")}')">▶ Ouvir</button>
+          <button class="record-btn" id="recordBtn" onclick="toggleRecord('${d.speak.toLowerCase().replace(/[.,!?']/g,'').replace(/'/g,"\\'")}')">🎤 Gravar</button>
+        </div>
+        <p class="speak-result" id="speakResult"></p>
+      </div>
+    </div>
+
+    <div class="lesson-block">
+      <div class="complete-row">
+        <button class="complete-btn" id="completeBtn" ${isDone?'disabled':''} onclick="markDayComplete(${currentDay})">${isDone ? '✓ Dia concluído' : 'Marcar dia como concluído'}</button>
+        <span class="complete-msg">${isDone ? 'Ótimo trabalho! Sua sequência foi contabilizada.' : 'Ao concluir, sua sequência (streak) é atualizada.'}</span>
+      </div>
+      <div class="nav-buttons">
+        <button onclick="selectDay(${Math.max(1,currentDay-1)})" ${currentDay===1?'disabled':''}>← Dia anterior</button>
+        <button onclick="selectDay(${Math.min(TOTAL_DAYS,currentDay+1)})" ${currentDay===TOTAL_DAYS?'disabled':''}>Próximo dia →</button>
+      </div>
+    </div>
+  `;
+}
+
+/* ============ DIAL DE PROGRESSO ============ */
+function renderDial(){
+  const svgNS = "http://www.w3.org/2000/svg";
+  const arcsGroup = document.getElementById('dialArcs');
+  arcsGroup.innerHTML = '';
+  const segments = [{ color:'#B23A2E', minutes:20 },{ color:'#C98F3F', minutes:20 },{ color:'#7A2620', minutes:10 }];
+  const r=50, cx=60, cy=60, circumference = 2*Math.PI*r;
+  let offset = 0;
+  segments.forEach(seg => {
+    const len = (seg.minutes/50) * circumference;
+    const circle = document.createElementNS(svgNS,'circle');
+    circle.setAttribute('cx',cx); circle.setAttribute('cy',cy); circle.setAttribute('r',r);
+    circle.setAttribute('fill','none'); circle.setAttribute('stroke',seg.color); circle.setAttribute('stroke-width',12);
+    circle.setAttribute('stroke-dasharray', `${len} ${circumference-len}`);
+    circle.setAttribute('stroke-dashoffset', -offset);
+    circle.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
+    arcsGroup.appendChild(circle);
+    offset += len;
+  });
+}
+
+/* ============ TEXT-TO-SPEECH ============ */
+function speak(text){
+  if(!('speechSynthesis' in window)){ alert('Seu navegador não suporta síntese de voz.'); return; }
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-US'; utter.rate = 0.92;
+  speechSynthesis.cancel(); speechSynthesis.speak(utter);
+}
+function speakAll(day, i=0){
+  const lines = lessons[day].dialogue;
+  if(i >= lines.length || !('speechSynthesis' in window)) return;
+  const utter = new SpeechSynthesisUtterance(lines[i][1]);
+  utter.lang = 'en-US'; utter.rate = 0.92;
+  utter.onend = () => speakAll(day, i+1);
+  speechSynthesis.speak(utter);
+}
+
+/* ============ CORREÇÃO DE EXERCÍCIOS ============ */
+function checkFill(){
+  const questions = document.querySelectorAll('#quizFill .q');
+  let correct = 0;
+  questions.forEach(q => {
+    const answer = q.dataset.answer.trim().toLowerCase();
+    const input = q.querySelector('.blank');
+    const value = input.value.trim().toLowerCase();
+    input.classList.remove('correct','wrong');
+    if(value === answer){ input.classList.add('correct'); correct++; } else{ input.classList.add('wrong'); }
+  });
+  const fb = document.getElementById('feedback-quizFill');
+  fb.textContent = `Você acertou ${correct} de ${questions.length}.`;
+  fb.style.color = correct === questions.length ? '#4A7A45' : '#B23A2E';
+}
+function checkReorder(){
+  const boxes = document.querySelectorAll('#quizReorder .reorder-box');
+  let correct = 0;
+  boxes.forEach(box => {
+    const answer = box.dataset.answer.trim().toLowerCase();
+    const input = box.querySelector('.reorder-input');
+    const value = input.value.trim().toLowerCase().replace(/[.,!?]/g,'');
+    input.style.borderColor = '';
+    if(value === answer){ input.style.borderColor = 'var(--green)'; correct++; }
+    else{ input.style.borderColor = 'var(--coral)'; }
+  });
+  const fb = document.getElementById('feedback-quizReorder');
+  fb.textContent = `Você acertou ${correct} de ${boxes.length}.`;
+  fb.style.color = correct === boxes.length ? '#4A7A45' : '#B23A2E';
+}
+function checkChoiceGroup(containerId, count, namePrefix){
+  let correct = 0;
+  for(let i=0;i<count;i++){
+    const checked = document.querySelector(`input[name="${namePrefix}-${i}"]:checked`);
+    if(checked && checked.value === 'correct') correct++;
+  }
+  const fb = document.getElementById('feedback-' + containerId);
+  fb.textContent = `Você acertou ${correct} de ${count}.`;
+  fb.style.color = correct === count ? '#4A7A45' : '#B23A2E';
+}
+
+/* ============ GRAVAÇÃO DE VOZ ============ */
+let recognizing = false; let recognition;
+function toggleRecord(targetPhrase){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btn = document.getElementById('recordBtn'); const result = document.getElementById('speakResult');
+  if(!SpeechRecognition){ result.textContent = 'Seu navegador não suporta reconhecimento de voz (funciona melhor no Chrome).'; return; }
+  if(recognizing){ recognition.stop(); return; }
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US'; recognition.interimResults = false;
+  recognition.onstart = () => { recognizing = true; btn.classList.add('recording'); btn.textContent = '⏺ Gravando...'; result.textContent = 'Fale agora...'; };
+  recognition.onend = () => { recognizing = false; btn.classList.remove('recording'); btn.textContent = '🎤 Gravar'; };
+  recognition.onerror = () => { result.textContent = 'Não foi possível captar o áudio. Tente novamente.'; };
+  recognition.onresult = (e) => {
+    const said = e.results[0][0].transcript.toLowerCase().trim();
+    const saidClean = said.replace(/[.,!?]/g,'');
+    const similarity = wordOverlap(saidClean, targetPhrase);
+    result.innerHTML = `Você disse: <strong>"${said}"</strong><br>Aproximação com a frase alvo: <strong>${similarity}%</strong>`;
+  };
+  recognition.start();
+}
+function wordOverlap(a,b){
+  const wordsA = a.split(/\s+/); const wordsB = b.split(/\s+/);
+  let matches = 0; wordsB.forEach(w => { if(wordsA.includes(w)) matches++; });
+  return Math.round((matches/wordsB.length)*100);
+}
+
+/* ============ DICIONÁRIO INSTANTÂNEO ============ */
+const dictionary = {
+  "hi":"oi","hello":"olá","bye":"tchau","goodbye":"adeus","name":"nome","friend":"amigo(a)","friendly":"amigável, simpático",
+  "classmate":"colega de classe","funny":"engraçado(a)","student":"estudante","teacher":"professor(a)","doctor":"médico(a)",
+  "brother":"irmão","sister":"irmã","mother":"mãe","father":"pai","family":"família","book":"livro","coffee":"café","school":"escola",
+  "home":"casa, lar","today":"hoje","tired":"cansado(a)","happy":"feliz","sad":"triste","hot":"quente","cold":"frio",
+  "monday":"segunda-feira","brazil":"brasil","brazilian":"brasileiro(a)","canada":"canadá","from":"de (origem)","meet":"conhecer, encontrar",
+  "nice":"legal, agradável","yes":"sim","no":"não","am":"(to be) sou/estou","is":"(to be) é/está","are":"(to be) é/são/está/estão",
+  "not":"não (negação)","and":"e","too":"também","i":"eu","you":"você","he":"ele","she":"ela","it":"isso/ele/ela",
+  "we":"nós","they":"eles/elas","my":"meu/minha","your":"seu/sua","his":"dele","her":"dela","our":"nosso(a)","their":"deles/delas",
+  "what":"o que/qual","where":"onde","who":"quem","parents":"pais","good":"bom/boa","always":"sempre","never":"nunca",
+  "usually":"geralmente","sometimes":"às vezes","can":"poder, conseguir","must":"dever (obrigação)","should":"deveria (conselho)",
+  "went":"foi (passado de go)","was":"era/estava","were":"eram/estavam","going":"indo","weather":"clima","summer":"verão",
+  "winter":"inverno","birthday":"aniversário","market":"mercado","trip":"viagem","work":"trabalho","study":"estudar",
+  "relatives":"parentes","neighbors":"vizinhos","between":"entre","behind":"atrás de","bill":"conta (restaurante)",
+  "please":"por favor",
+  "thank you":"obrigado(a)",
+  "sorry":"desculpe",
+  "excuse me":"com licença, desculpe",
+  "good morning":"bom dia",
+  "good afternoon":"boa tarde",
+  "good evening":"boa noite (saudação)",
+  "good night":"boa noite (despedida)",
+  "you're welcome":"de nada",
+  "see you later":"até mais",
+  "see you soon":"até breve",
+  "alphabet":"alfabeto",
+  "letter":"letra",
+  "spell":"soletrar",
+  "sound":"som",
+  "pronounce":"pronunciar",
+  "color":"cor",
+  "number":"número",
+  "zero":"zero",
+  "one":"um",
+  "two":"dois",
+  "three":"três",
+  "four":"quatro",
+  "five":"cinco",
+  "six":"seis",
+  "seven":"sete",
+  "eight":"oito",
+  "nine":"nove",
+  "ten":"dez",
+  "eleven":"onze",
+  "twelve":"doze",
+  "red":"vermelho",
+  "blue":"azul",
+  "green":"verde",
+  "yellow":"amarelo",
+  "black":"preto",
+  "white":"branco",
+  "orange":"laranja",
+  "purple":"roxo",
+  "pink":"rosa",
+  "brown":"marrom",
+  "gray":"cinza",
+  "pen":"caneta",
+  "pencil":"lápis",
+  "table":"mesa",
+  "chair":"cadeira",
+  "door":"porta",
+  "window":"janela",
+  "classroom":"sala de aula",
+  "tuesday":"terça-feira",
+  "wednesday":"quarta-feira",
+  "thursday":"quinta-feira",
+  "friday":"sexta-feira",
+  "saturday":"sábado",
+  "sunday":"domingo",
+  "apple":"maçã",
+  "how many":"quantos(as)",
+  "how much":"quanto(a)",
+  "abroad":"no exterior",
+  "active":"ativo(a)",
+  "advice":"conselho",
+  "after":"depois",
+  "amazing":"incrível",
+  "anything else":"mais alguma coisa",
+  "arrive":"chegar",
+  "asks":"pergunta",
+  "aunts":"tias",
+  "backpack":"mochila",
+  "bank":"banco",
+  "beautiful":"lindo(a)",
+  "bench":"banco (assento)",
+  "blocks":"quadras",
+  "break":"pausa, intervalo",
+  "breakfast":"café da manhã",
+  "brothers":"irmãos",
+  "busy":"ocupado(a)",
+  "buy":"comprar",
+  "call":"ligar, chamar",
+  "called":"ligou, chamou",
+  "calm":"calmo(a)",
+  "cat":"gato",
+  "celebrate":"celebrar",
+  "cities":"cidades",
+  "cleanest":"mais limpa",
+  "cloudy":"nublado",
+  "coin":"moeda",
+  "confident":"confiante",
+  "corner":"esquina",
+  "course":"curso",
+  "cousins":"primos",
+  "creative":"criativo(a)",
+  "decided":"decidiu, decidido",
+  "dedicated":"dedicado(a)",
+  "definitely":"definitivamente",
+  "desk":"mesa (escrivaninha)",
+  "dinner":"jantar",
+  "eat out":"comer fora",
+  "eggs":"ovos",
+  "enjoy":"aproveitar, curtir",
+  "enjoying":"aproveitando",
+  "enough":"suficiente",
+  "entrance":"entrada",
+  "especially":"especialmente",
+  "evening":"noite (início)",
+  "event":"evento",
+  "excited":"animado(a), empolgado(a)",
+  "exhausted":"exausto(a)",
+  "fast food":"comida rápida",
+  "finished":"terminou, terminado",
+  "finishes":"termina",
+  "floor":"andar, chão",
+  "forget":"esquecer",
+  "garden":"jardim",
+  "grandmother":"avó",
+  "guests":"convidados",
+  "guitar":"violão, guitarra",
+  "hard worker":"trabalhador(a) esforçado(a)",
+  "harder":"mais difícil",
+  "honor":"honra",
+  "hour":"hora",
+  "improving":"melhorando",
+  "instead":"em vez disso",
+  "instrument":"instrumento",
+  "interesting":"interessante",
+  "invite":"convidar",
+  "jacket":"jaqueta",
+  "january":"janeiro",
+  "kind":"gentil, bondoso(a)",
+  "learning":"aprendendo",
+  "leaves":"sai, parte (verbo)",
+  "left":"restante; saiu (passado de leave)",
+  "loves":"ama, adora",
+  "meals":"refeições",
+  "meeting":"reunião",
+  "memories":"memórias",
+  "mountain":"montanha",
+  "native speaker":"falante nativo",
+  "nearby":"por perto",
+  "noise":"barulho",
+  "noon":"meio-dia",
+  "notebook":"caderno",
+  "obligation":"obrigação",
+  "once":"uma vez",
+  "order":"pedido, pedir",
+  "ordinal":"ordinal (número)",
+  "organized":"organizado(a)",
+  "outside":"lá fora",
+  "party":"festa",
+  "peaceful":"pacífico(a), tranquilo(a)",
+  "people":"pessoas",
+  "pet":"animal de estimação",
+  "pharmacy":"farmácia",
+  "photo":"foto",
+  "plans":"planos",
+  "post office":"correios",
+  "practice":"prática, praticar",
+  "prediction":"previsão",
+  "progress":"progresso",
+  "proud":"orgulhoso(a)",
+  "raining":"chovendo",
+  "reach":"alcançar, chegar a",
+  "relaxing":"relaxante",
+  "report":"relatório",
+  "rest":"descansar, descanso",
+  "reunion":"reunião (de família/amigos)",
+  "routine":"rotina",
+  "salad":"salada",
+  "satisfied":"satisfeito(a)",
+  "scarf":"cachecol, echarpe",
+  "season":"estação (do ano)",
+  "shares":"compartilha",
+  "shelf":"prateleira",
+  "siblings":"irmãos (de modo geral)",
+  "sing":"cantar",
+  "skip":"pular, não fazer",
+  "sleep":"dormir",
+  "snacks":"lanches, salgadinhos",
+  "snow":"neve",
+  "souvenir":"lembrança (de viagem)",
+  "souvenirs":"lembranças (de viagem)",
+  "special":"especial",
+  "spicy":"picante",
+  "starts":"começa",
+  "straight":"reto, direto",
+  "stranger":"desconhecido(a), estranho(a)",
+  "studied":"estudou, estudado",
+  "sunny":"ensolarado",
+  "support":"apoio, apoiar",
+  "teaches":"ensina",
+  "team":"equipe, time",
+  "these days":"atualmente, hoje em dia",
+  "tiring":"cansativo(a)",
+  "toast":"torrada",
+  "together":"juntos",
+  "tonight":"hoje à noite",
+  "uncles":"tios",
+  "vacation":"férias",
+  "waiter":"garçom",
+  "wakes up":"acorda",
+  "walk":"caminhar, caminhada",
+  "walked":"caminhou",
+  "watched":"assistiu",
+  "weekdays":"dias úteis, dias de semana",
+  "weekend":"fim de semana",
+  "weekends":"fins de semana",
+  "whose":"de quem",
+  "windy":"ventoso, com vento",
+  "wonderful":"maravilhoso(a)",
+  "worked":"trabalhou"
+};
+const dictInput = document.getElementById('dictInput'); const dictResult = document.getElementById('dictResult');
+let dictTimeout;
+dictInput.addEventListener('input', () => {
+  const word = dictInput.value.trim().toLowerCase().replace(/[.,!?']/g,'');
+  clearTimeout(dictTimeout);
+  if(!word){ dictResult.innerHTML = 'Traduzo qualquer palavra em inglês — na hora.'; return; }
+  if(dictionary[word]){ dictResult.innerHTML = `<span class="found"><strong>${word}</strong> → ${dictionary[word]} <span class="src">(aula)</span></span>`; return; }
+  dictResult.innerHTML = `<span class="loading">Traduzindo "${word}"...</span>`;
+  dictTimeout = setTimeout(() => translateOnline(word), 450);
+});
+async function translateOnline(word){
+  try{
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|pt-BR`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('network');
+    const data = await res.json();
+    const translated = data?.responseData?.translatedText;
+    if(dictInput.value.trim().toLowerCase().replace(/[.,!?']/g,'') !== word) return;
+    if(translated){ dictResult.innerHTML = `<span class="found"><strong>${word}</strong> → ${translated.toLowerCase()} <span class="src">(web)</span></span>`; }
+    else{ dictResult.innerHTML = `<span class="not-found">Não encontrei tradução para "${word}".</span>`; }
+  }catch(err){ dictResult.innerHTML = `<span class="not-found">Sem conexão com o tradutor agora. Tente novamente em instantes.</span>`; }
+}
+
+/* ============ INICIALIZAÇÃO ============ */
+document.getElementById('startBtn').addEventListener('click', () => {
+  const content = document.getElementById('lessonContent');
+  const isHidden = content.style.display === 'none';
+  content.style.display = isHidden ? 'block' : 'none';
+  document.getElementById('startBtn').textContent = isHidden ? 'Ocultar aula' : 'Começar aula';
+  if(isHidden){ content.scrollIntoView({behavior:'smooth', block:'start'}); }
+});
+document.getElementById('verbGuideBtn').addEventListener('click', () => {
+  document.getElementById('dayEyebrow').textContent = 'Recurso de consulta';
+  document.getElementById('lessonTitle').textContent = 'Guia de Verbos';
+  document.getElementById('lessonSub').textContent = 'Tabelas de referência para consultar sempre que precisar — não faz parte da trilha diária.';
+  document.querySelector('.dial-row').style.display = 'none';
+  document.getElementById('startBtn').style.display = 'none';
+  const content = document.getElementById('lessonContent');
+  content.innerHTML = buildVerbGuideHtml();
+  content.style.display = 'block';
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+function closeVerbGuide(){
+  document.querySelector('.dial-row').style.display = 'flex';
+  document.getElementById('startBtn').style.display = 'inline-block';
+  selectDay(currentDay);
+}
+
+renderDial(); renderStreak(); selectDay(currentDay);
+</script>
+</body>
+</html>
